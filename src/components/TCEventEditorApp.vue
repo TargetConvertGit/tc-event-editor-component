@@ -41,4 +41,5 @@ const save = () => emit('update:data', JSON.stringify(json.value, null, 4))
 </template>
 
 <style scoped>
+@import '../style.css';
 </style>

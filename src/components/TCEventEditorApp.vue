@@ -1,18 +1,21 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { EventItem } from '../types/event-items'
 
 interface Props {
-  item: EventItem
+  data: string
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits(['updateItem'])
 
+const json = computed((): EventItem => JSON.parse(props.data))
+
 const changeTitle = (event: Event) => {
   if(event.target) {
-    props.item.title = (event.target as HTMLInputElement).value
-    emit('updateItem', props.item)
+    json.value.title = (event.target as HTMLInputElement).value
+    emit('updateItem', JSON.stringify(json.value, null, 2))
   }
 }
 </script>
@@ -20,13 +23,13 @@ const changeTitle = (event: Event) => {
 <template>
   <div class="p-5 rounded-lg border space-y-5">
     <div>TC Event Editor is loaded.</div>
-    <pre><code>item title: {{ props.item.title }}</code></pre>
+    <pre><code>item title: {{ json.title }}</code></pre>
     <div>變更內容</div>
     <input 
       type="text" 
       class="form-input w-full"
       @keyup="changeTitle"
-      :value="props.item.title"
+      :value="json.title"
     />
   </div>
 </template>

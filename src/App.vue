@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Ref, ref } from 'vue';
-import { TCEventEditorApp, TCEventItems } from './index'
+import { ref } from 'vue';
+import { TCEventEditorApp } from './index'
 
-const data = ref(JSON.stringify(JSON.parse(`{
+const data = ref(`{
     "title": "每月第一個星期一Google帳戶剩餘預算小於1000元且本季花費大於上一季度，則暫停Google指定廣告活動",
     "start": "2023-07-17T11:00Z",
     "frequency": 4,
@@ -41,9 +41,8 @@ const data = ref(JSON.stringify(JSON.parse(`{
             "comparison": true
         }
     ]
-}`), null, 4))
-const json: Ref<TCEventItems.EventItem> = ref(JSON.parse(data.value))
-const updateItem = (item: TCEventItems.EventItem) => data.value = JSON.stringify(item, null, 4)
+}`)
+const updateItem = (content: string) => data.value = content
 const updateData = () => {
     try {
         json.value = JSON.parse(data.value)
@@ -57,7 +56,7 @@ const updateData = () => {
 <template>
     <h1>TC Event Editor Demo</h1>
     <div class="grid grid-cols-2 gap-5">
-        <TCEventEditorApp :item="json" @update-item="updateItem" />
+        <TCEventEditorApp :data="data" @update-item="updateItem" />
         <div class="flex flex-col space-y-2">
             <textarea class="form-textarea h-96 rounded-lg" v-model="data"></textarea>
             <div class="text-center">

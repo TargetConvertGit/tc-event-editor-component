@@ -5,7 +5,7 @@ declare const _default: import("vue").DefineComponent<{
         required: true;
     };
     interval: {
-        type: import("vue").PropType<Number>;
+        type: import("vue").PropType<number>;
         required: true;
     };
 }, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("update:frequency" | "update:interval")[], "update:frequency" | "update:interval", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
@@ -14,7 +14,7 @@ declare const _default: import("vue").DefineComponent<{
         required: true;
     };
     interval: {
-        type: import("vue").PropType<Number>;
+        type: import("vue").PropType<number>;
         required: true;
     };
 }>> & {

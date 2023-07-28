@@ -18,16 +18,16 @@ export declare class EventHelper {
  * 事件本身
  */
 export interface EventItem {
-    title: String;
-    start: String;
+    title: string;
+    start: string;
     frequency: FrequencyType;
-    interval: Number;
+    interval: number;
     weekdays?: WeekdaysType[];
     weekOrdinal?: WeekOrdinalWordsType[];
-    monthDate?: Number[];
+    monthDate?: number[];
     yearMonths?: MonthType[];
-    due?: String;
-    except?: String[];
+    due?: string;
+    except?: string[];
     action?: EventAction;
     conditions?: EventCondition[];
 }
@@ -45,8 +45,8 @@ export interface EventAction {
  * 執行動作目標
  */
 export interface EventActionTarget {
-    id: String;
-    name: String;
+    id: string;
+    name: string;
 }
 /**
  * 執行動作參數
@@ -54,8 +54,8 @@ export interface EventActionTarget {
 export interface EventActionParamBudget {
     budgetType: BudgetType;
     valueType: ValueType;
-    value: Number;
-    limit?: Number;
+    value: number;
+    limit?: number;
 }
 /**
  * 條件
@@ -65,9 +65,9 @@ export interface EventCondition {
     conditionType: ConditionType;
     operation: OperationType;
     valueType: ValueType;
-    value: Number;
+    value: number;
     dateRangeType?: DateRangeType;
-    dateRange?: String[];
+    dateRange?: string[];
     comparison: Boolean;
 }
 /**

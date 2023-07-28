@@ -9,11 +9,11 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const emit = defineEmits(['updateItem'])
+const emit = defineEmits(['update:data'])
 
 const json = computed((): EventItem => JSON.parse(props.data || `{}`))
 
-const save = () => emit('updateItem', JSON.stringify(json.value, null, 4))
+const save = () => emit('update:data', JSON.stringify(json.value, null, 4))
 
 </script>
 

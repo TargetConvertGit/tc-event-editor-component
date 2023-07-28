@@ -28,16 +28,16 @@ export class EventHelper {
  * 事件本身
  */
 export interface EventItem {
-    title: String // 事件名稱
-    start: String // 事件開始日期
+    title: string // 事件名稱
+    start: string // 事件開始日期
     frequency: FrequencyType // 頻率單位
-    interval: Number // 頻率間隔
+    interval: number // 頻率間隔
     weekdays?: WeekdaysType[] // 指定每週第幾星期
     weekOrdinal?: WeekOrdinalWordsType[] //指定每月第幾週
-    monthDate?: Number[] // 每個月第幾天(1 - 31), -1表示最後一天
+    monthDate?: number[] // 每個月第幾天(1 - 31), -1表示最後一天
     yearMonths?: MonthType[] // 每年的第幾個月
-    due?: String  // 事件結束日期
-    except?: String[] // 排除指定日期
+    due?: string  // 事件結束日期
+    except?: string[] // 排除指定日期
     action?: EventAction // 執行動作
     conditions?: EventCondition[] // 條件
 }
@@ -57,8 +57,8 @@ export interface EventAction {
  * 執行動作目標
  */
 export interface EventActionTarget {
-    id: String
-    name: String
+    id: string
+    name: string
 }
 
 /**
@@ -67,8 +67,8 @@ export interface EventActionTarget {
 export interface EventActionParamBudget {
     budgetType: BudgetType
     valueType: ValueType
-    value: Number // 值 or 百分比
-    limit?: Number // 上限 or 下限
+    value: number // 值 or 百分比
+    limit?: number // 上限 or 下限
 }
 
 /**
@@ -79,9 +79,9 @@ export interface EventCondition {
     conditionType: ConditionType // 條件下拉
     operation: OperationType
     valueType: ValueType
-    value: Number // 值 or 百分比
+    value: number // 值 or 百分比
     dateRangeType?: DateRangeType
-    dateRange?: String[]
+    dateRange?: string[]
     comparison: Boolean // 加入比較區間
 }
 

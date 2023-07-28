@@ -4,18 +4,22 @@ import { FrequencyType } from '../types/event-items';
 
 interface Props {
     frequency: FrequencyType,
-    interval: Number
+    interval: number
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits(['update:frequency', 'update:interval'])
 
-const repeat = ref(props.frequency)
-// repeat.value = (() => props.frequency)()
+const repeat = ref(0)
+if(props.interval == 1)
+  repeat.value = props.frequency
 watch(repeat, (val) => {
-    if(FrequencyType[val])
+    if(FrequencyType[val]) {
         emit('update:frequency', val)
+        emit('update:interval', 1)
+        frequency.value = repeat.value
+    }
 })
 
 const frequency = ref(props.frequency)

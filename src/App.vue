@@ -51,7 +51,7 @@ const updateItem = (content: string) => data.value = content
         <div class="flex flex-col space-y-2">
             <textarea class="form-textarea h-96 rounded-lg" v-model="data"></textarea>
         </div>
-        <TCEventEditorApp :data="data" @update-item="updateItem" />
+        <TCEventEditorApp v-model:data="data" />
     </div>
 </template>
 

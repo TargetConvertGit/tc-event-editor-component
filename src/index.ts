@@ -1,5 +1,5 @@
 import './style.css'
-import './types/event-items.ts'
+import * as TCEventItems from './types/event-items.ts'
 import TCEventEditorApp from './components/TCEventEditorApp.vue'
 
-export { TCEventEditorApp }
+export { TCEventEditorApp, TCEventItems }

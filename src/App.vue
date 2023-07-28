@@ -43,29 +43,15 @@ const data = ref(`{
     ]
 }`)
 const updateItem = (content: string) => data.value = content
-const updateData = () => {
-    try {
-        json.value = JSON.parse(data.value)
-    }
-    catch(error) {
-        alert(error)
-    }
-}
 </script>
 
 <template>
     <h1>TC Event Editor Demo</h1>
     <div class="grid grid-cols-2 gap-5">
-        <TCEventEditorApp :data="data" @update-item="updateItem" />
         <div class="flex flex-col space-y-2">
             <textarea class="form-textarea h-96 rounded-lg" v-model="data"></textarea>
-            <div class="text-center">
-                <button 
-                    class="p-2 px-3 w-full rounded-lg bg-slate-100 hover:bg-slate-300"
-                    @click="updateData"
-                >更新內容</button>
-            </div>
         </div>
+        <TCEventEditorApp :data="data" @update-item="updateItem" />
     </div>
 </template>
 

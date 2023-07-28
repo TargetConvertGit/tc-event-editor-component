@@ -1,4 +1,4 @@
-import { defineComponent as h, ref as g, watch as x, openBlock as o, createElementBlock as i, createElementVNode as r, withDirectives as b, Fragment as m, renderList as N, unref as _, toDisplayString as f, createCommentVNode as S, vModelSelect as E, computed as U, vModelText as $, createVNode as F, pushScopeId as H, popScopeId as K } from "vue";
+import { defineComponent as h, ref as g, watch as x, openBlock as o, createElementBlock as i, createElementVNode as r, withDirectives as b, Fragment as f, renderList as N, unref as _, toDisplayString as m, createCommentVNode as S, vModelSelect as E, computed as U, vModelText as $, createVNode as F, pushScopeId as H, popScopeId as K } from "vue";
 class z {
   // 取得列舉索引
   getEnumKey(l, e) {
@@ -52,11 +52,11 @@ const nt = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
             class: "form-select",
             "onUpdate:modelValue": a[0] || (a[0] = (s) => u.value = s)
           }, [
-            (o(!0), i(m, null, N(_(c), (s, v) => (o(), i(m, { key: v }, [
+            (o(!0), i(f, null, N(_(c), (s, v) => (o(), i(f, { key: v }, [
               Number.isInteger(s) ? (o(), i("option", {
                 key: 0,
                 value: s
-              }, f(v), 9, A)) : S("", !0)
+              }, m(v), 9, A)) : S("", !0)
             ], 64))), 128)),
             M
           ], 512), [
@@ -71,11 +71,11 @@ const nt = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
             class: "form-select",
             "onUpdate:modelValue": a[1] || (a[1] = (s) => n.value = s)
           }, [
-            (o(!0), i(m, null, N(_(c), (s, v) => (o(), i(m, { key: v }, [
+            (o(!0), i(f, null, N(_(c), (s, v) => (o(), i(f, { key: v }, [
               s != _(c).Never && Number.isInteger(s) ? (o(), i("option", {
                 key: 0,
                 value: s
-              }, f(v), 9, p)) : S("", !0)
+              }, m(v), 9, p)) : S("", !0)
             ], 64))), 128))
           ], 512), [
             [E, n.value]
@@ -89,12 +89,12 @@ const nt = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
             onKeyup: a[2] || (a[2] = (s) => d.$emit("update:interval", s.target.value)),
             value: e.interval
           }, null, 40, T),
-          r("span", null, f(_(c)[n.value]), 1)
+          r("span", null, m(_(c)[n.value]), 1)
         ])
       ])) : S("", !0)
     ]));
   }
-}), G = (t) => (H("data-v-a0891806"), t = t(), K(), t), rt = {
+}), G = (t) => (H("data-v-f94af63a"), t = t(), K(), t), rt = {
   key: 0,
   class: "p-5 rounded-lg border space-y-5"
 }, st = /* @__PURE__ */ G(() => /* @__PURE__ */ r("div", null, "TC Event Editor is loaded.", -1)), ut = /* @__PURE__ */ G(() => /* @__PURE__ */ r("span", null, "變更標題", -1)), at = /* @__PURE__ */ h({
@@ -108,7 +108,7 @@ const nt = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     return (d, a) => e.data ? (o(), i("div", rt, [
       st,
       r("pre", null, [
-        r("code", null, "item title: " + f(u.value.title), 1)
+        r("code", null, "item title: " + m(u.value.title), 1)
       ]),
       r("div", null, [
         r("label", null, [
@@ -140,7 +140,7 @@ const et = (t, l) => {
   for (const [u, n] of l)
     e[u] = n;
   return e;
-}, ot = /* @__PURE__ */ et(at, [["__scopeId", "data-v-a0891806"]]);
+}, ot = /* @__PURE__ */ et(at, [["__scopeId", "data-v-f94af63a"]]);
 export {
   ot as TCEventEditorApp,
   nt as TCEventItems

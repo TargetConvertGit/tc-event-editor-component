@@ -34,9 +34,7 @@ const save = () => emit('update:data', JSON.stringify(json.value, null, 4))
     <RepeatFrequency 
       v-model:frequency="json.frequency"
       v-model:interval="json.interval" />
-    <button 
-      @click="save"
-      class="p-2 px-3 rounded-lg bg-slate-100 hover:bg-sky-500 hover:text-white">保存</button>
+    <button @click="save" class="p-2 px-3 rounded-lg bg-slate-100 hover:bg-sky-500 hover:text-white">保存</button>
   </div>
 </template>
 

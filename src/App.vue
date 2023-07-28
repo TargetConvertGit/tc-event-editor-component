@@ -42,7 +42,6 @@ const data = ref(`{
         }
     ]
 }`)
-const updateItem = (content: string) => data.value = content
 </script>
 
 <template>

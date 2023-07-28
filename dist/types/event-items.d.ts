@@ -90,12 +90,12 @@ export declare enum AdLevelType {
  * 頻率
  */
 export declare enum FrequencyType {
+    Never = -1,
     Hour = 1,
     Day = 2,
     Week = 3,
     Month = 4,
-    Annual = 5,
-    Never = -1
+    Annual = 5
 }
 /**
  * 每週星期幾

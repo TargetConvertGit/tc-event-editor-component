@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { EventItem } from '../types/event-items'
+import RepeatFrequency from './RepeatFrequency.vue'
 
 interface Props {
   data?: string
@@ -12,25 +13,30 @@ const emit = defineEmits(['updateItem'])
 
 const json = computed((): EventItem => JSON.parse(props.data || `{}`))
 
-const changeTitle = (event: Event) => {
-  if(event.target) {
-    json.value.title = (event.target as HTMLInputElement).value
-    emit('updateItem', JSON.stringify(json.value, null, 4))
-  }
-}
+const save = () => emit('updateItem', JSON.stringify(json.value, null, 4))
+
 </script>
 
 <template>
   <div v-if="props.data" class="p-5 rounded-lg border space-y-5">
     <div>TC Event Editor is loaded.</div>
     <pre><code>item title: {{ json.title }}</code></pre>
-    <div>變更內容</div>
-    <input 
-      type="text" 
-      class="form-input w-full"
-      @keyup="changeTitle"
-      :value="json.title"
-    />
+    <div>
+      <label>
+        <span>變更標題</span>
+        <input 
+          type="text" 
+          class="form-input w-full"
+          v-model="json.title"
+        />
+      </label>
+    </div>
+    <RepeatFrequency 
+      v-model:frequency="json.frequency"
+      v-model:interval="json.interval" />
+    <button 
+      @click="save"
+      class="p-2 px-3 rounded-lg bg-slate-100 hover:bg-sky-500 hover:text-white">保存</button>
   </div>
 </template>
 

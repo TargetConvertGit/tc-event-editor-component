@@ -78,9 +78,22 @@ export declare enum ClientType {
     Facebook = 2
 }
 /**
- * 層級
+ * 各平台層級
  */
-export declare enum AdLevelType {
+export type AdLevelType = AdLevelTypeGoogle | AdLevelTypeFacebook;
+/**
+ * Google 層級
+ */
+export declare enum AdLevelTypeGoogle {
+    Campaign = 1,
+    AdGroup = 2,
+    Ad = 3,
+    AdTag = 4
+}
+/**
+ * Facebook 層級
+ */
+export declare enum AdLevelTypeFacebook {
     Campaign = 1,
     AdGroup = 2,
     Ad = 3,

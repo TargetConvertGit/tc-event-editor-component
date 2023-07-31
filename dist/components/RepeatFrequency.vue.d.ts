@@ -1,11 +1,11 @@
-import { FrequencyType } from '../types/event-items';
+import { FrequencyType } from "../types/event-items";
 declare const _default: import("vue").DefineComponent<{
     frequency: {
         type: import("vue").PropType<FrequencyType>;
         required: true;
     };
     interval: {
-        type: import("vue").PropType<number>;
+        type: import("vue").PropType<string | number>;
         required: true;
     };
 }, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("update:frequency" | "update:interval")[], "update:frequency" | "update:interval", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
@@ -14,7 +14,7 @@ declare const _default: import("vue").DefineComponent<{
         required: true;
     };
     interval: {
-        type: import("vue").PropType<number>;
+        type: import("vue").PropType<string | number>;
         required: true;
     };
 }>> & {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, inject } from "vue";
+import { ref, watch, inject } from "vue";
 import { FrequencyType } from "../types/event-items";
 import SpecifyDate from "./SpecifyDate.vue";
 interface Props {

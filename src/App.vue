@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { TCEventEditorApp } from './index'
+import { ref } from "vue";
+import { TCEventEditorApp } from "./index";
 
 const data = ref(`{
     "title": "每月第一個星期一Google帳戶剩餘預算小於1000元且本季花費大於上一季度，則暫停Google指定廣告活動",
     "start": "2023-07-17T11:00Z",
     "frequency": 4,
-    "interval": 1,
-    "weekdays": [1],
-    "weekOrdinal": [1],
+    "interval": 2,
+    "monthDate": [1],
     "due": "2023-12-31T23:59Z",
     "action": {
         "client": 1,
@@ -23,7 +22,13 @@ const data = ref(`{
                 "name": "廣告活動B"
             }
         ],
-        "action": 5
+        "action": 1,
+        "params": {
+            "budgetType": "dailyBudget",
+            "valueType": "value",
+            "value":34,
+            "limit":22
+        }
     },
     "conditions": [
         {
@@ -41,18 +46,17 @@ const data = ref(`{
             "comparison": true
         }
     ]
-}`)
+}`);
 </script>
 
 <template>
-    <h1>TC Event Editor Demo</h1>
-    <div class="grid grid-cols-2 gap-5">
-        <div class="flex flex-col space-y-2">
-            <textarea class="form-textarea h-96 rounded-lg" v-model="data"></textarea>
-        </div>
-        <TCEventEditorApp v-model:data="data" />
+  <h1>TC Event Editor Demo</h1>
+  <div class="grid grid-cols-2 gap-5">
+    <div class="flex flex-col space-y-2">
+      <textarea class="form-textarea h-96 rounded-lg" v-model="data"></textarea>
     </div>
+    <TCEventEditorApp v-model:data="data" />
+  </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

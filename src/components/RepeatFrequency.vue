@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, inject } from "vue";
+// import { ref, watch, inject } from "vue";
 import { FrequencyType } from "../types/event-items";
 import SpecifyDate from "./SpecifyDate.vue";
+import DuePicker from "./DuePicker.vue";
 interface Props {
   frequency: FrequencyType;
   interval: number | string;
@@ -22,21 +23,43 @@ watch(repeat, (val) => {
 });
 
 const frequency = ref(props.frequency);
-watch(frequency, (val) => emit("update:frequency", val));
+watch(frequency, (val) => {
+  emit("update:frequency", val);
+});
 
-const updateSpecifyDate = (value) => {
-  console.log(value);
-};
+const weekdays = computed({
+  get: () => eventData.value.weekdays ?? [],
+  set: (value) => {
+    eventData.value.weekdays = value;
+  },
+});
+const weekOrdinal = computed({
+  get: () => eventData.value.weekOrdinal ?? [],
+  set: (value) => {
+    eventData.value.weekOrdinal = value;
+  },
+});
+const monthDate = computed({
+  get: () => eventData.value.monthDate ?? [],
+  set: (value) => {
+    eventData.value.monthDate = value;
+  },
+});
+const yearMonths = computed({
+  get: () => eventData.value.yearMonths ?? [],
+  set: (value) => {
+    eventData.value.yearMonths = value;
+  },
+});
 
 const eventData = inject("eventData");
 </script>
 
 <template>
   <div class="space-y-3">
-    <input type="text" v-model="eventData.title" />
     <div class="flex space-x-1">
       <label class="flex items-center gap-1">
-        <span>重複</span>
+        <span class="p3-b">重複</span>
         <select
           class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="repeat"
@@ -52,10 +75,10 @@ const eventData = inject("eventData");
     </div>
     <div
       v-if="FrequencyType[repeat] == undefined"
-      class="flex flex-col space-y-3"
+      class="flex items-center gap-2"
     >
       <label class="flex items-center gap-1">
-        <span>頻率</span>
+        <span class="p3-b">頻率</span>
         <select
           class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="frequency"
@@ -70,23 +93,37 @@ const eventData = inject("eventData");
           </template>
         </select>
       </label>
-      <label class="flex items-center space-x-1">
+      <label class="flex items-center gap-1">
         <span>每</span>
         <div
           class="flex w-auto items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-1.5"
         >
           <input
             type="text"
-            class="p3-b w-full border-none outline-none shadow-none"
-            @keyup="(event: Event) => $emit('update:interval', (event.target as HTMLInputElement).value)"
+            class="p3-b w-4 text-center border-none outline-none shadow-none"
+            @keyup="
+              (event: Event) =>
+                $emit(
+                  'update:interval',
+                  (event.target as HTMLInputElement).value
+                )
+            "
             :value="props.interval"
           />
         </div>
         <span>{{ FrequencyType[frequency] }}</span>
       </label>
-
-      <SpecifyDate :type="frequency" @update="updateSpecifyDate" />
     </div>
-    <div v-if="frequency === 5">月份</div>
+    <template v-if="FrequencyType[repeat] == undefined">
+      <SpecifyDate
+        :type="frequency"
+        v-model:weekdays="weekdays"
+        v-model:weekOrdinal="weekOrdinal"
+        v-model:monthDate="monthDate"
+        v-model:yearMonths="yearMonths"
+      />
+    </template>
+
+    <DuePicker v-model="eventData.due" v-if="frequency !== -1" />
   </div>
 </template>

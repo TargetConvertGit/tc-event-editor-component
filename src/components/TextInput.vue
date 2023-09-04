@@ -1,7 +1,7 @@
 <script setup lang="ts">
 export interface Props {
   placeholder?: string;
-  modelValue: string | number;
+  modelValue?: string | number;
 }
 const props = withDefaults(defineProps<Props>(), {});
 

@@ -23,26 +23,49 @@ const emit = defineEmits([]);
 
 const eventData = inject("eventData");
 
-const adLevel = computed(() => {
-  if (eventData.value.action["client"] == ClientType.Google) {
+const unSelected = -1;
+
+const adLevelOption = computed(() => {
+  if (eventData.value.action?.["client"] == ClientType.Google) {
     return AdLevelTypeGoogle;
   }
 
   return AdLevelTypeFacebook;
 });
 
-const action = ref(eventData.value.action);
-
-watchEffect(() => {
-  if (action.value.action == ActionType.SetNewBudget) {
-    if (action.value.params) return;
-    action.value.params = {
-      budgetType: BudgetType.TotalBudget,
-      valueType: ValueType.Percentage,
-      value: 0,
-    } as EventActionParamBudget;
+const action = ref(
+  eventData.value.action ??
+    {
+      // client: -1,
+      // adLevel: -1,
+      // action: -1,
+    }
+);
+const hasLimitBudget = ref(false);
+watch(hasLimitBudget, (val) => {
+  if (!action.value.params?.limit) {
+    delete action.value.params.limit;
   }
-  if (action.value.params.limit) {
+  if (!val) {
+    delete action.value.params.limit;
+  }
+});
+watchEffect(() => {
+  if (
+    action.value?.action == ActionType.SetNewBudget ||
+    action.value?.action == ActionType.IncreaseBudget ||
+    action.value?.action == ActionType.LowerBudget
+  ) {
+    // if (action.value?.params) return;
+    // action.value.params = {
+    //   budgetType: BudgetType.DailyBudget,
+    //   valueType: ValueType.Value,
+    //   value: 0,
+    // } as EventActionParamBudget;
+  } else {
+    delete action.value.params;
+  }
+  if (action.value?.params?.limit) {
     hasLimitBudget.value = true;
   }
 });
@@ -54,26 +77,202 @@ watch(
   { deep: true }
 );
 
-const hasLimitBudget = ref(false);
-watch(hasLimitBudget, (val) => {
-  if (!action.value.params?.limit) {
-    action.value.params.limit = null;
+// 可選執行項
+const actionOptionsMap: any = {
+  [ClientType.Google]: {
+    [AdLevelTypeGoogle.Campaign]: {
+      SetNewBudget: ActionType.SetNewBudget,
+      IncreaseBudget: ActionType.IncreaseBudget,
+      LowerBudget: ActionType.LowerBudget,
+      OpenProject: ActionType.OpenProject,
+      SuspendProject: ActionType.SuspendProject,
+      None: ActionType.None,
+    },
+    [AdLevelTypeGoogle.AdGroup]: {
+      SuspendProject: ActionType.SuspendProject,
+      None: ActionType.None,
+    },
+    [AdLevelTypeGoogle.AdTag]: {
+      SuspendProject: ActionType.SuspendProject,
+      None: ActionType.None,
+    },
+    [AdLevelTypeGoogle.Ad]: {
+      SuspendProject: ActionType.SuspendProject,
+      None: ActionType.None,
+    },
+  },
+  [ClientType.Facebook]: {
+    [AdLevelTypeFacebook.Campaign]: {
+      SetNewBudget: ActionType.SetNewBudget,
+      IncreaseBudget: ActionType.IncreaseBudget,
+      LowerBudget: ActionType.LowerBudget,
+      OpenProject: ActionType.OpenProject,
+      SuspendProject: ActionType.SuspendProject,
+      None: ActionType.None,
+    },
+    [AdLevelTypeFacebook.AdGroup]: {
+      SetNewBudget: ActionType.SetNewBudget,
+      IncreaseBudget: ActionType.IncreaseBudget,
+      LowerBudget: ActionType.LowerBudget,
+      OpenProject: ActionType.OpenProject,
+      SuspendProject: ActionType.SuspendProject,
+      None: ActionType.None,
+    },
+    [AdLevelTypeFacebook.AdTag]: {
+      SuspendProject: ActionType.SuspendProject,
+      None: ActionType.None,
+    },
+    [AdLevelTypeFacebook.Ad]: {
+      SuspendProject: ActionType.SuspendProject,
+      None: ActionType.None,
+    },
+  },
+};
+// 可選執行項
+
+const actionOption = computed(() => {
+  const client = action.value?.client;
+  const adLevel = action.value?.adLevel;
+
+  if (client && adLevel) {
+    const clientOptions = actionOptionsMap[client];
+    if (clientOptions) {
+      const adLevelOptions = clientOptions[adLevel];
+      if (adLevelOptions) {
+        return adLevelOptions;
+      }
+    }
   }
-  if (!val) {
-    action.value.params.limit = null;
-  }
+
+  return {};
 });
+
+const valueTypeOptionsMap: any = {
+  [ClientType.Google]: {
+    [AdLevelTypeGoogle.Campaign]: {
+      [ActionType.SetNewBudget]: [ValueType.Value],
+      [ActionType.IncreaseBudget]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.LowerBudget]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.OpenProject]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
+    },
+    [AdLevelTypeGoogle.AdGroup]: {
+      [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
+    },
+    [AdLevelTypeGoogle.AdTag]: {
+      [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
+    },
+    [AdLevelTypeGoogle.Ad]: {
+      [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
+    },
+  },
+  [ClientType.Facebook]: {
+    [AdLevelTypeFacebook.Campaign]: {
+      [ActionType.SetNewBudget]: [ValueType.Value],
+      [ActionType.IncreaseBudget]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.LowerBudget]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.OpenProject]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
+    },
+    [AdLevelTypeFacebook.AdGroup]: {
+      [ActionType.SetNewBudget]: [ValueType.Value],
+      [ActionType.IncreaseBudget]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.LowerBudget]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.OpenProject]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
+    },
+    [AdLevelTypeFacebook.AdTag]: {
+      [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
+    },
+    [AdLevelTypeFacebook.Ad]: {
+      [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
+      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
+    },
+  },
+};
+
+const valueTypeOption = computed(() => {
+  const client = action.value?.client;
+  const adLevel = action.value?.adLevel;
+  const actionValue = action.value?.action;
+  // action.value.params.valueType = unSelected;
+
+  if (client && adLevel && actionValue) {
+    const clientOptions = valueTypeOptionsMap[client];
+    if (clientOptions) {
+      const adLevelOptions = clientOptions[adLevel];
+      if (adLevelOptions) {
+        const actionOptions = adLevelOptions[actionValue];
+        if (actionOptions) {
+          return actionOptions;
+        }
+      }
+    }
+  }
+
+  return [ValueType.Percentage, ValueType.Value]; // 默认值
+});
+
+// 平台
+const client = computed(() => {
+  if (action.value.client) return action.value.client;
+  return -1;
+});
+const setClient = (v) => (action.value.client = v.target.value);
+// 層級
+const adLevel = computed(() => {
+  if (action.value.adLevel) return action.value.adLevel;
+  return -1;
+});
+const setAdLevel = (v) => {
+  action.value.adLevel = v.target.value;
+  // 調整階層就預設不執行動作
+  action.value.action = ActionType.None;
+};
+// 執行
+const actionValue = computed(() => {
+  console.log(eventData.value);
+  if (action.value.action) return action.value.action;
+  return -1;
+});
+const setActionValue = (v) => (action.value.action = v.target.value);
+// 執行
+const paramsBudgetType = computed(() => {
+  if (!action.value?.params) action.value.params = {};
+  if (action.value.params.budgetType) return action.value.params.budgetType;
+  return -1;
+});
+const setParamsBudgetType = (v) =>
+  (action.value.params.budgetType = v.target.value);
+// 類型
+const paramsValueType = computed(() => {
+  if (!action.value?.params) action.value.params = {};
+  if (action.value.params.valueType) return action.value.params.valueType;
+  return -1;
+});
+const setParamsValueType = (v) =>
+  (action.value.params.valueType = v.target.value);
 </script>
 
 <template>
+  <!-- 層級不同 可執行項目也不同 還有註解 -->
   <div class="flex flex-col gap-6">
-    <div class="flex space-x-1">
-      <label class="flex items-center gap-1">
+    <div class="flex items-center gap-2">
+      <label class="flex items-center gap-2">
         <span class="p3-b">平台</span>
         <select
           class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-          v-model="eventData.action.client"
+          v-model="client"
+          @change="setClient"
         >
+          <option value="-1" disabled>請選擇</option>
           <template v-for="(value, key) in ClientType" :key="key">
             <option v-if="!Number.isInteger(value)" :value="key">
               {{ value }}
@@ -81,55 +280,52 @@ watch(hasLimitBudget, (val) => {
           </template>
         </select>
       </label>
-      <label class="flex items-center gap-1">
+      <label class="flex items-center gap-2" v-if="client != unSelected">
         <span class="p3-b">層級</span>
         <select
           class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-          v-model="eventData.action.adLevel"
+          v-model="adLevel"
+          @change="setAdLevel"
         >
-          <template v-for="(value, key) in adLevel" :key="key">
+          <option value="-1" disabled>請選擇</option>
+          <template v-for="(value, key) in adLevelOption" :key="key">
             <option v-if="!Number.isInteger(value)" :value="key">
               {{ value }}
             </option>
           </template>
         </select>
       </label>
-      <label class="flex items-center gap-1">
+      <label class="flex items-center gap-2" v-if="adLevel != unSelected">
         <span class="p3-b">目標</span>
-        <!-- <select
-          class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-          v-model="a"
-        >
-          <template v-for="(value, key) in ClientType" :key="key">
-            <option v-if="!Number.isInteger(value)" :value="value">
-              {{ value }}
-            </option>
-          </template>
-        </select> -->
+        <div>選擇廣告帳戶</div>
       </label>
     </div>
-    <div class="flex flex-col gap-3">
-      <label class="flex items-center gap-1">
+    <div class="flex flex-col gap-3" v-if="adLevel != unSelected">
+      <label class="flex items-center gap-2">
         <span class="p3-b">執行</span>
         <select
           class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-          v-model="action.action"
+          v-model="actionValue"
+          @change="setActionValue"
         >
-          <template v-for="(value, key) in ActionType" :key="key">
-            <option v-if="!Number.isInteger(value)" :value="key">
-              {{ value }}
+          <template v-for="(value, key) in actionOption" :key="key">
+            <option :value="value">
+              {{ key }}
             </option>
           </template>
         </select>
       </label>
-      <div class="flex gap-x-1 gap-y-3 flex-wrap">
+      <div class="flex gap-x-2 gap-y-3 flex-wrap" v-if="adLevel != unSelected">
+        <!-- 新預算 -->
         <template v-if="action.action == ActionType.SetNewBudget">
-          <label class="flex items-center gap-1">
+          <label class="flex items-center gap-2">
             <span class="p3-b">類型</span>
             <select
               class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="action.params.budgetType"
+              v-model="paramsBudgetType"
+              @change="setParamsBudgetType"
             >
+              <option value="-1" disabled>請選擇</option>
               <template v-for="(value, key) in BudgetType" :key="key">
                 <option v-if="!Number.isInteger(value)" :value="value">
                   {{ value }}
@@ -137,25 +333,27 @@ watch(hasLimitBudget, (val) => {
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-1">
+          <label class="flex items-center gap-2">
             <span class="p3-b">調整</span>
             <select
               class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="action.params.valueType"
+              v-model="paramsValueType"
+              @change="setParamsValueType"
             >
-              <template v-for="(value, key) in ValueType" :key="key">
-                <option v-if="!Number.isInteger(value)" :value="value">
+              <option value="-1" disabled>請選擇</option>
+              <template v-for="(value, key) in valueTypeOption" :key="key">
+                <option :value="value">
                   {{ value }}
                 </option>
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-1">
+          <label class="flex items-center gap-2">
             <div
               class="flex w-auto items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-1.5"
             >
               <input
-                type="text"
+                type="number"
                 class="p3-b w-4 text-center border-none outline-none shadow-none"
                 v-model="action.params.value"
               />
@@ -165,13 +363,17 @@ watch(hasLimitBudget, (val) => {
             }}</span>
           </label>
         </template>
+        <!-- 提升預算 -->
         <template v-else-if="action.action == ActionType.IncreaseBudget">
-          <label class="flex items-center gap-1">
+          <label class="flex items-center gap-2">
             <span class="p3-b">類型</span>
             <select
               class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="action.params.budgetType"
+              v-model="paramsBudgetType"
+              @change="setParamsBudgetType"
             >
+              <option value="-1" disabled>請選擇</option>
+
               <template v-for="(value, key) in BudgetType" :key="key">
                 <option v-if="!Number.isInteger(value)" :value="value">
                   {{ value }}
@@ -179,25 +381,27 @@ watch(hasLimitBudget, (val) => {
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-1">
+          <label class="flex items-center gap-2">
             <span class="p3-b">調整</span>
             <select
               class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="action.params.valueType"
+              v-model="paramsValueType"
+              @change="setParamsValueType"
             >
-              <template v-for="(value, key) in ValueType" :key="key">
-                <option v-if="!Number.isInteger(value)" :value="value">
+              <option value="-1" disabled>請選擇</option>
+              <template v-for="(value, key) in valueTypeOption" :key="key">
+                <option :value="value">
                   {{ value }}
                 </option>
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-1">
+          <label class="flex items-center gap-2">
             <div
               class="flex w-auto items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-1.5"
             >
               <input
-                type="text"
+                type="number"
                 class="p3-b w-4 text-center border-none outline-none shadow-none"
                 v-model="action.params.value"
               />
@@ -207,32 +411,35 @@ watch(hasLimitBudget, (val) => {
             }}</span>
           </label>
           <label
-            class="flex items-center gap-1 w-full"
+            class="flex items-center gap-2 w-full"
             v-if="action.params.valueType === ValueType.Percentage"
           >
             <div class="flex flex-col gap-2">
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-2">
                 <input
                   type="checkbox"
                   v-model="hasLimitBudget"
                   id="maxBudget"
                 />
                 <label for="maxBudget">設定預算上限</label>
-                <div class="flex gap-1 items-center" v-if="hasLimitBudget">
-                  <TextInput v-model="action.params.limit" />
+                <div class="flex gap-2 items-center" v-if="hasLimitBudget">
+                  <TextInput v-model="action.params.limit" :type="'number'" />
                   <span>元</span>
                 </div>
               </div>
             </div>
           </label>
         </template>
+        <!-- 降低預算 -->
         <template v-else-if="action.action == ActionType.LowerBudget">
-          <label class="flex items-center gap-1">
+          <label class="flex items-center gap-2">
             <span class="p3-b">類型</span>
             <select
               class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="action.params.budgetType"
+              v-model="paramsBudgetType"
+              @change="setParamsBudgetType"
             >
+              <option value="-1" disabled>請選擇</option>
               <template v-for="(value, key) in BudgetType" :key="key">
                 <option v-if="!Number.isInteger(value)" :value="value">
                   {{ value }}
@@ -240,47 +447,42 @@ watch(hasLimitBudget, (val) => {
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-1">
+          <label class="flex items-center gap-2">
             <span class="p3-b">調整</span>
             <select
               class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="action.params.valueType"
+              v-model="paramsValueType"
+              @change="setParamsValueType"
             >
-              <template v-for="(value, key) in ValueType" :key="key">
-                <option v-if="!Number.isInteger(value)" :value="value">
+              <option value="-1" disabled>請選擇</option>
+              <template v-for="(value, key) in valueTypeOption" :key="key">
+                <option :value="value">
                   {{ value }}
                 </option>
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-1">
-            <div
-              class="flex w-auto items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-1.5"
-            >
-              <input
-                type="text"
-                class="p3-b w-4 text-center border-none outline-none shadow-none"
-                v-model="action.params.value"
-              />
-            </div>
+          <label class="flex items-center gap-2">
+            <TextInput v-model="action.params.value" :type="'number'" />
+
             <span>{{
               action.params.valueType === ValueType.Percentage ? "%" : "元"
             }}</span>
           </label>
           <label
-            class="flex items-center gap-1 w-full"
+            class="flex items-center gap-2 w-full"
             v-if="action.params.valueType === ValueType.Percentage"
           >
             <div class="flex flex-col gap-2">
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-2">
                 <input
                   type="checkbox"
                   v-model="hasLimitBudget"
                   id="maxBudget"
                 />
                 <label for="maxBudget">設定預算下限</label>
-                <div class="flex gap-1 items-center" v-if="hasLimitBudget">
-                  <TextInput v-model="action.params.limit" />
+                <div class="flex gap-2 items-center" v-if="hasLimitBudget">
+                  <TextInput v-model="action.params.limit" :type="'number'" />
                   <span>元</span>
                 </div>
               </div>

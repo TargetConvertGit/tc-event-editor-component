@@ -6,6 +6,7 @@ import EventAction from "./EventAction.vue";
 import TextInput from "./TextInput.vue";
 import Condition from "./Condition.vue";
 import OuterBlock from "./OuterBlock.vue";
+import Notification from "./Notification.vue";
 interface Props {
   data?: string;
 }
@@ -26,6 +27,8 @@ const formatData = (data: EventItem) => {
 const save = () => emit("update:data", formatData(json.value));
 
 provide("eventData", json);
+
+const titleMaxLength = 100;
 </script>
 
 <template>
@@ -37,7 +40,7 @@ provide("eventData", json);
     <OuterBlock :title="'基本資料'">
       <div>
         <span class="p3-b text-dark-3">規則名稱</span>
-        <TextInput v-model="json.title" />
+        <TextInput v-model="json.title" :maxLength="titleMaxLength" />
       </div>
     </OuterBlock>
     <OuterBlock :title="'執行時間'">
@@ -49,6 +52,9 @@ provide("eventData", json);
     <OuterBlock :title="'動作'">
       <EventAction />
     </OuterBlock>
+    <!-- <OuterBlock :title="'系統通知'">
+      <Notification />
+    </OuterBlock> -->
     <Condition />
     <button
       @click="save"

@@ -2,8 +2,12 @@
 export interface Props {
   placeholder?: string;
   modelValue?: string | number;
+  type?: string | number;
+  maxLength?: number;
 }
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  type: "string",
+});
 
 const emit = defineEmits(["update:modelValue"]);
 function onInput(e: any) {
@@ -18,9 +22,10 @@ function onInput(e: any) {
     <input
       :value="modelValue"
       @input="onInput"
-      type="text"
+      :type="type"
       class="p3-b w-full border-none outline-none shadow-none"
       :placeholder="placeholder"
+      :maxLength="maxLength"
     />
   </div>
 </template>

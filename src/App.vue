@@ -10,8 +10,9 @@ const data = ref(`{
     "monthDate": [1],
     "due": "2023-12-31T23:59Z",
     "action": {
-        "client": 1,
+        "client": 2,
         "adLevel": 2,
+        "action": 3,
         "target": [
             {
                 "id": "4493645",
@@ -22,7 +23,6 @@ const data = ref(`{
                 "name": "廣告活動B"
             }
         ],
-        "action": 1,
         "params": {
             "budgetType": "dailyBudget",
             "valueType": "value",
@@ -35,7 +35,8 @@ const data = ref(`{
             "conditionType": "budgetRemaining",
             "operation": "<",
             "valueType": "value",
-            "value": 1000
+            "value": 1000,
+            "target":[1]
         },
         {
             "conditionType": "spent",
@@ -47,15 +48,16 @@ const data = ref(`{
         }
     ]
 }`);
+const d = ref("{}");
 </script>
 
 <template>
   <h1>TC Event Editor Demo</h1>
-  <div class="grid grid-cols-2 gap-5">
-    <div class="flex flex-col space-y-2">
-      <textarea class="form-textarea h-96 rounded-lg" v-model="data"></textarea>
+  <div class="flex gap-5">
+    <div class="flex flex-col space-y-2 w-full">
+      <textarea class="form-textarea h-full rounded-lg" v-model="d"></textarea>
     </div>
-    <TCEventEditorApp v-model:data="data" />
+    <TCEventEditorApp v-model:data="d" class="w-fit min-w-[50%]" />
   </div>
 </template>
 

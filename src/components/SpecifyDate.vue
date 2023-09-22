@@ -301,11 +301,9 @@ watch(
   () => props.type,
   (val: FrequencyType) => {
     if (val === FrequencyType.Month || val === FrequencyType.Annual) {
-      // if (props.monthDate && props.monthDate.length > 0) {
-      //   selectType.value = specifyDateType.value[1];
-      // } else {
-      //   selectType.value = specifyDateType.value[0];
-      // }
+      if (val != FrequencyType.Annual) {
+        yearMonthsOrigin.value = [];
+      }
       if (monthDate.value && monthDate.value.length > 0) {
         selectType.value = specifyDateType.value[1];
       } else {
@@ -338,8 +336,8 @@ onBeforeUnmount(() => {
       :label="opt.name"
     />
   </div>
-  <div class="flex gap-1 items-center" v-if="showTypeSelector">
-    <span>指定</span>
+  <div class="flex gap-2 items-center" v-if="showTypeSelector">
+    <span class="p3-r">指定</span>
     <select
       class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
       v-model="selectType"

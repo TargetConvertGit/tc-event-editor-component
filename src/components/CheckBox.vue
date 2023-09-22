@@ -19,7 +19,7 @@ const emit = defineEmits(["update:checked"]);
     />
     <label
       :for="fieldId"
-      class="p3-r cursor-pointer rounded border border-dark-5 px-1 py-0.5 flex justify-center items-center text-dark-2 min-w-[1.75rem] min-h-[1.75rem]"
+      class="p3-r cursor-pointer rounded border hover:bg-light-4 border-dark-5 px-1 py-0.5 flex justify-center items-center text-dark-2 min-w-[1.75rem] min-h-[1.75rem]"
     >
       {{ label }}
     </label>

@@ -119,6 +119,31 @@ export enum AdLevelTypeFacebook {
 }
 
 /**
+ * 各平台層級
+ */
+export type ConditionAdLevelType =
+  | ConditionAdLevelTypeGoogle
+  | ConditionAdLevelTypeFacebook;
+
+/**
+ * Google 層級
+ */
+export enum ConditionAdLevelTypeGoogle {
+  Account = 1,
+  Campaign = 2,
+  AdGroup = 3,
+}
+
+/**
+ * Facebook 層級
+ */
+export enum ConditionAdLevelTypeFacebook {
+  Account = 1,
+  Campaign = 2,
+  AdGroup = 3,
+}
+
+/**
  * 頻率
  */
 export enum FrequencyType {
@@ -244,4 +269,14 @@ export enum OperationType {
   Equal = "==",
   LessThan = "<",
   LessThanOrEqualTo = "<=",
+}
+
+/**
+ * email通知
+ */
+export enum emailType {
+  Implement,
+  AbnormalityOrError,
+  Error,
+  None = -1,
 }

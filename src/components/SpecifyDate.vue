@@ -255,10 +255,7 @@ const options = computed(() => {
 const showTypeSelector = computed(() => {
   if (props.type === FrequencyType.Month) return true;
   if (props.type === FrequencyType.Annual) return true;
-  // emit("update:monthDate", null);
-  // emit("update:weekOrdinal", null);
-  // emit("update:weekdays", null);
-  // emit("update:yearMonths", null);
+
   monthDateOrigin.value = [];
   weekOrdinalOrigin.value = [];
   weekdaysOrigin.value = [];
@@ -277,26 +274,17 @@ const specifyDateType = ref([
   { name: "日期", id: SpecifyDateType.Date },
 ]);
 const selectType = ref(specifyDateType.value[0]);
-watch(
-  selectType,
-  (val: { name: string; id: SpecifyDateType }) => {
-    if (val.id === SpecifyDateType.Week) {
-      monthDateOrigin.value = [];
-      // emit("update:monthDate", null);
-
-      return;
-    }
-    if (val.id === SpecifyDateType.Date) {
-      weekOrdinalOrigin.value = [];
-      weekdaysOrigin.value = [];
-
-      // emit("update:weekOrdinal", null);
-      // emit("update:weekdays", null);
-      return;
-    }
+watch(selectType, (val: { name: string; id: SpecifyDateType }) => {
+  if (val.id === SpecifyDateType.Week) {
+    monthDateOrigin.value = [];
+    return;
   }
-  // { immediate: true }
-);
+  if (val.id === SpecifyDateType.Date) {
+    weekOrdinalOrigin.value = [];
+    weekdaysOrigin.value = [];
+    return;
+  }
+});
 watch(
   () => props.type,
   (val: FrequencyType) => {
@@ -315,10 +303,6 @@ watch(
 );
 
 onBeforeUnmount(() => {
-  // emit("update:monthDate", null);
-  // emit("update:weekOrdinal", null);
-  // emit("update:weekdays", null);
-  // emit("update:yearMonths", null);
   monthDateOrigin.value = [];
   weekOrdinalOrigin.value = [];
   weekdaysOrigin.value = [];

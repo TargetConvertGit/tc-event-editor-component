@@ -18,7 +18,7 @@ const emit = defineEmits(["update:data"]);
 const json = computed((): EventItem => JSON.parse(props.data || `{}`));
 
 const formatData = (data: EventItem) => {
-  console.log(data);
+  // 剔除 value==null 的key,視情況修改
   const filteredData = Object.fromEntries(
     Object.entries(data).filter(([key, value]) => value !== null)
   );
@@ -34,7 +34,7 @@ const titleMaxLength = 100;
 <template>
   <div
     v-if="props.data"
-    class="p-5 rounded-lg border flex flex-col gap-5 relative"
+    class="p-5 rounded border flex flex-col gap-5 relative"
   >
     <div class="p1-b">建立自動化規則</div>
     <OuterBlock :title="'基本資料'">
@@ -53,12 +53,12 @@ const titleMaxLength = 100;
       <EventAction />
     </OuterBlock>
     <Condition />
-    <!-- <OuterBlock :title="'系統通知'">
+    <OuterBlock :title="'通知'">
       <Notification />
-    </OuterBlock> -->
+    </OuterBlock>
     <button
       @click="save"
-      class="p-2 px-3 rounded-lg bg-slate-100 hover:bg-sky-500 hover:text-white"
+      class="p-2 px-3 rounded bg-slate-100 hover:bg-sky-500 hover:text-white"
     >
       保存
     </button>

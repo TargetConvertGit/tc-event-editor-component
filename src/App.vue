@@ -34,16 +34,63 @@ const data = ref(`{
        
     ]
 }`);
-const d = ref("{}");
+const d = ref(`{
+      "id": 1,
+      "title": "Dignissimos repellat hic omnis aliquid et.",
+      "start": "2023-09-25 13:28:18",
+      "frequency": 3,
+      "interval": 4,
+      "weekdays": [
+        -1,
+        -2
+      ],
+      "week_ordinal": 5, 
+      "month_date": 5,
+      "year_months": 1,
+      "due": null,
+      "except": [],
+      "deleted_at": null,
+      "created_at": "2023-09-25T10:13:30.000000Z",
+      "updated_at": "2023-09-25T10:13:30.000000Z",
+      "action": {
+        "id": 1,
+        "event_id": 1,
+        "client": 1,
+        "adLevel": 3,
+        "target": null,
+        "action": 1,
+        "params": [],
+        "created_at": "2023-09-25T10:13:30.000000Z",
+        "updated_at": "2023-09-25T10:13:30.000000Z"
+      },
+      "conditions": [
+        {
+          "id": 1,
+          "event_id": 1,
+          "target": [],
+          "conditionType": "eum",
+          "operation": "==",
+          "valueType": "value",
+          "value": "70.87",
+          "dateRangeType": "Today",
+          "dateRange": [],
+          "comparison": 1,
+          "created_at": "2023-09-25T10:13:30.000000Z",
+          "updated_at": "2023-09-25T10:13:30.000000Z"
+        }
+      ]
+    }`);
+
+const dd = ref(`{}`);
 </script>
 
 <template>
   <h1>TC Event Editor Demo</h1>
   <div class="flex gap-5">
     <div class="flex flex-col space-y-2 w-full">
-      <textarea class="form-textarea h-full rounded-lg" v-model="d"></textarea>
+      <textarea class="form-textarea h-full rounded-lg" v-model="dd"></textarea>
     </div>
-    <TCEventEditorApp v-model:data="d" class="w-fit min-w-[50%]" />
+    <TCEventEditorApp v-model:data="dd" class="w-fit min-w-[50%]" />
   </div>
 </template>
 

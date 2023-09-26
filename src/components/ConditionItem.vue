@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import TextInput from "./TextInput.vue";
 import OuterBlock from "./OuterBlock.vue";
-import Checkbox from "./checkbox.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
 import {
@@ -28,35 +27,35 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const emit = defineEmits(["update:modelValue", "removeItem"]);
+
+const condition = computed(() => props.modelValue ?? {});
+
+// 未選擇
 const unSelected = -1;
 
-const data = ref({
-  client: ClientType.Google,
-});
-const emit = defineEmits(["update:modelValue"]);
+// 層級可選項
 const adLevelOption = computed(() => {
-  if (data?.["client"] == ClientType.Google) {
+  if (condition.value?.["client"] == ClientType.Google) {
     return ConditionAdLevelTypeGoogle;
   }
 
   return ConditionAdLevelTypeFacebook;
 });
 
-const condition = computed(() => props.modelValue ?? {});
-
 // 平台
 const client = computed(() => {
   if (condition.value.client) return condition.value.client;
   return -1;
 });
-const setClient = (v) => (condition.value.client = v.target.value);
+const setClient = (v) => (condition.value.client = Number(v.target.value));
 // 層級
 const adLevel = computed(() => {
   if (condition.value.adLevel) return condition.value.adLevel;
   return -1;
 });
 const setAdLevel = (v) => {
-  condition.value.adLevel = v.target.value;
+  condition.value.adLevel = Number(v.target.value);
   if (conditionType.value != unSelected) {
     emit("update:modelValue", {
       client: client.value,
@@ -77,7 +76,7 @@ const dateRangeType = computed(() => {
   return 0;
 });
 const setDateRangeType = (v) =>
-  (condition.value.dateRangeType = v.target.value);
+  (condition.value.dateRangeType = Number(v.target.value));
 // 數值條件
 const operation = computed(() => {
   if (condition.value.operation) return condition.value.operation;
@@ -156,7 +155,6 @@ const actionOptionsMap: any = {
   },
 };
 // 可選執行項
-
 const actionOption = computed(() => {
   if (client.value && adLevel.value) {
     const clientOptions = actionOptionsMap[client.value];
@@ -174,7 +172,14 @@ const actionOption = computed(() => {
 
 <template>
   <OuterBlock :title="'條件' + (index + 1)">
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 relative pt-2">
+      <div
+        class="cursor-pointer text-dark-4 absolute -top-2.5 -right-1.5 p4-b"
+        @click="emit('removeItem')"
+      >
+        刪除
+      </div>
+
       <div class="flex items-center gap-2">
         <label class="flex items-center gap-2">
           <span class="p3-b">平台</span>

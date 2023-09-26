@@ -11,7 +11,10 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(["update:modelValue"]);
 function onInput(e: any) {
-  emit("update:modelValue", e.target.value);
+  emit(
+    "update:modelValue",
+    props.type == "number" ? Number(e.target.value) : e.target.value
+  );
 }
 </script>
 

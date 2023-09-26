@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, inject } from "vue";
-import Checkbox from "./checkbox.vue";
 import TextInput from "./TextInput.vue";
-
 import {
   ClientType,
   AdLevelTypeGoogle,
@@ -12,25 +9,14 @@ import {
   ValueType,
 } from "../types/event-items";
 
-interface Props {}
-
-const props = defineProps<Props>();
-
-const emit = defineEmits([]);
-
 const eventData = inject("eventData");
 
+// 未選擇
 const unSelected = -1;
 
-const adLevelOption = computed(() => {
-  if (eventData.value.action?.["client"] == ClientType.Google) {
-    return AdLevelTypeGoogle;
-  }
-
-  return AdLevelTypeFacebook;
-});
-
 const action = ref(eventData.value.action ?? {});
+
+// 是否要限定數值
 const hasLimitBudget = ref(false);
 watch(hasLimitBudget, (val) => {
   if (!action.value.params?.limit) {
@@ -40,6 +26,7 @@ watch(hasLimitBudget, (val) => {
     delete action.value.params.limit;
   }
 });
+
 watchEffect(() => {
   if (
     action.value?.action == ActionType.SetNewBudget ||
@@ -47,17 +34,29 @@ watchEffect(() => {
     action.value?.action == ActionType.LowerBudget
   ) {
   } else {
+    //刪除多餘資料
     delete action.value.params;
   }
+  // 是否有限制
   hasLimitBudget.value = Boolean(action.value?.params?.limit);
 });
+
 watch(
   action,
   (val) => {
+    // 設定資料
     eventData.value.action = val;
   },
   { deep: true }
 );
+
+// 可選層級
+const adLevelOption = computed(() => {
+  if (eventData.value.action?.["client"] == ClientType.Google) {
+    return AdLevelTypeGoogle;
+  }
+  return AdLevelTypeFacebook;
+});
 
 // 可選執行項
 const actionOptionsMap: any = {
@@ -205,14 +204,14 @@ const client = computed(() => {
   if (action.value.client) return action.value.client;
   return -1;
 });
-const setClient = (v) => (action.value.client = v.target.value);
+const setClient = (v) => (action.value.client = Number(v.target.value));
 // 層級
 const adLevel = computed(() => {
   if (action.value.adLevel) return action.value.adLevel;
   return -1;
 });
 const setAdLevel = (v) => {
-  action.value.adLevel = v.target.value;
+  action.value.adLevel = Number(v.target.value);
   // 調整階層就預設不執行動作
   action.value.action = ActionType.None;
 };
@@ -221,7 +220,7 @@ const actionValue = computed(() => {
   if (action.value.action) return action.value.action;
   return -1;
 });
-const setActionValue = (v) => (action.value.action = v.target.value);
+const setActionValue = (v) => (action.value.action = Number(v.target.value));
 // 執行
 const paramsBudgetType = computed(() => {
   if (!action.value?.params) action.value.params = {};
@@ -350,7 +349,6 @@ const setParamsValueType = (v) =>
               @change="setParamsBudgetType"
             >
               <option value="-1" disabled>請選擇</option>
-
               <template v-for="(value, key) in BudgetType" :key="key">
                 <option v-if="!Number.isInteger(value)" :value="value">
                   {{ value }}

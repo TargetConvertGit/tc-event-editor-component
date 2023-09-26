@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { emailType } from "../types/event-items";
-const email = ref();
 const eventData = inject("eventData");
 const notification = ref(
   eventData.value.notification ?? {
@@ -10,7 +9,7 @@ const notification = ref(
 
 watch(
   notification,
-  (val) => {
+  (val: number) => {
     eventData.value.notification = val;
   },
   { deep: true }
@@ -20,13 +19,13 @@ watch(
 <template>
   <div>
     <label class="flex items-center gap-2">
-      <span class="p3-r">Email</span>
+      <span class="p3-r">以電子郵件寄出結果</span>
       <select
         class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
         v-model="notification.email"
       >
         <template v-for="(value, key) in emailType" :key="key">
-          <option v-if="!Number.isInteger(value)" :value="key">
+          <option v-if="!Number.isInteger(value)" :value="Number(key)">
             {{ value }}
           </option>
         </template>

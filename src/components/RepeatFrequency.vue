@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// import { ref, watch, inject } from "vue";
 import { FrequencyType } from "../types/event-items";
 import SpecifyDate from "./SpecifyDate.vue";
 import DuePicker from "./DuePicker.vue";
+import TextInput from "./TextInput.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
 interface Props {
@@ -30,6 +30,7 @@ watch(frequency, (val) => {
   emit("update:frequency", val);
 });
 
+//#region 日期相關參數
 const weekdays = computed({
   get: () => eventData.value.weekdays ?? [],
   set: (value) => {
@@ -54,25 +55,9 @@ const yearMonths = computed({
     eventData.value.yearMonths = value;
   },
 });
+//#endregion
 
-const repeat = ref(-1);
-if (props.interval == 1) repeat.value = props.frequency;
-watch(
-  repeat,
-  (val) => {
-    if (FrequencyType[val]) {
-      emit("update:frequency", val);
-      emit("update:interval", 1);
-      frequency.value = repeat.value;
-      eventData.value.weekdays = null;
-      eventData.value.weekOrdinal = null;
-      eventData.value.monthDate = null;
-      eventData.value.yearMonths = null;
-    }
-  },
-  { immediate: true }
-);
-
+// 顯示文字
 const repeatLabel = computed(() => {
   if (repeat.value == FrequencyType.Never) {
     return "只執行一次";
@@ -104,6 +89,24 @@ const repeatLabel = computed(() => {
   }
   return "";
 });
+
+const repeat = ref(-1);
+if (props.interval == 1) repeat.value = props.frequency;
+watch(
+  repeat,
+  (val) => {
+    if (FrequencyType[val]) {
+      emit("update:frequency", val);
+      emit("update:interval", 1);
+      frequency.value = repeat.value;
+      eventData.value.weekdays = null;
+      eventData.value.weekOrdinal = null;
+      eventData.value.monthDate = null;
+      eventData.value.yearMonths = null;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -163,7 +166,7 @@ const repeatLabel = computed(() => {
           <option :value="0">自訂</option>
         </select>
       </label>
-      <span class="p4-b">{{ repeatLabel }}</span>
+      <span class="p4-b" v-if="interval">{{ repeatLabel }}</span>
     </div>
     <div
       v-if="FrequencyType[repeat] == undefined"
@@ -175,6 +178,7 @@ const repeatLabel = computed(() => {
           class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="frequency"
         >
+          <option value="-1" disabled>請選擇</option>
           <template v-for="(value, key) in FrequencyType" :key="key">
             <option
               v-if="value != FrequencyType.Never && Number.isInteger(value)"
@@ -185,25 +189,9 @@ const repeatLabel = computed(() => {
           </template>
         </select>
       </label>
-      <label class="flex items-center gap-2">
+      <label class="flex items-center gap-2" v-if="frequency != -1">
         <span>每</span>
-        <div
-          class="flex w-auto items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-1.5"
-        >
-          <input
-            type="number"
-            class="p3-b w-4 text-center border-none outline-none shadow-none"
-            v-model="interval"
-          />
-          <!-- @keyup="
-              (event: Event) =>
-                $emit(
-                  'update:interval',
-                  (event.target as HTMLInputElement).value
-                )
-            "
-            :value="props.interval" -->
-        </div>
+        <TextInput class="!w-10" v-model="interval" type="number" />
         <span>{{ FrequencyType[frequency] }}</span>
       </label>
     </div>

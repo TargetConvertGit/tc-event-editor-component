@@ -52,10 +52,10 @@ const titleMaxLength = 100;
     <OuterBlock :title="'動作'">
       <EventAction />
     </OuterBlock>
+    <Condition />
     <!-- <OuterBlock :title="'系統通知'">
       <Notification />
     </OuterBlock> -->
-    <Condition />
     <button
       @click="save"
       class="p-2 px-3 rounded-lg bg-slate-100 hover:bg-sky-500 hover:text-white"

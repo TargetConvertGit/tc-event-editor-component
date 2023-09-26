@@ -25,22 +25,14 @@ watch(
 );
 
 const addCondition = () => {
-  conditions.value.push({
-    // client: -1,
-    // adLevel: -1,
-    // conditionType: -1,
-    // operation: -1,
-    // valueType: -1,
-    // value: 0,
-    // comparison: false,
-  });
+  conditions.value.push({});
   addConditionModal.value = false;
 };
 </script>
 
 <template>
   <template v-for="(condition, index) in conditions" :key="index">
-    <ConditionItem :index="index" :condition="condition" />
+    <ConditionItem :index="index" v-model="conditions[index]" />
     <div
       class="flex items-center justify-center gap-3"
       v-if="index + 1 !== conditions.length"

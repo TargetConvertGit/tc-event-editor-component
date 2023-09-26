@@ -31,21 +31,7 @@ const data = ref(`{
         }
     },
     "conditions": [
-        {
-            "conditionType": "budgetRemaining",
-            "operation": "<",
-            "valueType": "value",
-            "value": 1000,
-            "target":[1]
-        },
-        {
-            "conditionType": "spent",
-            "dateRange": ["2023-11-16T11:00Z", "2023-11-22T11:00Z"],
-            "operation": ">",
-            "valueType": "value",
-            "value": 0,
-            "comparison": true
-        }
+       
     ]
 }`);
 const d = ref("{}");

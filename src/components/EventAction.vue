@@ -4,13 +4,10 @@ import Checkbox from "./checkbox.vue";
 import TextInput from "./TextInput.vue";
 
 import {
-  EventAction,
   ClientType,
-  AdLevelType,
   AdLevelTypeGoogle,
   AdLevelTypeFacebook,
   ActionType,
-  EventActionParamBudget,
   BudgetType,
   ValueType,
 } from "../types/event-items";
@@ -33,14 +30,7 @@ const adLevelOption = computed(() => {
   return AdLevelTypeFacebook;
 });
 
-const action = ref(
-  eventData.value.action ??
-    {
-      // client: -1,
-      // adLevel: -1,
-      // action: -1,
-    }
-);
+const action = ref(eventData.value.action ?? {});
 const hasLimitBudget = ref(false);
 watch(hasLimitBudget, (val) => {
   if (!action.value.params?.limit) {
@@ -56,18 +46,10 @@ watchEffect(() => {
     action.value?.action == ActionType.IncreaseBudget ||
     action.value?.action == ActionType.LowerBudget
   ) {
-    // if (action.value?.params) return;
-    // action.value.params = {
-    //   budgetType: BudgetType.DailyBudget,
-    //   valueType: ValueType.Value,
-    //   value: 0,
-    // } as EventActionParamBudget;
   } else {
     delete action.value.params;
   }
-  if (action.value?.params?.limit) {
-    hasLimitBudget.value = true;
-  }
+  hasLimitBudget.value = Boolean(action.value?.params?.limit);
 });
 watch(
   action,
@@ -129,7 +111,6 @@ const actionOptionsMap: any = {
   },
 };
 // 可選執行項
-
 const actionOption = computed(() => {
   const client = action.value?.client;
   const adLevel = action.value?.adLevel;
@@ -146,7 +127,7 @@ const actionOption = computed(() => {
 
   return {};
 });
-
+// 預算單位
 const valueTypeOptionsMap: any = {
   [ClientType.Google]: {
     [AdLevelTypeGoogle.Campaign]: {
@@ -197,12 +178,11 @@ const valueTypeOptionsMap: any = {
     },
   },
 };
-
+// 預算單位
 const valueTypeOption = computed(() => {
   const client = action.value?.client;
   const adLevel = action.value?.adLevel;
   const actionValue = action.value?.action;
-  // action.value.params.valueType = unSelected;
 
   if (client && adLevel && actionValue) {
     const clientOptions = valueTypeOptionsMap[client];
@@ -238,7 +218,6 @@ const setAdLevel = (v) => {
 };
 // 執行
 const actionValue = computed(() => {
-  console.log(eventData.value);
   if (action.value.action) return action.value.action;
   return -1;
 });
@@ -333,7 +312,10 @@ const setParamsValueType = (v) =>
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-2">
+          <label
+            class="flex items-center gap-2"
+            v-if="paramsBudgetType != unSelected"
+          >
             <span class="p3-b">調整</span>
             <select
               class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
@@ -348,16 +330,11 @@ const setParamsValueType = (v) =>
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-2">
-            <div
-              class="flex w-auto items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-1.5"
-            >
-              <input
-                type="number"
-                class="p3-b w-4 text-center border-none outline-none shadow-none"
-                v-model="action.params.value"
-              />
-            </div>
+          <label
+            class="flex items-center gap-2"
+            v-if="paramsValueType != unSelected"
+          >
+            <TextInput v-model="action.params.value" :type="'number'" />
             <span>{{
               action.params.valueType === ValueType.Percentage ? "%" : "元"
             }}</span>
@@ -381,7 +358,10 @@ const setParamsValueType = (v) =>
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-2">
+          <label
+            class="flex items-center gap-2"
+            v-if="paramsBudgetType != unSelected"
+          >
             <span class="p3-b">調整</span>
             <select
               class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
@@ -396,16 +376,11 @@ const setParamsValueType = (v) =>
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-2">
-            <div
-              class="flex w-auto items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-1.5"
-            >
-              <input
-                type="number"
-                class="p3-b w-4 text-center border-none outline-none shadow-none"
-                v-model="action.params.value"
-              />
-            </div>
+          <label
+            class="flex items-center gap-2"
+            v-if="paramsValueType != unSelected"
+          >
+            <TextInput v-model="action.params.value" :type="'number'" />
             <span>{{
               action.params.valueType === ValueType.Percentage ? "%" : "元"
             }}</span>
@@ -447,7 +422,10 @@ const setParamsValueType = (v) =>
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-2">
+          <label
+            class="flex items-center gap-2"
+            v-if="paramsBudgetType != unSelected"
+          >
             <span class="p3-b">調整</span>
             <select
               class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
@@ -462,9 +440,11 @@ const setParamsValueType = (v) =>
               </template>
             </select>
           </label>
-          <label class="flex items-center gap-2">
+          <label
+            class="flex items-center gap-2"
+            v-if="paramsValueType != unSelected"
+          >
             <TextInput v-model="action.params.value" :type="'number'" />
-
             <span>{{
               action.params.valueType === ValueType.Percentage ? "%" : "元"
             }}</span>

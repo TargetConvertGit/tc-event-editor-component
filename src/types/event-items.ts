@@ -234,12 +234,15 @@ export enum ValueType {
  */
 export enum ConditionType {
   BudgetRemaining = "budgetRemaining", // 帳戶剩餘預算
+  BudgetCap = "budgetCap", // 預算上限
+  Clicks = "clicks", // 點擊數
   Impressions = "impressions", // 曝光數
-  Spent = "spent", // 花費
+  Cpc = "CPC",
+  Spend = "spend", // 花費
   Conversions = "conversions", // 轉換數
+  ConversionSpend = "conversionSpend", // 單次轉換費用
   // ConversionRates = 'conversionRates', // 轉換率: 轉換次數除以同個時間範圍內帶來轉換的廣告點擊總數。舉例來說，如果 1,000 次互動帶來了 50 次轉換，轉換率就是 5% (50 ÷ 1,000 = 5%)。
   ReturnOnADSpending = "roas", // ROAS
-  Clicks = "clicks", // 點擊數
   // ClickThroughRate = 'clickThroughRate', // 點擊率: 計算方式為 (點擊次數 ÷ 曝光次數)。
 }
 
@@ -252,11 +255,11 @@ export enum DateRangeType {
   Last3Days, // 近3天
   Last7Days, // 近7天
   ThisMonth, // 這個月
-  LastMonth, // 上個月
-  ThisSeason, // 這一季
-  LastSeason, // 上一季
-  ThisYear, // 今年
-  LastYear, // 去年
+  // LastMonth, // 上個月
+  // ThisSeason, // 這一季
+  // LastSeason, // 上一季
+  // ThisYear, // 今年
+  // LastYear, // 去年
   SpecifiedTime = -1, // 指定時間
 }
 

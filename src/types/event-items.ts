@@ -159,13 +159,13 @@ export enum FrequencyType {
  * 每週星期幾
  */
 export enum WeekdaysType {
+  Sunday = 0,
   Monday = 1,
   Tuesday,
   Wednesday,
   Thursday,
   Friday,
   Saturday,
-  Sunday,
   Weekday = -1, // 平日
   Weekend = -2, // 週末
 }

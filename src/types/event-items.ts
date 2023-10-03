@@ -58,7 +58,6 @@ export interface EventAction {
  */
 export interface EventActionTarget {
   id: string;
-  name: string;
 }
 
 /**
@@ -75,7 +74,9 @@ export interface EventActionParamBudget {
  * 條件
  */
 export interface EventCondition {
-  target?: EventActionTarget[]; // 依據來源
+  client: ClientType;
+  adLevel: AdLevelType;
+  target?: EventActionTarget[];
   conditionType: ConditionType; // 條件下拉
   operation: OperationType;
   valueType: ValueType;

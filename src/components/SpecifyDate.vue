@@ -38,16 +38,7 @@ const check = (optionId: number, key: any, hasValue = false) => {
     key.sort((a: number, b: number) => a - b);
     return;
   }
-  // if (props[key].findIndex((item: number) => item === optionId) === -1) {
-  //   props[key].push(optionId);
-  // } else {
-  //   props[key].splice(props[key].indexOf(optionId), 1);
-  // }
 
-  // emit(
-  //   `update:${key}`,
-  //   props[key].sort((a: number, b: number) => a - b)
-  // );
   if (key.value.findIndex((item: number) => item === optionId) === -1) {
     key.value.push(optionId);
   } else {

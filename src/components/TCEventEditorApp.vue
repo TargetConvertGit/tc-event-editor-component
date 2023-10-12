@@ -7,6 +7,8 @@ import TextInput from "./TextInput.vue";
 import Condition from "./Condition.vue";
 import OuterBlock from "./OuterBlock.vue";
 import Notification from "./Notification.vue";
+import { getDescription } from "../description.js";
+
 interface Props {
   data?: string;
 }
@@ -24,7 +26,101 @@ const formatData = (data: EventItem) => {
   );
   return JSON.stringify(filteredData, null, 4);
 };
-const save = () => emit("update:data", formatData(json.value));
+interface FieldCheckRule {
+  name: string;
+  type?: "string" | "number" | "boolean" | "array"; // 可以根据需要添加更多类型
+  child?: FieldCheckRule[]; // 用于处理多层嵌套字段
+}
+
+const checkData = (
+  data: EventItem,
+  rules: FieldCheckRule[]
+): { checkedData: EventItem; errors: string[] } => {
+  const checkedData: EventItem = {};
+  const errors: string[] = [];
+
+  for (const rule of rules) {
+    const { name, type, child } = rule;
+    const fieldValue = data[name];
+
+    if (
+      data.hasOwnProperty(name) &&
+      fieldValue !== null &&
+      fieldValue !== undefined
+    ) {
+      if (child) {
+        // 如果存在子规则，递归检查子规则
+        const { checkedData: nestedData, errors: nestedErrors } = checkData(
+          fieldValue,
+          child
+        );
+
+        if (nestedErrors.length === 0) {
+          checkedData[name] = nestedData;
+        } else {
+          errors.push(
+            ...nestedErrors.map((errorField) => `${name}.${errorField}`)
+          );
+        }
+      } else {
+        if (type === "string" && fieldValue === "") {
+          // 如果字段为字符串类型且为空字符串，则将字段名称添加到errors数组
+          errors.push(name);
+        } else if (type === "array" && fieldValue.length == 0) {
+          errors.push(name);
+        } else {
+          checkedData[name] = fieldValue;
+        }
+      }
+    } else {
+      // 如果字段不存在或其值为null或undefined，将字段名称添加到errors数组
+      errors.push(name);
+    }
+  }
+
+  return { checkedData, errors };
+};
+
+const rules: FieldCheckRule[] = [
+  { name: "title", type: "string" },
+  {
+    name: "start",
+    type: "string",
+  },
+  { name: "frequency", type: "number" },
+  { name: "interval", type: "number" },
+  {
+    name: "notification",
+    child: [{ name: "email", type: "number" }],
+  },
+  {
+    name: "action",
+    child: [
+      { name: "client", type: "number" },
+      { name: "adLevel", type: "number" },
+      { name: "action", type: "number" },
+      { name: "target", type: "array" },
+    ],
+  },
+  // {
+  //   name: "conditions",
+  //   child: [
+  //     { name: "client", type: "number" },
+  //     { name: "adLevel", type: "number" },
+  //     { name: "action", type: "number" },
+  //     { name: "target", type: "array" },
+  //   ],
+  // },
+];
+
+// const save = () => emit("update:data", formatData(checkData(json.value)));
+const save = () => {
+  // const { checkedData, errors } = checkData(json.value, rules);
+  // console.log(checkedData);
+  // console.log(errors);
+  emit("update:data", formatData(json.value));
+  console.log(getDescription(json.value));
+};
 
 provide("eventData", json);
 
@@ -35,6 +131,7 @@ const titleMaxLength = 100;
   <div
     v-if="props.data"
     class="p-5 rounded border flex flex-col gap-5 relative"
+    id="editor-container"
   >
     <div class="p1-b">建立自動化規則</div>
     <OuterBlock :title="'基本資料'">

@@ -104,25 +104,15 @@ watch(
       eventData.value.monthDate = null;
       eventData.value.yearMonths = null;
     }
+    // 若頻率為自訂
+    eventData.value.customInterval = val === 0;
   },
   { immediate: true }
 );
 </script>
 
 <template>
-  <div v-if="!editMode" class="flex gap-2 items-center">
-    <span>
-      於{{ eventData.start }}開始,每隔{{ eventData.interval
-      }}{{ eventData.frequency }}再次執行
-    </span>
-    <div
-      class="bg-true-blue-5 text-true-blue-2 flex-shrink-0 h-fit p3-r rounded w-fit px-2 cursor-pointer flex justify-center items-center"
-      @click="editMode = true"
-    >
-      編輯
-    </div>
-  </div>
-  <div v-else class="flex flex-col gap-3">
+  <div class="flex flex-col gap-3">
     <div class="flex items-center justify-center gap-3 my-2">
       <p class="p4-b to-dark-4">日期時間</p>
       <div class="h-[1px] flex-1 bg-light-3"></div>
@@ -166,7 +156,7 @@ watch(
           <option :value="0">自訂</option>
         </select>
       </label>
-      <span class="p4-b" v-if="interval">{{ repeatLabel }}</span>
+      <span class="p4-b">{{ repeatLabel }}</span>
     </div>
     <div
       v-if="FrequencyType[repeat] == undefined"
@@ -190,9 +180,9 @@ watch(
         </select>
       </label>
       <label class="flex items-center gap-2" v-if="frequency != -1">
-        <span>每</span>
-        <TextInput class="!w-10" v-model="interval" type="number" />
-        <span>{{ FrequencyType[frequency] }}</span>
+        <span class="p4-b">每</span>
+        <TextInput class="!w-10 text-center" v-model="interval" type="number" />
+        <span class="p4-b">{{ FrequencyType[frequency] }}</span>
       </label>
     </div>
     <template v-if="FrequencyType[repeat] == undefined">

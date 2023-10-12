@@ -3,7 +3,7 @@ import { emailType } from "../types/event-items";
 const eventData = inject("eventData");
 const notification = ref(
   eventData.value.notification ?? {
-    email: emailType.None,
+    email: -1,
   }
 );
 
@@ -24,6 +24,7 @@ watch(
         class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
         v-model="notification.email"
       >
+        <option value="-1" disabled>請選擇</option>
         <template v-for="(value, key) in emailType" :key="key">
           <option v-if="!Number.isInteger(value)" :value="Number(key)">
             {{ value }}

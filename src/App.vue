@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { TCEventEditorApp } from "./index";
+import { QuickSetup } from "./index";
 
 const data = ref(`{
     "title": "每月第一個星期一Google帳戶剩餘預算小於1000元且本季花費大於上一季度，則暫停Google指定廣告活動",
@@ -31,7 +32,7 @@ const data = ref(`{
         }
     },
     "conditions": [
-       
+
     ]
 }`);
 const d = ref(`{
@@ -44,7 +45,7 @@ const d = ref(`{
         -1,
         -2
       ],
-      "week_ordinal": 5, 
+      "week_ordinal": 5,
       "month_date": 5,
       "year_months": 1,
       "due": null,
@@ -58,10 +59,11 @@ const d = ref(`{
         "client": 1,
         "adLevel": 3,
         "target": null,
-        "action": 1,
+        "action": 5,
         "params": [],
         "created_at": "2023-09-25T10:13:30.000000Z",
         "updated_at": "2023-09-25T10:13:30.000000Z"
+
       },
       "conditions": [
         {
@@ -82,15 +84,19 @@ const d = ref(`{
     }`);
 
 const dd = ref(`{}`);
+const showModal = ref(false);
 </script>
 
 <template>
   <h1>TC Event Editor Demo</h1>
   <div class="flex gap-5">
     <div class="flex flex-col space-y-2 w-full">
-      <textarea class="form-textarea h-full rounded-lg" v-model="dd"></textarea>
+      <textarea class="form-textarea h-full rounded-lg" v-model="d"></textarea>
     </div>
-    <TCEventEditorApp v-model:data="dd" class="w-fit min-w-[50%]" />
+    <TCEventEditorApp v-model:data="d" class="w-fit min-w-[50%]" />
+    <QuickSetup>
+      <div>快速創建</div>
+    </QuickSetup>
   </div>
 </template>
 

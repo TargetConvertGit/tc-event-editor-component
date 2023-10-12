@@ -168,6 +168,56 @@ const actionOption = computed(() => {
 
   return {};
 });
+
+const addAccountModal = ref(false);
+// 新增目標
+const addAccount = (account) => {
+  if (!condition.value?.target) condition.value.target = [];
+
+  const existingIndex = condition.value.target.findIndex(
+    (item) => item.id === account.id
+  );
+
+  if (existingIndex === -1) {
+    condition.value.target.push(account);
+  } else {
+    condition.value.target.splice(existingIndex, 1);
+  }
+};
+
+// 目標列表
+const allAccountList = ref();
+const getAccountList = async () => {
+  allAccountList.value = [
+    { id: 1, name: "qwe" },
+    { id: 2, name: "asd" },
+    { id: 3, name: "zxc" },
+    { id: 4, name: "rty" },
+    { id: 5, name: "bgfb" },
+  ];
+};
+const filterItem = computed(() => "name");
+const accountList = computed(() => {
+  const filterText = accountFilterText.value.toLowerCase();
+
+  return allAccountList.value.filter((acc) =>
+    acc[filterItem.value].toLowerCase().includes(filterText)
+  );
+});
+
+// 選擇目標視窗
+const showAccountModal = async () => {
+  await getAccountList();
+  addAccountModal.value = true;
+};
+
+// 目標搜尋
+const accountFilterText = ref("");
+
+const accountModalLoading = ref(false);
+onMounted(() => {
+  accountModalLoading.value = true;
+});
 </script>
 
 <template>
@@ -211,11 +261,62 @@ const actionOption = computed(() => {
             </template>
           </select>
         </label>
-        <label class="flex items-center gap-2" v-if="adLevel != unSelected">
-          <span class="p3-b">目標</span>
-          <div>選擇廣告帳戶</div>
-        </label>
       </div>
+      <label class="flex items-center gap-2" v-if="adLevel != unSelected">
+        <span class="p3-b">目標</span>
+        <div>
+          <span
+            class="p4-r text-true-blue-3"
+            v-for="acc in condition.target"
+            :key="acc.id"
+            >{{ acc.name }},</span
+          >
+        </div>
+        <div @click="showAccountModal">選擇廣告帳戶</div>
+      </label>
+      <!-- 選擇帳號彈窗 -->
+      <Teleport to="#editor-container" v-if="accountModalLoading">
+        <div
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center items-center bg-dark-3 rounded bg-opacity-50 z-[2]"
+          v-if="addAccountModal"
+        >
+          <div
+            class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4 min-h-[300px] h-fit"
+          >
+            <div
+              class="absolute top-1 right-2 cursor-pointer"
+              @click="addAccountModal = false"
+            >
+              X
+            </div>
+            <span class="p1-b flex justify-center mb-1">請選擇目標</span>
+            <TextInput v-model="accountFilterText" />
+            <div class="flex flex-col gap-2 mt-2">
+              <div
+                class="border border-dark-5 rounded py-1 px-3 flex gap-1 hover:border-transparent hover:bg-true-blue-5 cursor-pointer"
+                v-for="account in accountList"
+                :key="account.id"
+                @click="addAccount(account)"
+              >
+                <div class="flex flex-col flex-1">
+                  <span class="p3-b">{{ account.id }}</span>
+                  <span class="p4-r">{{ account.name }}</span>
+                </div>
+                <div
+                  class="rounded h-3 w-3 border"
+                  :class="[
+                    condition.target
+                      ? condition?.target.find((ac) => ac.id === account.id)
+                        ? 'bg-red-1'
+                        : ''
+                      : '',
+                  ]"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Teleport>
       <label class="flex items-center gap-1" v-if="adLevel != unSelected">
         <span class="p3-b">條件</span>
         <select

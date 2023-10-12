@@ -8,7 +8,6 @@ import {
   BudgetType,
   ValueType,
 } from "../types/event-items";
-
 const eventData = inject("eventData");
 
 // 未選擇
@@ -20,10 +19,10 @@ const action = ref(eventData.value.action ?? {});
 const hasLimitBudget = ref(false);
 watch(hasLimitBudget, (val) => {
   if (!action.value.params?.limit) {
-    delete action.value.params.limit;
+    delete action.value?.params?.limit;
   }
   if (!val) {
-    delete action.value.params.limit;
+    delete action.value?.params?.limit;
   }
 });
 
@@ -204,7 +203,11 @@ const client = computed(() => {
   if (action.value.client) return action.value.client;
   return -1;
 });
-const setClient = (v) => (action.value.client = Number(v.target.value));
+const setClient = (v) => {
+  action.value.client = Number(v.target.value);
+  // 不可跨平台選目標
+  delete action.value.target;
+};
 // 層級
 const adLevel = computed(() => {
   if (action.value.adLevel) return action.value.adLevel;
@@ -214,6 +217,8 @@ const setAdLevel = (v) => {
   action.value.adLevel = Number(v.target.value);
   // 調整階層就預設不執行動作
   action.value.action = ActionType.None;
+  // 不可跨層級選目標
+  delete action.value.target;
 };
 // 執行
 const actionValue = computed(() => {
@@ -237,6 +242,60 @@ const paramsValueType = computed(() => {
 });
 const setParamsValueType = (v) =>
   (action.value.params.valueType = v.target.value);
+
+const addAccountModal = ref(false);
+// 新增目標
+const addAccount = (account) => {
+  if (!action.value?.target) action.value.target = [];
+
+  const existingIndex = action.value.target.findIndex(
+    (item) => item.id === account.id
+  );
+
+  if (existingIndex === -1) {
+    action.value.target.push(account);
+  } else {
+    action.value.target.splice(existingIndex, 1);
+  }
+};
+
+// 目標列表
+const allAccountList = ref();
+const getAccountList = async () => {
+  allAccountList.value = [
+    { id: 1, name: "qwe" },
+    { id: 2, name: "asd" },
+    { id: 3, name: "zxc" },
+    { id: 4, name: "rty" },
+    { id: 5, name: "bgfb" },
+  ];
+};
+const filterItem = computed(() => "name");
+const accountList = computed(() => {
+  const filterText = accountFilterText.value.toLowerCase();
+
+  return allAccountList.value.filter((acc) =>
+    acc[filterItem.value].toLowerCase().includes(filterText)
+  );
+});
+
+// 選擇目標視窗
+const showAccountModal = async () => {
+  await getAccountList();
+  addAccountModal.value = true;
+};
+
+// 目標搜尋
+const accountFilterText = ref("");
+// 全選
+const selectAllAccount = () => {
+  action.value.target = accountList.value;
+};
+
+const accountModalLoading = ref(false);
+onMounted(() => {
+  accountModalLoading.value = true;
+});
 </script>
 
 <template>
@@ -273,12 +332,80 @@ const setParamsValueType = (v) =>
           </template>
         </select>
       </label>
+    </div>
+    <div class="flex flex-col">
       <label class="flex items-center gap-2" v-if="adLevel != unSelected">
         <span class="p3-b">目標</span>
-        <div>選擇廣告帳戶</div>
+        <div
+          class="p4-b text-true-blue-3 flex w-fit cursor-pointer hover:text-true-blue-2"
+          @click="showAccountModal"
+        >
+          加入目標
+        </div>
       </label>
+      <div>
+        <span
+          class="p4-r text-dark-4"
+          v-for="acc in action.target"
+          :key="acc.id"
+          >{{ acc.name }},</span
+        >
+      </div>
     </div>
-    <div class="flex flex-col gap-3" v-if="adLevel != unSelected">
+    <!-- 選擇帳號彈窗 -->
+    <Teleport to="#editor-container" v-if="accountModalLoading">
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center items-center bg-dark-3 rounded bg-opacity-50 z-[2]"
+        v-if="addAccountModal"
+      >
+        <div
+          class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4 min-h-[300px] h-fit"
+        >
+          <div
+            class="absolute top-1 right-2 cursor-pointer"
+            @click="addAccountModal = false"
+          >
+            X
+          </div>
+          <span class="p1-b flex justify-center mb-1">請選擇目標</span>
+          <TextInput v-model="accountFilterText" />
+          <div
+            class="mt-2 flex w-full justify-end p4-b text-true-blue-3"
+            @click="selectAllAccount"
+          >
+            全選
+          </div>
+          <div class="flex flex-col gap-2 mt-2">
+            <div
+              class="border border-dark-5 rounded py-1 px-3 flex gap-1 hover:border-transparent hover:bg-true-blue-5 cursor-pointer"
+              v-for="account in accountList"
+              :key="account.id"
+              @click="addAccount(account)"
+            >
+              <div class="flex flex-col flex-1">
+                <span class="p3-b">{{ account.id }}</span>
+                <span class="p4-r">{{ account.name }}</span>
+              </div>
+              <div
+                class="rounded h-3 w-3 border"
+                :class="[
+                  action.target
+                    ? action?.target.find((ac) => ac.id === account.id)
+                      ? 'bg-red-1'
+                      : ''
+                    : '',
+                ]"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <div
+      class="flex flex-col gap-3"
+      v-if="action.target && action.target.length > 0"
+    >
       <label class="flex items-center gap-2">
         <span class="p3-b">執行</span>
         <select
@@ -286,6 +413,7 @@ const setParamsValueType = (v) =>
           v-model="actionValue"
           @change="setActionValue"
         >
+          <option value="-1" disabled>請選擇</option>
           <template v-for="(value, key) in actionOption" :key="key">
             <option :value="value">
               {{ key }}

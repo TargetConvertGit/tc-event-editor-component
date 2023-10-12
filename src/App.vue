@@ -91,7 +91,10 @@ const showModal = ref(false);
   <h1>TC Event Editor Demo</h1>
   <div class="flex gap-5">
     <div class="flex flex-col space-y-2 w-full">
-      <textarea class="form-textarea h-full rounded-lg" v-model="d"></textarea>
+      <textarea
+        class="form-textarea h-full rounded border p-5"
+        v-model="dd"
+      ></textarea>
     </div>
     <TCEventEditorApp v-model:data="d" class="w-fit min-w-[50%]" />
     <QuickSetup>

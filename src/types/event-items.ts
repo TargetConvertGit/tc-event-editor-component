@@ -59,7 +59,6 @@ export interface EventAction {
  */
 export interface EventActionTarget {
   id: string;
-  name: string;
 }
 
 /**
@@ -76,7 +75,9 @@ export interface EventActionParamBudget {
  * 條件
  */
 export interface EventCondition {
-  target?: EventActionTarget[]; // 依據來源
+  client: ClientType;
+  adLevel: AdLevelType;
+  target?: EventActionTarget[];
   conditionType: ConditionType; // 條件下拉
   operation: OperationType;
   valueType: ValueType;
@@ -150,23 +151,23 @@ export enum ConditionAdLevelTypeFacebook {
 export enum FrequencyType {
   Never = -1,
   Hour = 1,
-  Day,
-  Week,
-  Month,
-  Annual,
+  Day = 2,
+  Week = 3,
+  Month = 4,
+  Annual = 5,
 }
 
 /**
  * 每週星期幾
  */
 export enum WeekdaysType {
+  Sunday = 0,
   Monday = 1,
-  Tuesday,
-  Wednesday,
-  Thursday,
-  Friday,
-  Saturday,
-  Sunday,
+  Tuesday = 2,
+  Wednesday = 3,
+  Thursday = 4,
+  Friday = 5,
+  Saturday = 6,
   Weekday = -1, // 平日
   Weekend = -2, // 週末
 }
@@ -176,10 +177,10 @@ export enum WeekdaysType {
  */
 export enum WeekOrdinalWordsType {
   First = 1,
-  Second,
-  Third,
-  Fourth,
-  Fifth,
+  Second = 2,
+  Third = 3,
+  Fourth = 4,
+  Fifth = 5,
   Last = -1,
 }
 
@@ -189,17 +190,17 @@ export enum WeekOrdinalWordsType {
  */
 export enum MonthType {
   January = 1,
-  February,
-  March,
-  April,
-  May,
-  June,
-  July,
-  August,
-  September,
-  October,
-  November,
-  December,
+  February = 2,
+  March = 3,
+  April = 4,
+  May = 5,
+  June = 6,
+  July = 7,
+  August = 8,
+  September = 9,
+  October = 10,
+  November = 11,
+  December = 12,
 }
 
 /**
@@ -252,15 +253,15 @@ export enum ConditionType {
  */
 export enum DateRangeType {
   Today = 1, // 當天
-  Yesterday, // 昨天
-  Last3Days, // 近3天
-  Last7Days, // 近7天
-  ThisMonth, // 這個月
-  // LastMonth, // 上個月
-  // ThisSeason, // 這一季
-  // LastSeason, // 上一季
-  // ThisYear, // 今年
-  // LastYear, // 去年
+  Yesterday = 2, // 昨天
+  Last3Days = 3, // 近3天
+  Last7Days = 4, // 近7天
+  ThisMonth = 5, // 這個月
+  // LastMonth = 6, // 上個月
+  // ThisSeason = 7, // 這一季
+  // LastSeason = 8, // 上一季
+  // ThisYear = 9, // 今年
+  // LastYear = 10, // 去年
   SpecifiedTime = -1, // 指定時間
 }
 

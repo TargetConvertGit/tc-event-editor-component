@@ -49,6 +49,7 @@ export interface EventItem {
 export interface EventAction {
   client: ClientType;
   adLevel: AdLevelType;
+  targetType: EventActionTargetType;
   target?: EventActionTarget[];
   action: ActionType;
   params?: EventActionParamBudget;
@@ -77,6 +78,7 @@ export interface EventActionParamBudget {
 export interface EventCondition {
   client: ClientType;
   adLevel: AdLevelType;
+  targetType: EventActionTargetType;
   target?: EventActionTarget[];
   conditionType: ConditionType; // 條件下拉
   operation: OperationType;
@@ -118,6 +120,15 @@ export enum AdLevelTypeFacebook {
   AdGroup = 2,
   Ad = 3,
   AdTag = 4,
+}
+
+/**
+ * 目標類別
+ */
+export enum EventActionTargetType {
+  ForAll = 1,
+  ForID = 2,
+  ForActive = 3,
 }
 
 /**

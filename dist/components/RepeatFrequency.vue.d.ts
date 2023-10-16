@@ -1,21 +1,18 @@
 import { FrequencyType } from "../types/event-items";
+import "v-calendar/style.css";
 declare const _default: import("vue").DefineComponent<{
     frequency: {
-        type: import("vue").PropType<FrequencyType>;
-        required: true;
+        type: globalThis.PropType<FrequencyType>;
     };
     interval: {
-        type: import("vue").PropType<string | number>;
-        required: true;
+        type: globalThis.PropType<string | number>;
     };
 }, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("update:frequency" | "update:interval")[], "update:frequency" | "update:interval", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     frequency: {
-        type: import("vue").PropType<FrequencyType>;
-        required: true;
+        type: globalThis.PropType<FrequencyType>;
     };
     interval: {
-        type: import("vue").PropType<string | number>;
-        required: true;
+        type: globalThis.PropType<string | number>;
     };
 }>> & {
     "onUpdate:frequency"?: ((...args: any[]) => any) | undefined;

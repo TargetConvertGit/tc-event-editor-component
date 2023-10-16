@@ -20,6 +20,7 @@ export declare class EventHelper {
 export interface EventItem {
     title: string;
     start: string;
+    customInterval: boolean;
     frequency: FrequencyType;
     interval: number;
     weekdays?: WeekdaysType[];
@@ -37,6 +38,7 @@ export interface EventItem {
 export interface EventAction {
     client: ClientType;
     adLevel: AdLevelType;
+    targetType: EventActionTargetType;
     target?: EventActionTarget[];
     action: ActionType;
     params?: EventActionParamBudget;
@@ -46,7 +48,6 @@ export interface EventAction {
  */
 export interface EventActionTarget {
     id: string;
-    name: string;
 }
 /**
  * 執行動作參數
@@ -61,6 +62,9 @@ export interface EventActionParamBudget {
  * 條件
  */
 export interface EventCondition {
+    client: ClientType;
+    adLevel: AdLevelType;
+    targetType: EventActionTargetType;
     target?: EventActionTarget[];
     conditionType: ConditionType;
     operation: OperationType;
@@ -100,6 +104,34 @@ export declare enum AdLevelTypeFacebook {
     AdTag = 4
 }
 /**
+ * 目標類別
+ */
+export declare enum EventActionTargetType {
+    ForAll = 1,
+    ForID = 2,
+    ForActive = 3
+}
+/**
+ * 各平台層級
+ */
+export type ConditionAdLevelType = ConditionAdLevelTypeGoogle | ConditionAdLevelTypeFacebook;
+/**
+ * Google 層級
+ */
+export declare enum ConditionAdLevelTypeGoogle {
+    Account = 1,
+    Campaign = 2,
+    AdGroup = 3
+}
+/**
+ * Facebook 層級
+ */
+export declare enum ConditionAdLevelTypeFacebook {
+    Account = 1,
+    Campaign = 2,
+    AdGroup = 3
+}
+/**
  * 頻率
  */
 export declare enum FrequencyType {
@@ -114,13 +146,13 @@ export declare enum FrequencyType {
  * 每週星期幾
  */
 export declare enum WeekdaysType {
+    Sunday = 0,
     Monday = 1,
     Tuesday = 2,
     Wednesday = 3,
     Thursday = 4,
     Friday = 5,
     Saturday = 6,
-    Sunday = 7,
     Weekday = -1,
     Weekend = -2
 }
@@ -183,11 +215,14 @@ export declare enum ValueType {
  */
 export declare enum ConditionType {
     BudgetRemaining = "budgetRemaining",
+    BudgetCap = "budgetCap",
+    Clicks = "clicks",
     Impressions = "impressions",
-    Spent = "spent",
+    Cpc = "CPC",
+    Spend = "spend",
     Conversions = "conversions",
-    ReturnOnADSpending = "roas",
-    Clicks = "clicks"
+    ConversionSpend = "conversionSpend",
+    ReturnOnADSpending = "roas"
 }
 /**
  * 比較區間日期範圍
@@ -198,11 +233,6 @@ export declare enum DateRangeType {
     Last3Days = 3,
     Last7Days = 4,
     ThisMonth = 5,
-    LastMonth = 6,
-    ThisSeason = 7,
-    LastSeason = 8,
-    ThisYear = 9,
-    LastYear = 10,
     SpecifiedTime = -1
 }
 /**
@@ -214,4 +244,12 @@ export declare enum OperationType {
     Equal = "==",
     LessThan = "<",
     LessThanOrEqualTo = "<="
+}
+/**
+ * email通知
+ */
+export declare enum emailType {
+    AbnormalityOrError = 0,
+    Error = 1,
+    None = -1
 }

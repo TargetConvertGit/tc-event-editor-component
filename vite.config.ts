@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     vue({
       compilerOptions: {
-        isCustomElement: (tag) => tag.startsWith("PH"), // 排除以 'ph-' 开头的组件
+        isCustomElement: (tag) => tag.startsWith("Ph"), // 排除以 'ph-' 开头的组件
       },
     }),
     AutoImport({
@@ -34,6 +34,8 @@ export default defineConfig({
         // for externalized deps
         globals: {
           vue: "Vue",
+          "v-calendar": "vCalendar",
+          "@phosphor-icons/vue": "Ph",
         },
       },
     },

@@ -19,7 +19,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && vue-tsc --emitDeclarationOnly",
-    "types": "vue-tsc ",
+    "types": "vue-tsc",
     "preview": "vite preview"
   },
   "dependencies": {

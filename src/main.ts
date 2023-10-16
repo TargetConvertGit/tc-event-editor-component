@@ -13,6 +13,5 @@ const i18n = createI18n({
   messages: {
     zh_TW,
   },
-  // something vue-i18n options here ...
 });
 app.use(vfmPlugin).use(i18n).mount("#app");

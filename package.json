@@ -1,7 +1,7 @@
 {
   "name": "@targetconvert/event-editor-component",
   "private": true,
-  "version": "2.2.5",
+  "version": "",
   "type": "module",
   "files": [
     "dist"

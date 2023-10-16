@@ -4,7 +4,11 @@ import AutoImport from "unplugin-auto-import/vite";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      compilerOptions: {
+        isCustomElement: (tag) => tag.startsWith("PH"), // 排除以 'ph-' 开头的组件
+      },
+    }),
     AutoImport({
       dts: true,
       eslintrc: {

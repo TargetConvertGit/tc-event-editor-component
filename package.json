@@ -4,8 +4,7 @@
   "version": "2.2.5",
   "type": "module",
   "files": [
-    "dist",
-    "lang"
+    "dist"
   ],
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",

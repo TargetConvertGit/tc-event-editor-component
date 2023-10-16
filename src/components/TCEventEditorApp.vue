@@ -144,7 +144,7 @@ defineExpose({
     id="editor-container"
     @submit.prevent="save"
   >
-    <div class="p1-b">建立自動化規則</div>
+    <div class="p1-b">建立自動化規則<ph-heart /></div>
     <OuterBlock :title="'基本資料'">
       <div>
         <span class="p4-b">規則名稱*</span>

@@ -13,6 +13,7 @@ import {
   ConditionAdLevelTypeFacebook,
   ConditionAdLevelTypeGoogle,
   ConditionAdLevelType,
+  EventActionTargetType,
 } from "../types/event-items";
 
 interface Condition extends EventCondition {
@@ -32,7 +33,7 @@ const emit = defineEmits(["update:modelValue", "removeItem"]);
 const condition = computed(() => props.modelValue ?? {});
 
 // 未選擇
-const unSelected = -1;
+const unSelected = "";
 
 // 層級可選項
 const adLevelOption = computed(() => {
@@ -46,13 +47,13 @@ const adLevelOption = computed(() => {
 // 平台
 const client = computed(() => {
   if (condition.value.client) return condition.value.client;
-  return -1;
+  return "";
 });
 const setClient = (v) => (condition.value.client = Number(v.target.value));
 // 層級
 const adLevel = computed(() => {
   if (condition.value.adLevel) return condition.value.adLevel;
-  return -1;
+  return "";
 });
 const setAdLevel = (v) => {
   condition.value.adLevel = Number(v.target.value);
@@ -63,30 +64,46 @@ const setAdLevel = (v) => {
     });
   }
 };
+// 目標類型
+const targetType = computed(() => {
+  if (condition.value.targetType) return condition.value.targetType;
+  return "";
+});
+const setTargetType = (v) => {
+  condition.value.targetType = Number(v.target.value);
+  // 調整階層就預設不執行動作
+  delete condition.value.action;
+  // 不可跨平台選目標
+  delete condition.value.target;
+};
 // 條件
 const conditionType = computed(() => {
   if (condition.value.conditionType) return condition.value.conditionType;
-  return -1;
+  return "";
 });
 const setConditionType = (v) =>
   (condition.value.conditionType = v.target.value);
 // 運算
 const dateRangeType = computed(() => {
   if (condition.value.dateRangeType) return condition.value.dateRangeType;
-  return 0;
+  return "";
 });
-const setDateRangeType = (v) =>
-  (condition.value.dateRangeType = Number(v.target.value));
+const setDateRangeType = (v) => {
+  condition.value.dateRangeType = Number(v.target.value);
+  if (Number(v.target.value) !== DateRangeType.SpecifiedTime) {
+    delete condition.value.dateRange;
+  }
+};
 // 數值條件
 const operation = computed(() => {
   if (condition.value.operation) return condition.value.operation;
-  return -1;
+  return "";
 });
 const setOperation = (v) => (condition.value.operation = v.target.value);
 // 數值
 const valueType = computed(() => {
   if (condition.value.valueType) return condition.value.valueType;
-  return -1;
+  return "";
 });
 const setValueType = (v) => (condition.value.valueType = v.target.value);
 
@@ -100,7 +117,7 @@ const actionOptionsMap: any = {
       Spend: ConditionType.Spend,
       Conversions: ConditionType.Conversions,
       ConversionSpend: ConditionType.ConversionSpend,
-      Roas: ConditionType.ReturnOnADSpending,
+      ReturnOnADSpending: ConditionType.ReturnOnADSpending,
     },
     [ConditionAdLevelTypeGoogle.AdGroup]: {
       Clicks: ConditionType.Clicks,
@@ -109,7 +126,7 @@ const actionOptionsMap: any = {
       Spend: ConditionType.Spend,
       Conversions: ConditionType.Conversions,
       ConversionSpend: ConditionType.ConversionSpend,
-      Roas: ConditionType.ReturnOnADSpending,
+      ReturnOnADSpending: ConditionType.ReturnOnADSpending,
     },
     [ConditionAdLevelTypeGoogle.Account]: {
       BudgetRemaining: ConditionType.BudgetRemaining,
@@ -119,7 +136,7 @@ const actionOptionsMap: any = {
       Spend: ConditionType.Spend,
       Conversions: ConditionType.Conversions,
       ConversionSpend: ConditionType.ConversionSpend,
-      Roas: ConditionType.ReturnOnADSpending,
+      ReturnOnADSpending: ConditionType.ReturnOnADSpending,
     },
   },
   [ClientType.Facebook]: {
@@ -131,7 +148,7 @@ const actionOptionsMap: any = {
       Spend: ConditionType.Spend,
       Conversions: ConditionType.Conversions,
       ConversionSpend: ConditionType.ConversionSpend,
-      Roas: ConditionType.ReturnOnADSpending,
+      ReturnOnADSpending: ConditionType.ReturnOnADSpending,
     },
     [ConditionAdLevelTypeFacebook.AdGroup]: {
       Clicks: ConditionType.Clicks,
@@ -140,7 +157,7 @@ const actionOptionsMap: any = {
       Spend: ConditionType.Spend,
       Conversions: ConditionType.Conversions,
       ConversionSpend: ConditionType.ConversionSpend,
-      Roas: ConditionType.ReturnOnADSpending,
+      ReturnOnADSpending: ConditionType.ReturnOnADSpending,
     },
     [ConditionAdLevelTypeFacebook.Account]: {
       BudgetRemaining: ConditionType.BudgetRemaining,
@@ -150,7 +167,7 @@ const actionOptionsMap: any = {
       Spend: ConditionType.Spend,
       Conversions: ConditionType.Conversions,
       ConversionSpend: ConditionType.ConversionSpend,
-      Roas: ConditionType.ReturnOnADSpending,
+      ReturnOnADSpending: ConditionType.ReturnOnADSpending,
     },
   },
 };
@@ -237,8 +254,9 @@ onMounted(() => {
             class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="client"
             @change="setClient"
+            required
           >
-            <option value="-1" disabled>請選擇</option>
+            <option value="" disabled>請選擇</option>
             <template v-for="(value, key) in ClientType" :key="key">
               <option v-if="!Number.isInteger(value)" :value="key">
                 {{ value }}
@@ -252,28 +270,56 @@ onMounted(() => {
             class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="adLevel"
             @change="setAdLevel"
+            required
           >
-            <option value="-1" disabled>請選擇</option>
+            <option value="" disabled>請選擇</option>
             <template v-for="(value, key) in adLevelOption" :key="key">
               <option v-if="!Number.isInteger(value)" :value="key">
-                {{ value }}
+                {{ $t(`${ClientType[client]}${value}`) }}
+              </option>
+            </template>
+          </select>
+        </label>
+        <label class="flex items-center gap-2" v-if="adLevel != unSelected">
+          <span class="p4-b">目標</span>
+          <select
+            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            v-model="targetType"
+            @change="setTargetType"
+            required
+          >
+            <option value="" disabled>請選擇</option>
+            <template v-for="(value, key) in EventActionTargetType" :key="key">
+              <option v-if="!Number.isInteger(value)" :value="key">
+                {{ $t(value) }}
               </option>
             </template>
           </select>
         </label>
       </div>
-      <label class="flex items-center gap-2" v-if="adLevel != unSelected">
-        <span class="p3-b">目標</span>
-        <div>
+      <div
+        class="flex flex-col"
+        v-if="targetType === EventActionTargetType.ForID"
+      >
+        <label class="flex items-center gap-2">
+          <span class="p4-b">指定目標</span>
+          <div
+            class="p4-r px-1.5 py-0.5 text-true-blue-2 rounded bg-true-blue-5 flex w-fit cursor-pointer hover:bg-true-blue-4"
+            @click="showAccountModal"
+          >
+            編輯
+          </div>
+        </label>
+        <div v-if="targetType === EventActionTargetType.ForID">
           <span
-            class="p4-r text-true-blue-3"
-            v-for="acc in condition.target"
+            class="p4-r text-true-blue-3 px-0.5"
+            v-for="(acc, i) in condition.target"
             :key="acc.id"
-            >{{ acc.name }},</span
+            >{{ acc.name
+            }}{{ i !== condition.target.length - 1 ? "," : "" }}</span
           >
         </div>
-        <div @click="showAccountModal">選擇廣告帳戶</div>
-      </label>
+      </div>
       <!-- 選擇帳號彈窗 -->
       <Teleport to="#editor-container" v-if="accountModalLoading">
         <div
@@ -317,17 +363,18 @@ onMounted(() => {
           </div>
         </div>
       </Teleport>
-      <label class="flex items-center gap-1" v-if="adLevel != unSelected">
+      <label class="flex items-center gap-1" v-if="targetType != unSelected">
         <span class="p3-b">條件</span>
         <select
           class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="conditionType"
           @change="setConditionType"
+          required
         >
-          <option value="-1" disabled>請選擇</option>
+          <option value="" disabled>請選擇</option>
           <template v-for="(value, key) in actionOption" :key="key">
             <option :value="value">
-              {{ key }}
+              {{ $t(key) }}
             </option>
           </template>
         </select>
@@ -340,11 +387,12 @@ onMounted(() => {
               class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
               v-model="dateRangeType"
               @change="setDateRangeType"
+              required
             >
-              <option value="0" disabled>請選擇</option>
+              <option value="" disabled>請選擇</option>
               <template v-for="(value, key) in DateRangeType" :key="key">
                 <option v-if="!Number.isInteger(value)" :value="key">
-                  {{ value }}
+                  {{ $t(value) }}
                 </option>
               </template>
             </select>
@@ -366,16 +414,17 @@ onMounted(() => {
             </DatePicker>
           </div>
         </div>
-        <label class="flex items-center gap-1" v-if="dateRangeType != 0">
+        <label class="flex items-center gap-1" v-if="dateRangeType != ''">
           <select
             class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="operation"
             @change="setOperation"
+            required
           >
-            <option value="-1" disabled>請選擇</option>
+            <option value="" disabled>請選擇</option>
             <template v-for="(value, key) in OperationType" :key="key">
               <option v-if="!Number.isInteger(value)" :value="value">
-                {{ value }}
+                {{ $t(key) }}
               </option>
             </template>
           </select>
@@ -385,11 +434,12 @@ onMounted(() => {
             class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="valueType"
             @change="setValueType"
+            required
           >
-            <option value="-1" disabled>請選擇</option>
+            <option value="" disabled>請選擇</option>
             <template v-for="(value, key) in ValueType" :key="key">
               <option v-if="!Number.isInteger(value)" :value="value">
-                {{ value }}
+                {{ $t(`condition${key}`) }}
               </option>
             </template>
           </select>
@@ -398,6 +448,7 @@ onMounted(() => {
           v-model="condition.value"
           :type="'number'"
           v-if="valueType != unSelected"
+          :required="true"
         />
       </div>
       <div class="flex items-center gap-2" v-if="conditionType != unSelected">

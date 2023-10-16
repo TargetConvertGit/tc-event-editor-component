@@ -54,7 +54,7 @@ const removeItem = (index: number) => {
     class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center items-center bg-dark-3 rounded bg-opacity-50 z-[2]"
     v-if="addConditionModal"
   >
-    <div class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4 min-h-[50%]">
+    <div class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4">
       <div
         class="absolute top-1 right-2 cursor-pointer"
         @click="addConditionModal = false"

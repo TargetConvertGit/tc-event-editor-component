@@ -4,6 +4,7 @@ export interface Props {
   modelValue?: string | number;
   type?: string | number;
   maxLength?: number;
+  required?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   type: "string",
@@ -11,6 +12,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(["update:modelValue"]);
 function onInput(e: any) {
+  if (props.type === "number" && !e.target.value) e.target.value = 0;
   emit(
     "update:modelValue",
     props.type == "number" ? Number(e.target.value) : e.target.value
@@ -29,6 +31,7 @@ function onInput(e: any) {
       class="p3-b w-full border-none outline-none shadow-none"
       :placeholder="placeholder"
       :maxLength="maxLength"
+      :required="required"
     />
   </div>
 </template>

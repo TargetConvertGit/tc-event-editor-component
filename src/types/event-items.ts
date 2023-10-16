@@ -126,8 +126,8 @@ export enum AdLevelTypeFacebook {
  * 目標類別
  */
 export enum EventActionTargetType {
-  ForAll = 1,    // 所有項目
-  ForID = 2,     // 指定項目
+  ForAll = 1, // 所有項目
+  ForID = 2, // 指定項目
   ForActive = 3, // 僅已啟用項目
 }
 
@@ -291,7 +291,6 @@ export enum OperationType {
  * email通知
  */
 export enum emailType {
-  Implement,
   AbnormalityOrError,
   Error,
   None = -1,

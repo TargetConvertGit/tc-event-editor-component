@@ -20,9 +20,10 @@ const editMode = ref(true);
 watch(eventData, () => {
   editMode.value = true;
 });
-
-const interval = ref(props.interval);
+const minInterval = 1;
+const interval = ref(props.interval ?? minInterval);
 watch(interval, (val) => {
+  if (!val) val = minInterval;
   emit("update:interval", val);
 });
 const frequency = ref(props.frequency);
@@ -114,23 +115,29 @@ watch(
 <template>
   <div class="flex flex-col gap-3">
     <div class="flex items-center justify-center gap-3 my-2">
-      <p class="p4-b to-dark-4">日期時間</p>
+      <p class="p4-b">日期時間</p>
       <div class="h-[1px] flex-1 bg-light-3"></div>
     </div>
     <div class="flex flex-col gap-2">
       <div class="flex gap-2 items-center">
-        <span class="p3-r">開始</span>
+        <span class="p4-b">開始</span>
         <DatePicker
           v-model="eventData.start"
           mode="dateTime"
           :timezone="'UTC'"
           :min-Date="new Date()"
+          is-required
         >
           <template #default="{ togglePopover, inputValue }">
             <button
-              class="p3-b flex w-fit cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
+              class="p3-b flex w-fit cursor-pointer relative items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
               @click="togglePopover"
             >
+              <input
+                :value="inputValue"
+                required
+                class="opacity-0 absolute w-full h-full pointer-events-none"
+              />
               {{ inputValue ? inputValue : "請選定執行日期" }}
             </button>
           </template>
@@ -138,19 +145,19 @@ watch(
       </div>
     </div>
     <div class="flex items-center justify-center gap-3 w-full my-2">
-      <p class="p4-b to-dark-4">重複頻率</p>
+      <p class="p4-b">重複頻率</p>
       <div class="h-[1px] flex-1 bg-light-3"></div>
     </div>
     <div class="flex space-x-2 items-center">
       <label class="flex items-center gap-2">
-        <span class="p3-r">重複</span>
+        <span class="p4-b">重複</span>
         <select
           class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="repeat"
         >
           <template v-for="(value, key) in FrequencyType" :key="key">
             <option v-if="Number.isInteger(value)" :value="value">
-              {{ key }}
+              {{ $t(key) }}
             </option>
           </template>
           <option :value="0">自訂</option>
@@ -163,7 +170,7 @@ watch(
       class="flex items-center gap-2"
     >
       <label class="flex items-center gap-2">
-        <span class="p3-r">頻率</span>
+        <span class="p4-b">頻率</span>
         <select
           class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="frequency"
@@ -174,7 +181,7 @@ watch(
               v-if="value != FrequencyType.Never && Number.isInteger(value)"
               :value="value"
             >
-              {{ key }}
+              {{ $t(key) }}
             </option>
           </template>
         </select>
@@ -182,7 +189,7 @@ watch(
       <label class="flex items-center gap-2" v-if="frequency != -1">
         <span class="p4-b">每</span>
         <TextInput class="!w-10 text-center" v-model="interval" type="number" />
-        <span class="p4-b">{{ FrequencyType[frequency] }}</span>
+        <span class="p4-b">{{ $t(`s${FrequencyType[frequency]}`) }}</span>
       </label>
     </div>
     <template v-if="FrequencyType[repeat] == undefined">

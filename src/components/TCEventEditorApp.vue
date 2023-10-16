@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed, provide } from "vue";
 import { EventItem } from "../types/event-items";
 import RepeatFrequency from "./RepeatFrequency.vue";
 import EventAction from "./EventAction.vue";
@@ -58,9 +57,7 @@ const checkData = (
         if (nestedErrors.length === 0) {
           checkedData[name] = nestedData;
         } else {
-          errors.push(
-            ...nestedErrors.map((errorField) => `${name}.${errorField}`)
-          );
+          errors.push(...nestedErrors.map((errorField) => `${name}`));
         }
       } else {
         if (type === "string" && fieldValue === "") {
@@ -93,15 +90,15 @@ const rules: FieldCheckRule[] = [
     name: "notification",
     child: [{ name: "email", type: "number" }],
   },
-  {
-    name: "action",
-    child: [
-      { name: "client", type: "number" },
-      { name: "adLevel", type: "number" },
-      { name: "action", type: "number" },
-      { name: "target", type: "array" },
-    ],
-  },
+  // {
+  //   name: "action",
+  //   child: [
+  //     { name: "client", type: "number" },
+  //     { name: "adLevel", type: "number" },
+  //     { name: "targetType", type: "number" },
+  //     { name: "action", type: "number" },
+  //   ],
+  // },
   // {
   //   name: "conditions",
   //   child: [
@@ -114,30 +111,48 @@ const rules: FieldCheckRule[] = [
 ];
 
 // const save = () => emit("update:data", formatData(checkData(json.value)));
-const save = () => {
+const checkDataValid = ref([]);
+const save = (e) => {
+  e.preventDefault();
   // const { checkedData, errors } = checkData(json.value, rules);
-  // console.log(checkedData);
+  // checkDataValid.value = errors;
   // console.log(errors);
   emit("update:data", formatData(json.value));
-  console.log(getDescription(json.value));
+
+  // console.log(getDescription(json.value));
 };
 
+const saveData = (e) => {
+  submitBtn.value?.click();
+};
 provide("eventData", json);
+provide("checkDataValid", checkDataValid);
 
 const titleMaxLength = 100;
+
+const submitBtn = ref();
+
+defineExpose({
+  saveData,
+});
 </script>
 
 <template>
-  <div
+  <form
     v-if="props.data"
     class="p-5 rounded border flex flex-col gap-5 relative"
     id="editor-container"
+    @submit.prevent="save"
   >
     <div class="p1-b">建立自動化規則</div>
     <OuterBlock :title="'基本資料'">
       <div>
-        <span class="p3-b text-dark-3">規則名稱</span>
-        <TextInput v-model="json.title" :maxLength="titleMaxLength" />
+        <span class="p4-b">規則名稱*</span>
+        <TextInput
+          v-model="json.title"
+          :maxLength="titleMaxLength"
+          :required="true"
+        />
       </div>
     </OuterBlock>
     <OuterBlock :title="'執行時間'">
@@ -146,20 +161,21 @@ const titleMaxLength = 100;
         v-model:interval="json.interval"
       />
     </OuterBlock>
-    <OuterBlock :title="'動作'">
-      <EventAction />
-    </OuterBlock>
-    <Condition />
     <OuterBlock :title="'通知'">
       <Notification />
     </OuterBlock>
+    <EventAction />
+
+    <Condition />
+
+    <span v-if="checkDataValid.length" class="text-red-1">資料未填寫完整</span>
     <button
-      @click="save"
+      ref="submitBtn"
       class="p-2 px-3 rounded bg-slate-100 hover:bg-sky-500 hover:text-white"
     >
       保存
     </button>
-  </div>
+  </form>
 </template>
 
 <style scoped>

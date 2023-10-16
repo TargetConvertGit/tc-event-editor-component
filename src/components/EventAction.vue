@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import TextInput from "./TextInput.vue";
+import OuterBlock from "./OuterBlock.vue";
+
 import {
   ClientType,
   AdLevelTypeGoogle,
@@ -7,14 +9,16 @@ import {
   ActionType,
   BudgetType,
   ValueType,
+  EventActionTargetType,
 } from "../types/event-items";
+const { t } = useI18n();
 const eventData = inject("eventData");
 
 // 未選擇
-const unSelected = -1;
+const unSelected = "";
 
 const action = ref(eventData.value.action ?? {});
-
+const actionEnable = ref(Boolean(Object.keys(action.value).length));
 // 是否要限定數值
 const hasLimitBudget = ref(false);
 watch(hasLimitBudget, (val) => {
@@ -201,7 +205,7 @@ const valueTypeOption = computed(() => {
 // 平台
 const client = computed(() => {
   if (action.value.client) return action.value.client;
-  return -1;
+  return "";
 });
 const setClient = (v) => {
   action.value.client = Number(v.target.value);
@@ -211,26 +215,38 @@ const setClient = (v) => {
 // 層級
 const adLevel = computed(() => {
   if (action.value.adLevel) return action.value.adLevel;
-  return -1;
+  return "";
 });
 const setAdLevel = (v) => {
   action.value.adLevel = Number(v.target.value);
   // 調整階層就預設不執行動作
-  action.value.action = ActionType.None;
+  delete action.value.action;
   // 不可跨層級選目標
+  delete action.value.target;
+};
+// 目標類型
+const targetType = computed(() => {
+  if (action.value.targetType) return action.value.targetType;
+  return "";
+});
+const setTargetType = (v) => {
+  action.value.targetType = Number(v.target.value);
+  // 調整階層就預設不執行動作
+  delete action.value.action;
+  // 不可跨平台選目標
   delete action.value.target;
 };
 // 執行
 const actionValue = computed(() => {
   if (action.value.action) return action.value.action;
-  return -1;
+  return "";
 });
 const setActionValue = (v) => (action.value.action = Number(v.target.value));
 // 執行
 const paramsBudgetType = computed(() => {
   if (!action.value?.params) action.value.params = {};
   if (action.value.params.budgetType) return action.value.params.budgetType;
-  return -1;
+  return "";
 });
 const setParamsBudgetType = (v) =>
   (action.value.params.budgetType = v.target.value);
@@ -238,7 +254,7 @@ const setParamsBudgetType = (v) =>
 const paramsValueType = computed(() => {
   if (!action.value?.params) action.value.params = {};
   if (action.value.params.valueType) return action.value.params.valueType;
-  return -1;
+  return "";
 });
 const setParamsValueType = (v) =>
   (action.value.params.valueType = v.target.value);
@@ -296,306 +312,403 @@ const accountModalLoading = ref(false);
 onMounted(() => {
   accountModalLoading.value = true;
 });
+
+const removeAction = () => {
+  actionEnable.value = false;
+  action.value = {};
+  nextTick(() => {
+    delete eventData.value.action;
+  });
+};
+
+// 註解
+const budgetTips = computed(() => {
+  const clientValue = client.value;
+  const adLevelValue = action.value.adLevel;
+  const paramsBudgetTypeValue = paramsBudgetType.value;
+  console.log("object");
+  const isGoogleCampaign =
+    clientValue === ClientType.Google &&
+    adLevelValue === AdLevelTypeGoogle.Campaign;
+  const isFacebookCampaign =
+    clientValue === ClientType.Facebook &&
+    adLevelValue === AdLevelTypeFacebook.Campaign;
+  const isFacebookAdGroup =
+    clientValue === ClientType.Facebook &&
+    adLevelValue === AdLevelTypeFacebook.AdGroup;
+
+  const show = isGoogleCampaign || isFacebookCampaign || isFacebookAdGroup;
+
+  const budgetType =
+    paramsBudgetTypeValue === BudgetType.DailyBudget ? "日預算" : "總預算";
+  const clientAndAdLevel = `${ClientType[clientValue]}${adLevelOption.value[adLevelValue]}`;
+  const msg = show
+    ? `若${t(clientAndAdLevel)}設定為${budgetType}，則不會變更`
+    : "";
+
+  return { show, msg };
+});
 </script>
 
 <template>
-  <!-- 層級不同 可執行項目也不同 還有註解 -->
-  <div class="flex flex-col gap-6">
-    <div class="flex items-center gap-2">
-      <label class="flex items-center gap-2">
-        <span class="p3-b">平台</span>
-        <select
-          class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-          v-model="client"
-          @change="setClient"
-        >
-          <option value="-1" disabled>請選擇</option>
-          <template v-for="(value, key) in ClientType" :key="key">
-            <option v-if="!Number.isInteger(value)" :value="key">
-              {{ value }}
-            </option>
-          </template>
-        </select>
-      </label>
-      <label class="flex items-center gap-2" v-if="client != unSelected">
-        <span class="p3-b">層級</span>
-        <select
-          class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-          v-model="adLevel"
-          @change="setAdLevel"
-        >
-          <option value="-1" disabled>請選擇</option>
-          <template v-for="(value, key) in adLevelOption" :key="key">
-            <option v-if="!Number.isInteger(value)" :value="key">
-              {{ value }}
-            </option>
-          </template>
-        </select>
-      </label>
-    </div>
-    <div class="flex flex-col">
-      <label class="flex items-center gap-2" v-if="adLevel != unSelected">
-        <span class="p3-b">目標</span>
-        <div
-          class="p4-b text-true-blue-3 flex w-fit cursor-pointer hover:text-true-blue-2"
-          @click="showAccountModal"
-        >
-          加入目標
-        </div>
-      </label>
-      <div>
-        <span
-          class="p4-r text-dark-4"
-          v-for="acc in action.target"
-          :key="acc.id"
-          >{{ acc.name }},</span
-        >
-      </div>
-    </div>
-    <!-- 選擇帳號彈窗 -->
-    <Teleport to="#editor-container" v-if="accountModalLoading">
-      <div
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center items-center bg-dark-3 rounded bg-opacity-50 z-[2]"
-        v-if="addAccountModal"
-      >
-        <div
-          class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4 min-h-[300px] h-fit"
-        >
-          <div
-            class="absolute top-1 right-2 cursor-pointer"
-            @click="addAccountModal = false"
-          >
-            X
-          </div>
-          <span class="p1-b flex justify-center mb-1">請選擇目標</span>
-          <TextInput v-model="accountFilterText" />
-          <div
-            class="mt-2 flex w-full justify-end p4-b text-true-blue-3"
-            @click="selectAllAccount"
-          >
-            全選
-          </div>
-          <div class="flex flex-col gap-2 mt-2">
-            <div
-              class="border border-dark-5 rounded py-1 px-3 flex gap-1 hover:border-transparent hover:bg-true-blue-5 cursor-pointer"
-              v-for="account in accountList"
-              :key="account.id"
-              @click="addAccount(account)"
-            >
-              <div class="flex flex-col flex-1">
-                <span class="p3-b">{{ account.id }}</span>
-                <span class="p4-r">{{ account.name }}</span>
-              </div>
-              <div
-                class="rounded h-3 w-3 border"
-                :class="[
-                  action.target
-                    ? action?.target.find((ac) => ac.id === account.id)
-                      ? 'bg-red-1'
-                      : ''
-                    : '',
-                ]"
-              ></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
-
-    <div
-      class="flex flex-col gap-3"
-      v-if="action.target && action.target.length > 0"
-    >
-      <label class="flex items-center gap-2">
-        <span class="p3-b">執行</span>
-        <select
-          class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-          v-model="actionValue"
-          @change="setActionValue"
-        >
-          <option value="-1" disabled>請選擇</option>
-          <template v-for="(value, key) in actionOption" :key="key">
-            <option :value="value">
-              {{ key }}
-            </option>
-          </template>
-        </select>
-      </label>
-      <div class="flex gap-x-2 gap-y-3 flex-wrap" v-if="adLevel != unSelected">
-        <!-- 新預算 -->
-        <template v-if="action.action == ActionType.SetNewBudget">
-          <label class="flex items-center gap-2">
-            <span class="p3-b">類型</span>
-            <select
-              class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="paramsBudgetType"
-              @change="setParamsBudgetType"
-            >
-              <option value="-1" disabled>請選擇</option>
-              <template v-for="(value, key) in BudgetType" :key="key">
-                <option v-if="!Number.isInteger(value)" :value="value">
-                  {{ value }}
-                </option>
-              </template>
-            </select>
-          </label>
-          <label
-            class="flex items-center gap-2"
-            v-if="paramsBudgetType != unSelected"
-          >
-            <span class="p3-b">調整</span>
-            <select
-              class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="paramsValueType"
-              @change="setParamsValueType"
-            >
-              <option value="-1" disabled>請選擇</option>
-              <template v-for="(value, key) in valueTypeOption" :key="key">
-                <option :value="value">
-                  {{ value }}
-                </option>
-              </template>
-            </select>
-          </label>
-          <label
-            class="flex items-center gap-2"
-            v-if="paramsValueType != unSelected"
-          >
-            <TextInput v-model="action.params.value" :type="'number'" />
-            <span>{{
-              action.params.valueType === ValueType.Percentage ? "%" : "元"
-            }}</span>
-          </label>
-        </template>
-        <!-- 提升預算 -->
-        <template v-else-if="action.action == ActionType.IncreaseBudget">
-          <label class="flex items-center gap-2">
-            <span class="p3-b">類型</span>
-            <select
-              class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="paramsBudgetType"
-              @change="setParamsBudgetType"
-            >
-              <option value="-1" disabled>請選擇</option>
-              <template v-for="(value, key) in BudgetType" :key="key">
-                <option v-if="!Number.isInteger(value)" :value="value">
-                  {{ value }}
-                </option>
-              </template>
-            </select>
-          </label>
-          <label
-            class="flex items-center gap-2"
-            v-if="paramsBudgetType != unSelected"
-          >
-            <span class="p3-b">調整</span>
-            <select
-              class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="paramsValueType"
-              @change="setParamsValueType"
-            >
-              <option value="-1" disabled>請選擇</option>
-              <template v-for="(value, key) in valueTypeOption" :key="key">
-                <option :value="value">
-                  {{ value }}
-                </option>
-              </template>
-            </select>
-          </label>
-          <label
-            class="flex items-center gap-2"
-            v-if="paramsValueType != unSelected"
-          >
-            <TextInput v-model="action.params.value" :type="'number'" />
-            <span>{{
-              action.params.valueType === ValueType.Percentage ? "%" : "元"
-            }}</span>
-          </label>
-          <label
-            class="flex items-center gap-2 w-full"
-            v-if="action.params.valueType === ValueType.Percentage"
-          >
-            <div class="flex flex-col gap-2">
-              <div class="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  v-model="hasLimitBudget"
-                  id="maxBudget"
-                />
-                <label for="maxBudget">設定預算上限</label>
-                <div class="flex gap-2 items-center" v-if="hasLimitBudget">
-                  <TextInput v-model="action.params.limit" :type="'number'" />
-                  <span>元</span>
-                </div>
-              </div>
-            </div>
-          </label>
-        </template>
-        <!-- 降低預算 -->
-        <template v-else-if="action.action == ActionType.LowerBudget">
-          <label class="flex items-center gap-2">
-            <span class="p3-b">類型</span>
-            <select
-              class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="paramsBudgetType"
-              @change="setParamsBudgetType"
-            >
-              <option value="-1" disabled>請選擇</option>
-              <template v-for="(value, key) in BudgetType" :key="key">
-                <option v-if="!Number.isInteger(value)" :value="value">
-                  {{ value }}
-                </option>
-              </template>
-            </select>
-          </label>
-          <label
-            class="flex items-center gap-2"
-            v-if="paramsBudgetType != unSelected"
-          >
-            <span class="p3-b">調整</span>
-            <select
-              class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              v-model="paramsValueType"
-              @change="setParamsValueType"
-            >
-              <option value="-1" disabled>請選擇</option>
-              <template v-for="(value, key) in valueTypeOption" :key="key">
-                <option :value="value">
-                  {{ value }}
-                </option>
-              </template>
-            </select>
-          </label>
-          <label
-            class="flex items-center gap-2"
-            v-if="paramsValueType != unSelected"
-          >
-            <TextInput v-model="action.params.value" :type="'number'" />
-            <span>{{
-              action.params.valueType === ValueType.Percentage ? "%" : "元"
-            }}</span>
-          </label>
-          <label
-            class="flex items-center gap-2 w-full"
-            v-if="action.params.valueType === ValueType.Percentage"
-          >
-            <div class="flex flex-col gap-2">
-              <div class="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  v-model="hasLimitBudget"
-                  id="maxBudget"
-                />
-                <label for="maxBudget">設定預算下限</label>
-                <div class="flex gap-2 items-center" v-if="hasLimitBudget">
-                  <TextInput v-model="action.params.limit" :type="'number'" />
-                  <span>元</span>
-                </div>
-              </div>
-            </div>
-          </label>
-        </template>
-      </div>
-    </div>
+  <div
+    class="p3-b text-true-blue-3 flex ml-auto w-fit cursor-pointer hover:text-true-blue-2"
+    @click="actionEnable = true"
+    v-if="!actionEnable"
+  >
+    + 加入動作
   </div>
+  <!-- 層級不同 可執行項目也不同 還有註解 -->
+  <OuterBlock :title="'動作'" v-else>
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-2 relative pt-2">
+        <div
+          class="cursor-pointer text-dark-4 absolute -top-2.5 -right-1.5 p4-b"
+          @click="removeAction"
+        >
+          刪除
+        </div>
+        <label class="flex items-center gap-2">
+          <span class="p4-b">平台</span>
+          <select
+            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            v-model="client"
+            @change="setClient"
+            required
+          >
+            <option value="" disabled>請選擇</option>
+            <template v-for="(value, key) in ClientType" :key="key">
+              <option v-if="!Number.isInteger(value)" :value="key">
+                {{ value }}
+              </option>
+            </template>
+          </select>
+        </label>
+        <label class="flex items-center gap-2" v-if="client != unSelected">
+          <span class="p4-b">層級</span>
+          <select
+            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            v-model="adLevel"
+            @change="setAdLevel"
+            required
+          >
+            <option value="" disabled>請選擇</option>
+            <template v-for="(value, key) in adLevelOption" :key="key">
+              <option v-if="!Number.isInteger(value)" :value="key">
+                {{ $t(`${ClientType[client]}${value}`) }}
+              </option>
+            </template>
+          </select>
+        </label>
+        <label class="flex items-center gap-2" v-if="adLevel != unSelected">
+          <span class="p4-b">目標</span>
+          <select
+            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            v-model="targetType"
+            @change="setTargetType"
+            required
+          >
+            <option value="" disabled>請選擇</option>
+            <template v-for="(value, key) in EventActionTargetType" :key="key">
+              <option v-if="!Number.isInteger(value)" :value="key">
+                {{ $t(value) }}
+              </option>
+            </template>
+          </select>
+        </label>
+      </div>
+      <div
+        class="flex flex-col"
+        v-if="targetType === EventActionTargetType.ForID"
+      >
+        <label class="flex items-center gap-2">
+          <span class="p4-b">指定目標</span>
+          <div
+            class="p4-r px-1.5 py-0.5 text-true-blue-2 rounded bg-true-blue-5 flex w-fit cursor-pointer hover:bg-true-blue-4"
+            @click="showAccountModal"
+          >
+            編輯
+          </div>
+        </label>
+        <div v-if="targetType === EventActionTargetType.ForID">
+          <span
+            class="p4-r text-true-blue-3 px-0.5"
+            v-for="(acc, i) in action.target"
+            :key="acc.id"
+            >{{ acc.name }}{{ i !== action.target.length - 1 ? "," : "" }}</span
+          >
+        </div>
+      </div>
+      <!-- 選擇帳號彈窗 -->
+      <Teleport to="#editor-container" v-if="accountModalLoading">
+        <div
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center items-center bg-dark-3 rounded bg-opacity-50 z-[2]"
+          v-if="addAccountModal"
+        >
+          <div
+            class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4 min-h-[300px] h-fit"
+          >
+            <div
+              class="absolute top-1 right-2 cursor-pointer"
+              @click="addAccountModal = false"
+            >
+              X
+            </div>
+            <span class="p1-b flex justify-center mb-1">請選擇目標</span>
+            <TextInput v-model="accountFilterText" />
+            <div
+              class="mt-2 flex w-full justify-end p4-b text-true-blue-3"
+              @click="selectAllAccount"
+            >
+              全選
+            </div>
+            <div class="flex flex-col gap-2 mt-2">
+              <div
+                class="border border-dark-5 rounded py-1 px-3 flex gap-1 hover:border-transparent hover:bg-true-blue-5 cursor-pointer"
+                v-for="account in accountList"
+                :key="account.id"
+                @click="addAccount(account)"
+              >
+                <div class="flex flex-col flex-1">
+                  <span class="p3-b">{{ account.id }}</span>
+                  <span class="p4-r">{{ account.name }}</span>
+                </div>
+                <div
+                  class="rounded h-3 w-3 border"
+                  :class="[
+                    action.target
+                      ? action?.target.find((ac) => ac.id === account.id)
+                        ? 'bg-red-1'
+                        : ''
+                      : '',
+                  ]"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Teleport>
+      <div class="flex flex-col gap-2" v-if="targetType !== unSelected">
+        <label class="flex items-center gap-2">
+          <span class="p4-b">執行</span>
+          <select
+            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            v-model="actionValue"
+            @change="setActionValue"
+            required
+          >
+            <option value="" disabled>請選擇</option>
+            <template v-for="(value, key) in actionOption" :key="key">
+              <option :value="value">
+                {{ $t(key) }}
+              </option>
+            </template>
+          </select>
+        </label>
+        <div
+          class="flex gap-x-2 gap-y-3 flex-wrap"
+          v-if="adLevel != unSelected"
+        >
+          <!-- 新預算 -->
+          <template v-if="action.action == ActionType.SetNewBudget">
+            <label class="flex items-center gap-2">
+              <span class="p4-b">類型</span>
+              <select
+                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                v-model="paramsBudgetType"
+                @change="setParamsBudgetType"
+                required
+              >
+                <option value="" disabled>請選擇</option>
+                <template v-for="(value, key) in BudgetType" :key="key">
+                  <option v-if="!Number.isInteger(value)" :value="value">
+                    {{ $t(value) }}
+                  </option>
+                </template>
+              </select>
+            </label>
+            <label
+              class="flex items-center gap-2"
+              v-if="paramsBudgetType != unSelected"
+            >
+              <span class="p4-b">調整</span>
+              <select
+                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                v-model="paramsValueType"
+                @change="setParamsValueType"
+                required
+              >
+                <option value="" disabled>請選擇</option>
+                <template v-for="(value, key) in valueTypeOption" :key="key">
+                  <option :value="value">
+                    {{ $t(`action${value}`) }}
+                  </option>
+                </template>
+              </select>
+            </label>
+            <label
+              class="flex items-center gap-2"
+              v-if="paramsValueType != unSelected"
+            >
+              <TextInput
+                v-model="action.params.value"
+                :type="'number'"
+                :required="true"
+              />
+              <span>{{
+                action.params.valueType === ValueType.Percentage ? "%" : "元"
+              }}</span>
+            </label>
+          </template>
+          <!-- 提升預算 -->
+          <template v-else-if="action.action == ActionType.IncreaseBudget">
+            <label class="flex items-center gap-2">
+              <span class="p4-b">類型</span>
+              <select
+                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                v-model="paramsBudgetType"
+                @change="setParamsBudgetType"
+                required
+              >
+                <option value="" disabled>請選擇</option>
+                <template v-for="(value, key) in BudgetType" :key="key">
+                  <option v-if="!Number.isInteger(value)" :value="value">
+                    {{ $t(value) }}
+                  </option>
+                </template>
+              </select>
+            </label>
+            <label
+              class="flex items-center gap-2"
+              v-if="paramsBudgetType != unSelected"
+            >
+              <span class="p4-b">調整</span>
+              <select
+                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                v-model="paramsValueType"
+                @change="setParamsValueType"
+                required
+              >
+                <option value="" disabled>請選擇</option>
+                <template v-for="(value, key) in valueTypeOption" :key="key">
+                  <option :value="value">
+                    {{ $t(`action${value}`) }}
+                  </option>
+                </template>
+              </select>
+            </label>
+            <label
+              class="flex items-center gap-2"
+              v-if="paramsValueType != unSelected"
+            >
+              <TextInput
+                v-model="action.params.value"
+                :type="'number'"
+                :required="true"
+              />
+              <span>{{
+                action.params.valueType === ValueType.Percentage ? "%" : "元"
+              }}</span>
+            </label>
+            <label
+              class="flex items-center gap-2 w-full"
+              v-if="action.params.valueType === ValueType.Percentage"
+            >
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    v-model="hasLimitBudget"
+                    id="maxBudget"
+                  />
+                  <label for="maxBudget">設定預算上限</label>
+                  <div class="flex gap-2 items-center" v-if="hasLimitBudget">
+                    <TextInput
+                      v-model="action.params.limit"
+                      :type="'number'"
+                      :required="true"
+                    />
+                    <span>元</span>
+                  </div>
+                </div>
+              </div>
+            </label>
+          </template>
+          <!-- 降低預算 -->
+          <template v-else-if="action.action == ActionType.LowerBudget">
+            <label class="flex items-center gap-2">
+              <span class="p4-b">類型</span>
+              <select
+                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                v-model="paramsBudgetType"
+                @change="setParamsBudgetType"
+                required
+              >
+                <option value="" disabled>請選擇</option>
+                <template v-for="(value, key) in BudgetType" :key="key">
+                  <option v-if="!Number.isInteger(value)" :value="value">
+                    {{ $t(value) }}
+                  </option>
+                </template>
+              </select>
+            </label>
+            <label
+              class="flex items-center gap-2"
+              v-if="paramsBudgetType != unSelected"
+            >
+              <span class="p4-b">調整</span>
+              <select
+                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                v-model="paramsValueType"
+                @change="setParamsValueType"
+              >
+                <option value="" disabled>請選擇</option>
+                <template v-for="(value, key) in valueTypeOption" :key="key">
+                  <option :value="value">
+                    {{ $t(`action${value}`) }}
+                  </option>
+                </template>
+              </select>
+            </label>
+            <label
+              class="flex items-center gap-2"
+              v-if="paramsValueType != unSelected"
+            >
+              <TextInput
+                v-model="action.params.value"
+                :type="'number'"
+                :required="true"
+              />
+              <span>{{
+                action.params.valueType === ValueType.Percentage ? "%" : "元"
+              }}</span>
+            </label>
+            <div
+              class="flex items-center gap-2 w-full"
+              v-if="action.params.valueType === ValueType.Percentage"
+            >
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    v-model="hasLimitBudget"
+                    id="maxBudget"
+                  />
+                  <label for="maxBudget" class="p3-b">設定預算下限</label>
+                  <div class="flex gap-2 items-center" v-if="hasLimitBudget">
+                    <TextInput
+                      v-model="action.params.limit"
+                      :type="'number'"
+                      :required="true"
+                    />
+                    <span>元</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+  </OuterBlock>
 </template>

@@ -83,12 +83,14 @@ const d = ref(`{
       ]
     }`);
 
-const dd = ref(`{}`);
+const dd = ref(`{
+}`);
 const showModal = ref(false);
+const editor = ref();
 </script>
 
 <template>
-  <h1>TC Event Editor Demo</h1>
+  <h1 @click="editor.saveData">TC Event Editor Demo</h1>
   <div class="flex gap-5">
     <div class="flex flex-col space-y-2 w-full">
       <textarea
@@ -96,10 +98,11 @@ const showModal = ref(false);
         v-model="dd"
       ></textarea>
     </div>
-    <TCEventEditorApp v-model:data="d" class="w-fit min-w-[50%]" />
-    <QuickSetup>
-      <div>快速創建</div>
-    </QuickSetup>
+    <TCEventEditorApp
+      v-model:data="dd"
+      class="w-fit min-w-[50%]"
+      ref="editor"
+    />
   </div>
 </template>
 

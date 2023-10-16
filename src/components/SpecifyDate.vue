@@ -74,6 +74,8 @@ const weekdaysOptions = ref([
   { name: "星期四", id: WeekdaysType.Thursday },
   { name: "星期五", id: WeekdaysType.Friday },
   { name: "星期六", id: WeekdaysType.Saturday },
+  { name: "平日", id: WeekdaysType.Weekday },
+  { name: "週末", id: WeekdaysType.Weekend },
 ]);
 
 //指定每月第幾週
@@ -326,14 +328,7 @@ onBeforeUnmount(() => {
   </div>
 
   <div class="flex gap-4 flex-wrap">
-    <div
-      class="flex gap-1"
-      v-for="option in options"
-      :key="option"
-      :class="[
-        `${option.label}` === 'monthDateOrigin' ? ' flex-wrap' : 'flex-col',
-      ]"
-    >
+    <div class="flex gap-1 flex-wrap" v-for="option in options" :key="option">
       <Checkbox
         v-for="opt in option.options"
         :key="opt.id"

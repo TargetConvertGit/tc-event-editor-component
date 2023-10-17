@@ -1,7 +1,6 @@
 import { createApp } from "vue";
 import { vfmPlugin } from "vue-final-modal";
 import { createI18n } from "vue-i18n";
-import PhosphorIcons from "@phosphor-icons/vue";
 import zh_TW from "./lang/zh_TW.js";
 
 import "./style.css";
@@ -19,5 +18,4 @@ const i18n = createI18n({
 });
 app.use(vfmPlugin);
 app.use(i18n);
-app.use(PhosphorIcons);
 app.mount("#app");

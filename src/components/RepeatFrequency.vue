@@ -5,6 +5,8 @@ import DuePicker from "./DuePicker.vue";
 import TextInput from "./TextInput.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 interface Props {
   frequency?: FrequencyType;
   interval?: number | string;
@@ -157,7 +159,7 @@ watch(
         >
           <template v-for="(value, key) in FrequencyType" :key="key">
             <option v-if="Number.isInteger(value)" :value="value">
-              {{ $t(key) }}
+              {{ t(key) }}
             </option>
           </template>
           <option :value="0">自訂</option>
@@ -181,7 +183,7 @@ watch(
               v-if="value != FrequencyType.Never && Number.isInteger(value)"
               :value="value"
             >
-              {{ $t(key) }}
+              {{ t(key) }}
             </option>
           </template>
         </select>
@@ -189,7 +191,7 @@ watch(
       <label class="flex items-center gap-2" v-if="frequency != -1">
         <span class="p4-b">每</span>
         <TextInput class="!w-10 text-center" v-model="interval" type="number" />
-        <span class="p4-b">{{ $t(`s${FrequencyType[frequency]}`) }}</span>
+        <span class="p4-b">{{ t(`s${FrequencyType[frequency]}`) }}</span>
       </label>
     </div>
     <template v-if="FrequencyType[repeat] == undefined">

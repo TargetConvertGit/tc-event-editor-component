@@ -7,7 +7,7 @@ import Condition from "./Condition.vue";
 import OuterBlock from "./OuterBlock.vue";
 import Notification from "./Notification.vue";
 import { getDescription } from "../description.js";
-
+import { PhCube } from "@phosphor-icons/vue";
 interface Props {
   data?: string;
 }
@@ -144,7 +144,7 @@ defineExpose({
     id="editor-container"
     @submit.prevent="save"
   >
-    <div class="p1-b">建立自動化規則 <PhCube /></div>
+    <div class="p1-b">建立自動化規則<PhCube /></div>
     <OuterBlock :title="'基本資料'">
       <div>
         <span class="p4-b">規則名稱*</span>

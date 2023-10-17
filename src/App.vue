@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { TCEventEditorApp } from "./index";
-import { QuickSetup } from "./index";
 
 const data = ref(`{
     "title": "每月第一個星期一Google帳戶剩餘預算小於1000元且本季花費大於上一季度，則暫停Google指定廣告活動",

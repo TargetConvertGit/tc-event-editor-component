@@ -7,7 +7,6 @@ import Condition from "./Condition.vue";
 import OuterBlock from "./OuterBlock.vue";
 import Notification from "./Notification.vue";
 import { getDescription } from "../description.js";
-import { PhCube } from "@phosphor-icons/vue";
 interface Props {
   data?: string;
 }

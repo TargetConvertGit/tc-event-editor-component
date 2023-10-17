@@ -32,7 +32,6 @@
   ],
   "exclude": [
     "src/App.vue",
-    "src/main.ts"
   ],
   "references": [
     {

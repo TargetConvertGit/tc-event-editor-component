@@ -15,7 +15,7 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      // src/indext.ts is where we have exported the component(s)
+      // src/index.ts is where we have exported the component(s)
       entry: "./src/index.ts",
       name: "TCEventEditorComponent",
       // the name of the output files when the build is run

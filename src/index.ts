@@ -7,8 +7,6 @@ import zh_TW from "./lang/zh_TW.js";
 
 const install = (app) => {
   app.component("TCEventEditorApp", TCEventEditorApp);
-};
-const ci18n = (app) => {
   const i18n = createI18n({
     locale: "zh_TW",
     legacy: false,
@@ -19,9 +17,9 @@ const ci18n = (app) => {
   });
   app.use(i18n);
 };
+
 export default {
   install,
-  ci18n,
 };
 
 export { setApiUrlBase, TCEventEditorApp, TCEventItems, QuickSetup };

@@ -4,7 +4,8 @@
   "version": "",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "lang"
   ],
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",

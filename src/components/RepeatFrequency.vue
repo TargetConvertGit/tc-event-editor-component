@@ -11,7 +11,6 @@ interface Props {
   frequency?: FrequencyType;
   interval?: number | string;
 }
-
 const props = defineProps<Props>();
 
 const emit = defineEmits(["update:frequency", "update:interval"]);

@@ -1,5 +1,5 @@
 import { defineComponent as Se, openBlock as O, createElementBlock as T, createElementVNode as E, toDisplayString as le, ref as re, watchEffect as ps, computed as C, watch as Te, onBeforeUnmount as oc, Fragment as ne, unref as p, renderList as he, createBlock as qe, createCommentVNode as Q, withDirectives as Pe, isRef as be, vModelSelect as Be, reactive as hs, onMounted as hn, onUnmounted as xr, toRefs as ic, h as Fn, provide as qn, inject as yt, resolveDynamicComponent as rl, normalizeProps as al, mergeProps as rr, renderSlot as jt, normalizeClass as Ge, normalizeStyle as Er, withKeys as io, createVNode as me, withCtx as ze, nextTick as Yn, toRef as xa, resolveComponent as fn, Transition as sl, createTextVNode as Rr, withModifiers as ol, guardReactiveProps as lc, resolveDirective as uc, toHandlers as cc, vModelCheckbox as na, getCurrentInstance as Tr, shallowRef as dc, onBeforeMount as fc, effectScope as vc, Text as mc, Teleport as il, createStaticVNode as pc, pushScopeId as hc, popScopeId as gc } from "vue";
-function mC(e) {
+function vC(e) {
 }
 class _c {
   // 取得列舉索引
@@ -15,7 +15,7 @@ class _c {
   }
 }
 var Qe = /* @__PURE__ */ ((e) => (e[e.Google = 1] = "Google", e[e.Facebook = 2] = "Facebook", e))(Qe || {}), bt = /* @__PURE__ */ ((e) => (e[e.Campaign = 1] = "Campaign", e[e.AdGroup = 2] = "AdGroup", e[e.Ad = 3] = "Ad", e[e.AdTag = 4] = "AdTag", e))(bt || {}), vt = /* @__PURE__ */ ((e) => (e[e.Campaign = 1] = "Campaign", e[e.AdGroup = 2] = "AdGroup", e[e.Ad = 3] = "Ad", e[e.AdTag = 4] = "AdTag", e))(vt || {}), vn = /* @__PURE__ */ ((e) => (e[e.ForAll = 1] = "ForAll", e[e.ForID = 2] = "ForID", e[e.ForActive = 3] = "ForActive", e))(vn || {}), Vn = /* @__PURE__ */ ((e) => (e[e.Account = 1] = "Account", e[e.Campaign = 2] = "Campaign", e[e.AdGroup = 3] = "AdGroup", e))(Vn || {}), Un = /* @__PURE__ */ ((e) => (e[e.Account = 1] = "Account", e[e.Campaign = 2] = "Campaign", e[e.AdGroup = 3] = "AdGroup", e))(Un || {}), Re = /* @__PURE__ */ ((e) => (e[e.Never = -1] = "Never", e[e.Hour = 1] = "Hour", e[e.Day = 2] = "Day", e[e.Week = 3] = "Week", e[e.Month = 4] = "Month", e[e.Annual = 5] = "Annual", e))(Re || {}), It = /* @__PURE__ */ ((e) => (e[e.Sunday = 0] = "Sunday", e[e.Monday = 1] = "Monday", e[e.Tuesday = 2] = "Tuesday", e[e.Wednesday = 3] = "Wednesday", e[e.Thursday = 4] = "Thursday", e[e.Friday = 5] = "Friday", e[e.Saturday = 6] = "Saturday", e[e.Weekday = -1] = "Weekday", e[e.Weekend = -2] = "Weekend", e))(It || {}), un = /* @__PURE__ */ ((e) => (e[e.First = 1] = "First", e[e.Second = 2] = "Second", e[e.Third = 3] = "Third", e[e.Fourth = 4] = "Fourth", e[e.Fifth = 5] = "Fifth", e[e.Last = -1] = "Last", e))(un || {}), ct = /* @__PURE__ */ ((e) => (e[e.January = 1] = "January", e[e.February = 2] = "February", e[e.March = 3] = "March", e[e.April = 4] = "April", e[e.May = 5] = "May", e[e.June = 6] = "June", e[e.July = 7] = "July", e[e.August = 8] = "August", e[e.September = 9] = "September", e[e.October = 10] = "October", e[e.November = 11] = "November", e[e.December = 12] = "December", e))(ct || {}), ae = /* @__PURE__ */ ((e) => (e[e.SetNewBudget = 1] = "SetNewBudget", e[e.IncreaseBudget = 2] = "IncreaseBudget", e[e.LowerBudget = 3] = "LowerBudget", e[e.OpenProject = 4] = "OpenProject", e[e.SuspendProject = 5] = "SuspendProject", e[e.None = -1] = "None", e))(ae || {}), jn = /* @__PURE__ */ ((e) => (e.DailyBudget = "dailyBudget", e.TotalBudget = "totalBudget", e))(jn || {}), se = /* @__PURE__ */ ((e) => (e.Value = "value", e.Percentage = "percentage", e))(se || {}), fe = /* @__PURE__ */ ((e) => (e.BudgetRemaining = "budgetRemaining", e.BudgetCap = "budgetCap", e.Clicks = "clicks", e.Impressions = "impressions", e.Cpc = "CPC", e.Spend = "spend", e.Conversions = "conversions", e.ConversionSpend = "conversionSpend", e.ReturnOnADSpending = "roas", e))(fe || {}), wr = /* @__PURE__ */ ((e) => (e[e.Today = 1] = "Today", e[e.Yesterday = 2] = "Yesterday", e[e.Last3Days = 3] = "Last3Days", e[e.Last7Days = 4] = "Last7Days", e[e.ThisMonth = 5] = "ThisMonth", e[e.SpecifiedTime = -1] = "SpecifiedTime", e))(wr || {}), gs = /* @__PURE__ */ ((e) => (e.MoreThan = ">", e.GreaterOrEqualTo = ">=", e.Equal = "==", e.LessThan = "<", e.LessThanOrEqualTo = "<=", e))(gs || {}), _s = /* @__PURE__ */ ((e) => (e[e.AbnormalityOrError = 0] = "AbnormalityOrError", e[e.Error = 1] = "Error", e[e.None = -1] = "None", e))(_s || {});
-const pC = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const mC = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   ActionType: ae,
   AdLevelTypeFacebook: vt,
@@ -12261,7 +12261,7 @@ const AN = { class: "flex flex-col gap-3" }, xN = /* @__PURE__ */ E("div", { cla
     ], 40, QM)) : Q("", !0);
   }
 });
-const sC = /* @__PURE__ */ bs(aC, [["__scopeId", "data-v-015ed2c9"]]), oC = { class: "bg-white p-3 rounded-xl flex w-4/5 min-h-[80%] max-h-96" }, iC = { class: "flex flex-col gap-2 py-2 px-4" }, lC = /* @__PURE__ */ E("div", { class: "w-[1px] h-auto bg-dark-4" }, null, -1), uC = /* @__PURE__ */ E("div", { class: "flex-1 h-auto bg-red-1" }, null, -1), hC = /* @__PURE__ */ Se({
+const sC = /* @__PURE__ */ bs(aC, [["__scopeId", "data-v-015ed2c9"]]), oC = { class: "bg-white p-3 rounded-xl flex w-4/5 min-h-[80%] max-h-96" }, iC = { class: "flex flex-col gap-2 py-2 px-4" }, lC = /* @__PURE__ */ E("div", { class: "w-[1px] h-auto bg-dark-4" }, null, -1), uC = /* @__PURE__ */ E("div", { class: "flex-1 h-auto bg-red-1" }, null, -1), pC = /* @__PURE__ */ Se({
   __name: "QuickSetup",
   setup(e) {
     const t = re(!1), n = () => {
@@ -12365,7 +12365,6 @@ const sC = /* @__PURE__ */ bs(aC, [["__scopeId", "data-v-015ed2c9"]]), oC = { cl
   FacebookAccount: "帳戶"
 }, dC = (e) => {
   e.component("TCEventEditorApp", sC);
-}, fC = (e) => {
   const t = ON({
     locale: "zh_TW",
     legacy: !1,
@@ -12375,14 +12374,13 @@ const sC = /* @__PURE__ */ bs(aC, [["__scopeId", "data-v-015ed2c9"]]), oC = { cl
     }
   });
   e.use(t);
-}, gC = {
-  install: dC,
-  ci18n: fC
+}, hC = {
+  install: dC
 };
 export {
-  hC as QuickSetup,
+  pC as QuickSetup,
   sC as TCEventEditorApp,
-  pC as TCEventItems,
-  gC as default,
-  mC as setApiUrlBase
+  mC as TCEventItems,
+  hC as default,
+  vC as setApiUrlBase
 };

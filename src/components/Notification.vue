@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { emailType } from "../types/event-items";
+import { i18n } from "../i18n";
+
+const { t } = i18n.global;
 const eventData = inject("eventData");
 const notification = ref(
   eventData.value.notification ?? {
@@ -31,7 +34,7 @@ watch(
         <option value="-2" disabled>請選擇</option>
         <template v-for="(value, key) in emailType" :key="key">
           <option v-if="!Number.isInteger(value)" :value="Number(key)">
-            {{ $t(`mail${value}`) }}
+            {{ t(`mail${value}`) }}
           </option>
         </template>
       </select>

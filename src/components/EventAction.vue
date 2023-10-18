@@ -11,7 +11,9 @@ import {
   ValueType,
   EventActionTargetType,
 } from "../types/event-items";
-const { t } = useI18n();
+import { i18n } from "../i18n";
+
+const { t } = i18n.global;
 const eventData = inject("eventData");
 
 // 未選擇
@@ -395,7 +397,7 @@ const budgetTips = computed(() => {
             <option value="" disabled>請選擇</option>
             <template v-for="(value, key) in adLevelOption" :key="key">
               <option v-if="!Number.isInteger(value)" :value="key">
-                {{ $t(`${ClientType[client]}${value}`) }}
+                {{ t(`${ClientType[client]}${value}`) }}
               </option>
             </template>
           </select>
@@ -411,7 +413,7 @@ const budgetTips = computed(() => {
             <option value="" disabled>請選擇</option>
             <template v-for="(value, key) in EventActionTargetType" :key="key">
               <option v-if="!Number.isInteger(value)" :value="key">
-                {{ $t(value) }}
+                {{ t(value) }}
               </option>
             </template>
           </select>
@@ -500,7 +502,7 @@ const budgetTips = computed(() => {
             <option value="" disabled>請選擇</option>
             <template v-for="(value, key) in actionOption" :key="key">
               <option :value="value">
-                {{ $t(key) }}
+                {{ t(key) }}
               </option>
             </template>
           </select>
@@ -522,7 +524,7 @@ const budgetTips = computed(() => {
                 <option value="" disabled>請選擇</option>
                 <template v-for="(value, key) in BudgetType" :key="key">
                   <option v-if="!Number.isInteger(value)" :value="value">
-                    {{ $t(value) }}
+                    {{ t(value) }}
                   </option>
                 </template>
               </select>
@@ -541,7 +543,7 @@ const budgetTips = computed(() => {
                 <option value="" disabled>請選擇</option>
                 <template v-for="(value, key) in valueTypeOption" :key="key">
                   <option :value="value">
-                    {{ $t(`action${value}`) }}
+                    {{ t(`action${value}`) }}
                   </option>
                 </template>
               </select>
@@ -573,7 +575,7 @@ const budgetTips = computed(() => {
                 <option value="" disabled>請選擇</option>
                 <template v-for="(value, key) in BudgetType" :key="key">
                   <option v-if="!Number.isInteger(value)" :value="value">
-                    {{ $t(value) }}
+                    {{ t(value) }}
                   </option>
                 </template>
               </select>
@@ -592,7 +594,7 @@ const budgetTips = computed(() => {
                 <option value="" disabled>請選擇</option>
                 <template v-for="(value, key) in valueTypeOption" :key="key">
                   <option :value="value">
-                    {{ $t(`action${value}`) }}
+                    {{ t(`action${value}`) }}
                   </option>
                 </template>
               </select>
@@ -647,7 +649,7 @@ const budgetTips = computed(() => {
                 <option value="" disabled>請選擇</option>
                 <template v-for="(value, key) in BudgetType" :key="key">
                   <option v-if="!Number.isInteger(value)" :value="value">
-                    {{ $t(value) }}
+                    {{ t(value) }}
                   </option>
                 </template>
               </select>
@@ -665,7 +667,7 @@ const budgetTips = computed(() => {
                 <option value="" disabled>請選擇</option>
                 <template v-for="(value, key) in valueTypeOption" :key="key">
                   <option :value="value">
-                    {{ $t(`action${value}`) }}
+                    {{ t(`action${value}`) }}
                   </option>
                 </template>
               </select>

@@ -5,9 +5,9 @@ import DuePicker from "./DuePicker.vue";
 import TextInput from "./TextInput.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
-import { i18n } from "../i18n"; // 按需引入i18n对象
+import { i18n } from "../i18n";
 
-const { t } = i18n.global; // 获取i18n对象的t和locale方法
+const { t } = i18n.global;
 interface Props {
   frequency?: FrequencyType;
   interval?: number | string;

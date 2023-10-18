@@ -15,7 +15,9 @@ import {
   ConditionAdLevelType,
   EventActionTargetType,
 } from "../types/event-items";
+import { i18n } from "../i18n";
 
+const { t } = i18n.global;
 interface Condition extends EventCondition {
   adLevel: ConditionAdLevelType;
   client: ClientType;
@@ -275,7 +277,7 @@ onMounted(() => {
             <option value="" disabled>請選擇</option>
             <template v-for="(value, key) in adLevelOption" :key="key">
               <option v-if="!Number.isInteger(value)" :value="key">
-                {{ $t(`${ClientType[client]}${value}`) }}
+                {{ t(`${ClientType[client]}${value}`) }}
               </option>
             </template>
           </select>
@@ -291,7 +293,7 @@ onMounted(() => {
             <option value="" disabled>請選擇</option>
             <template v-for="(value, key) in EventActionTargetType" :key="key">
               <option v-if="!Number.isInteger(value)" :value="key">
-                {{ $t(value) }}
+                {{ t(value) }}
               </option>
             </template>
           </select>
@@ -374,7 +376,7 @@ onMounted(() => {
           <option value="" disabled>請選擇</option>
           <template v-for="(value, key) in actionOption" :key="key">
             <option :value="value">
-              {{ $t(key) }}
+              {{ t(key) }}
             </option>
           </template>
         </select>
@@ -392,7 +394,7 @@ onMounted(() => {
               <option value="" disabled>請選擇</option>
               <template v-for="(value, key) in DateRangeType" :key="key">
                 <option v-if="!Number.isInteger(value)" :value="key">
-                  {{ $t(value) }}
+                  {{ t(value) }}
                 </option>
               </template>
             </select>
@@ -424,7 +426,7 @@ onMounted(() => {
             <option value="" disabled>請選擇</option>
             <template v-for="(value, key) in OperationType" :key="key">
               <option v-if="!Number.isInteger(value)" :value="value">
-                {{ $t(key) }}
+                {{ t(key) }}
               </option>
             </template>
           </select>
@@ -439,7 +441,7 @@ onMounted(() => {
             <option value="" disabled>請選擇</option>
             <template v-for="(value, key) in ValueType" :key="key">
               <option v-if="!Number.isInteger(value)" :value="value">
-                {{ $t(`condition${key}`) }}
+                {{ t(`condition${key}`) }}
               </option>
             </template>
           </select>

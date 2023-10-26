@@ -41,6 +41,7 @@ export interface EventItem {
   except?: string[]; // 排除指定日期
   action?: EventAction; // 執行動作
   conditions?: EventCondition[]; // 條件
+  notify: EventNotify; // 通知
 }
 
 /**
@@ -87,6 +88,28 @@ export interface EventCondition {
   dateRangeType?: DateRangeType;
   dateRange?: string[];
   comparison: Boolean; // 加入比較區間
+}
+
+export interface EventNotify {
+  email: EmailNotify;
+  line: ToggleNotify;
+}
+
+/**
+ * Email通知
+ */
+export enum EmailNotify {
+  None = -1,
+  All = 1,
+  Error = 2
+}
+
+/**
+ * 訊息開關
+ */
+export enum ToggleNotify {
+  Off = 0,
+  On = 1
 }
 
 /**
@@ -246,17 +269,17 @@ export enum ValueType {
  * 條件
  */
 export enum ConditionType {
-  BudgetRemaining = "budgetRemaining", // 帳戶剩餘預算
+  BudgetRemaining = "accountBudget", // 帳戶剩餘預算
   BudgetCap = "budgetCap", // 預算上限
   Clicks = "clicks", // 點擊數
   Impressions = "impressions", // 曝光數
-  Cpc = "CPC",
-  Spend = "spend", // 花費
+  Cpc = "cpc",
+  Spend = "cost", // 花費
   Conversions = "conversions", // 轉換數
-  ConversionSpend = "conversionSpend", // 單次轉換費用
+  ConversionSpend = "conversionsValue", // 單次轉換費用
   // ConversionRates = 'conversionRates', // 轉換率: 轉換次數除以同個時間範圍內帶來轉換的廣告點擊總數。舉例來說，如果 1,000 次互動帶來了 50 次轉換，轉換率就是 5% (50 ÷ 1,000 = 5%)。
   ReturnOnADSpending = "roas", // ROAS
-  // ClickThroughRate = 'clickThroughRate', // 點擊率: 計算方式為 (點擊次數 ÷ 曝光次數)。
+  // ClickThroughRate = 'ctr', // 點擊率: 計算方式為 (點擊次數 ÷ 曝光次數)。
 }
 
 /**

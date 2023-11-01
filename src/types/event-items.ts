@@ -30,6 +30,7 @@ export class EventHelper {
 export interface EventItem {
   title: string; // 事件名稱
   start: string; // 事件開始日期
+  active: boolean; // 啟用狀態
   customInterval: boolean; // 自訂頻率
   frequency: FrequencyType; // 頻率單位
   interval: number; // 頻率間隔

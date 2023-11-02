@@ -20,6 +20,7 @@ export declare class EventHelper {
 export interface EventItem {
     title: string;
     start: string;
+    active: boolean;
     customInterval: boolean;
     frequency: FrequencyType;
     interval: number;
@@ -31,6 +32,8 @@ export interface EventItem {
     except?: string[];
     action?: EventAction;
     conditions?: EventCondition[];
+    notify: EventNotify;
+    lasttime_at: string;
 }
 /**
  * 執行動作
@@ -74,6 +77,25 @@ export interface EventCondition {
     dateRange?: string[];
     comparison: Boolean;
 }
+export interface EventNotify {
+    email: EmailNotify;
+    line: ToggleNotify;
+}
+/**
+ * Email通知
+ */
+export declare enum EmailNotify {
+    None = -1,
+    All = 1,
+    Error = 2
+}
+/**
+ * 訊息開關
+ */
+export declare enum ToggleNotify {
+    Off = 0,
+    On = 1
+}
 /**
  * 平台(帳戶類型)
  */
@@ -89,19 +111,19 @@ export type AdLevelType = AdLevelTypeGoogle | AdLevelTypeFacebook;
  * Google 層級
  */
 export declare enum AdLevelTypeGoogle {
-    Campaign = 1,
-    AdGroup = 2,
-    Ad = 3,
-    AdTag = 4
+    Campaign = 2,
+    AdGroup = 3,
+    Ad = 4,
+    AdTag = 5
 }
 /**
  * Facebook 層級
  */
 export declare enum AdLevelTypeFacebook {
-    Campaign = 1,
-    AdGroup = 2,
-    Ad = 3,
-    AdTag = 4
+    Campaign = 2,
+    AdGroup = 3,
+    Ad = 4,
+    AdTag = 5
 }
 /**
  * 目標類別
@@ -214,14 +236,14 @@ export declare enum ValueType {
  * 條件
  */
 export declare enum ConditionType {
-    BudgetRemaining = "budgetRemaining",
+    BudgetRemaining = "accountBudget",
     BudgetCap = "budgetCap",
     Clicks = "clicks",
     Impressions = "impressions",
-    Cpc = "CPC",
-    Spend = "spend",
+    Cpc = "cpc",
+    Spend = "cost",
     Conversions = "conversions",
-    ConversionSpend = "conversionSpend",
+    ConversionSpend = "conversionsValue",
     ReturnOnADSpending = "roas"
 }
 /**
@@ -249,7 +271,7 @@ export declare enum OperationType {
  * email通知
  */
 export declare enum emailType {
-    AbnormalityOrError = 0,
-    Error = 1,
+    AbnormalityOrError = 1,
+    Error = 2,
     None = -1
 }

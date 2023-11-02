@@ -43,7 +43,7 @@ export interface EventItem {
   action?: EventAction; // 執行動作
   conditions?: EventCondition[]; // 條件
   notify: EventNotify; // 通知
-  lasttime_at: string // 上次執行時間
+  lasttime_at: string; // 上次執行時間
 }
 
 /**
@@ -101,9 +101,9 @@ export interface EventNotify {
  * Email通知
  */
 export enum EmailNotify {
-  None = -1,  // 不寄送
-  All = 1,    // 僅執行動作或錯誤時
-  Error = 2   //僅出現錯誤時
+  None = -1, // 不寄送
+  All = 1, // 僅執行動作或錯誤時
+  Error = 2, //僅出現錯誤時
 }
 
 /**
@@ -111,7 +111,7 @@ export enum EmailNotify {
  */
 export enum ToggleNotify {
   Off = 0,
-  On = 1
+  On = 1,
 }
 
 /**
@@ -316,7 +316,7 @@ export enum OperationType {
  * email通知
  */
 export enum emailType {
-  AbnormalityOrError,
-  Error,
+  AbnormalityOrError = 1,
+  Error = 2,
   None = -1,
 }

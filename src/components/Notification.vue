@@ -1,23 +1,19 @@
 <script setup lang="ts">
-import { emailType } from "../types/event-items";
+import { emailType, EmailNotify } from "../types/event-items";
 import { i18n } from "../i18n";
 
 const { t } = i18n.global;
 const eventData = inject("eventData");
 const notification = ref(
-  eventData.value.notification ?? {
-    email: -2,
+  eventData.value.notify ?? {
+    email: EmailNotify.All,
   }
 );
-onMounted(() => {
-  if (notification.value.email === -2) {
-    notification.value.email = 0;
-  }
-});
+
 watch(
   notification,
   (val: number) => {
-    eventData.value.notification = val;
+    eventData.value.notify = val;
   },
   { deep: true }
 );
@@ -31,7 +27,7 @@ watch(
         class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
         v-model="notification.email"
       >
-        <option value="-2" disabled>請選擇</option>
+        <option value="" disabled>請選擇</option>
         <template v-for="(value, key) in emailType" :key="key">
           <option v-if="!Number.isInteger(value)" :value="Number(key)">
             {{ t(`mail${value}`) }}

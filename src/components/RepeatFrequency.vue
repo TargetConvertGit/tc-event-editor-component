@@ -6,7 +6,6 @@ import TextInput from "./TextInput.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
 import { i18n } from "../i18n";
-
 const { t } = i18n.global;
 interface Props {
   frequency?: FrequencyType;
@@ -129,6 +128,7 @@ watch(
           :timezone="'UTC'"
           :min-Date="new Date()"
           is-required
+          is24hr
         >
           <template #default="{ togglePopover, inputValue }">
             <button

@@ -6,7 +6,6 @@ import TextInput from "./TextInput.vue";
 import Condition from "./Condition.vue";
 import OuterBlock from "./OuterBlock.vue";
 import Notification from "./Notification.vue";
-import { PhCube } from "@phosphor-icons/vue";
 
 import { getDescription } from "../description.js";
 interface Props {
@@ -141,11 +140,11 @@ defineExpose({
 <template>
   <form
     v-if="props.data"
-    class="p-5 rounded border flex flex-col gap-5 relative"
+    class="flex flex-col gap-5 relative"
     id="editor-container"
     @submit.prevent="save"
   >
-    <div class="p1-b">建立自動化規則<ph-Cube /></div>
+    <div class="p1-b">建立自動化規則</div>
     <OuterBlock :title="'基本資料'">
       <div>
         <span class="p4-b">規則名稱*</span>

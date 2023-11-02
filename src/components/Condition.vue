@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import TextInput from "./TextInput.vue";
+import { PhCaretCircleRight } from "@phosphor-icons/vue";
+import axios from "axios";
+import { getApiUrlBase, getToken } from "../apiConfig";
 
 import ConditionItem from "./ConditionItem.vue";
 
@@ -25,6 +28,34 @@ const addCondition = () => {
 const removeItem = (index: number) => {
   conditions.value.splice(index, 1);
 };
+const demoConditionFilterText = ref("");
+const allDemoCondition = ref([]);
+const filterItem = computed(() => "title");
+const getDemoCondition = async () => {
+  const res = await axios({
+    method: "get",
+    url: `${getApiUrlBase()}/heybear/api/automation/template`,
+    data: { type: 2 },
+    withCredentials: true,
+    headers: {
+      Authorization: getToken(),
+    },
+  });
+  allDemoCondition.value = res.data.data;
+};
+const demoCondition = computed(() => {
+  const filterText = demoConditionFilterText.value.toLowerCase();
+  return allDemoCondition.value.filter((acc) =>
+    acc[filterItem.value].toLowerCase().includes(filterText)
+  );
+});
+const getDemoConditionLoading = ref(false);
+const showConditionModal = async () => {
+  addConditionModal.value = true;
+  getDemoConditionLoading.value = true;
+  await getDemoCondition();
+  getDemoConditionLoading.value = false;
+};
 </script>
 
 <template>
@@ -46,7 +77,7 @@ const removeItem = (index: number) => {
 
   <div
     class="p3-b text-true-blue-3 flex ml-auto w-fit cursor-pointer hover:text-true-blue-2"
-    @click="addConditionModal = !addConditionModal"
+    @click="showConditionModal"
   >
     + 加入條件
   </div>
@@ -55,23 +86,22 @@ const removeItem = (index: number) => {
     v-if="addConditionModal"
   >
     <div class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4">
-      <div
-        class="absolute top-1 right-2 cursor-pointer"
-        @click="addConditionModal = false"
-      >
-        X
-      </div>
       <span class="p1-b flex justify-center mb-1">請選擇條件</span>
-      <TextInput />
+      <TextInput
+        :placeholder="'輸入關鍵字搜尋 ex: 轉換數'"
+        v-model="demoConditionFilterText"
+      />
       <div class="flex flex-col gap-2 mt-2">
         <div
-          class="border border-dark-5 rounded py-1 px-3 flex gap-1 hover:border-transparent hover:bg-true-blue-5 cursor-pointer"
+          class="border border-dark-5 rounded items-center py-1 px-3 flex gap-1 hover:bg-true-blue-5 cursor-pointer"
+          v-for="condition in demoCondition"
+          :key="condition.id"
         >
           <div class="flex flex-col flex-1">
-            <span class="p3-b">當帳戶剩餘預算 小於指定金額，執行動作</span>
-            <span class="p4-r">ex: 帳戶剩餘預算小於 1000 元</span>
+            <span class="p3-b">{{ condition.title }}</span>
+            <span class="p4-r text-dark-4">{{ condition.description }}</span>
           </div>
-          <div class="flex justify-center items-center">O</div>
+          <ph-caret-circle-right :size="18" class="text-dark-3" weight="bold" />
         </div>
       </div>
       <div
@@ -79,6 +109,14 @@ const removeItem = (index: number) => {
         @click="addCondition"
       >
         自訂
+      </div>
+      <div class="flex gap-3 items-center justify-center mt-4">
+        <div
+          class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 px-1.5 py-0.5 text-light-5 hover:bg-true-blue-1"
+          @click="addConditionModal = false"
+        >
+          確定
+        </div>
       </div>
     </div>
   </div>

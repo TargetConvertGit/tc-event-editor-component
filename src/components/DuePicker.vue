@@ -47,6 +47,7 @@ onUnmounted(() => {
         mode="dateTime"
         :timezone="'UTC'"
         :min-Date="new Date()"
+        is24hr
       >
         <template #default="{ togglePopover, inputValue }">
           <button

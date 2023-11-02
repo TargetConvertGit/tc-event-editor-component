@@ -28,7 +28,7 @@ function onInput(e: any) {
       :value="modelValue"
       @input="onInput"
       :type="type"
-      class="p3-b w-full border-none outline-none shadow-none"
+      class="p3-b w-full border-none outline-none shadow-none placeholder:text-dark-5"
       :placeholder="placeholder"
       :maxLength="maxLength"
       :required="required"
@@ -39,5 +39,8 @@ function onInput(e: any) {
 <style lang="scss" scoped>
 input {
   text-align: inherit;
+  &::placeholder {
+    font-weight: 400;
+  }
 }
 </style>

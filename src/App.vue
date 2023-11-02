@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { TCEventEditorApp } from "./index";
+import { TCEventEditorApp, setApiUrlBase, setToken } from "./index";
 
 const data = ref(`{
     "title": "每月第一個星期一Google帳戶剩餘預算小於1000元且本季花費大於上一季度，則暫停Google指定廣告活動",
@@ -83,9 +83,12 @@ const d = ref(`{
     }`);
 
 const dd = ref(`{
+  "start":"2023-11-01T09:00:00.000000Z"
 }`);
 const showModal = ref(false);
 const editor = ref();
+setApiUrlBase("https://tc-adsystem-stg.southeastasia.cloudapp.azure.com");
+setToken("Bearer 7|IMZYBXtkk2b4DXnscSaexanLbcBbjvd7dP5Djj6Q");
 </script>
 
 <template>

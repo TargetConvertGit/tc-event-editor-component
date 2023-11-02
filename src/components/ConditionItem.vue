@@ -3,6 +3,10 @@ import TextInput from "./TextInput.vue";
 import OuterBlock from "./OuterBlock.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
+import axios from "axios";
+import { getApiUrlBase, getToken } from "../apiConfig";
+import EventActionTargetItem from "./EventActionTargetItem.vue";
+
 import {
   EventCondition,
   ConditionType,
@@ -46,12 +50,23 @@ const adLevelOption = computed(() => {
   return ConditionAdLevelTypeFacebook;
 });
 
+const resetData = {
+  target: {
+    value: "",
+  },
+};
+
 // 平台
 const client = computed(() => {
   if (condition.value.client) return condition.value.client;
   return "";
 });
-const setClient = (v) => (condition.value.client = Number(v.target.value));
+const setClient = (v) => {
+  condition.value.client = Number(v.target.value);
+  // 不可跨平台選目標
+  delete condition.value.target;
+  setAdLevel(resetData);
+};
 // 層級
 const adLevel = computed(() => {
   if (condition.value.adLevel) return condition.value.adLevel;
@@ -65,6 +80,11 @@ const setAdLevel = (v) => {
       adLevel: adLevel.value,
     });
   }
+  // 調整階層就預設不執行動作
+  delete condition.value.action;
+  // 不可跨層級選目標
+  delete condition.value.target;
+  setTargetType(resetData);
 };
 // 目標類型
 const targetType = computed(() => {
@@ -77,6 +97,9 @@ const setTargetType = (v) => {
   delete condition.value.action;
   // 不可跨平台選目標
   delete condition.value.target;
+  if (condition.value.targetType === EventActionTargetType.ForID) {
+    condition.value.target = [];
+  }
 };
 // 條件
 const conditionType = computed(() => {
@@ -198,44 +221,160 @@ const addAccount = (account) => {
   );
 
   if (existingIndex === -1) {
-    condition.value.target.push(account);
+    condition.value.target.push({
+      id: account.id,
+      name: account.name,
+    });
   } else {
     condition.value.target.splice(existingIndex, 1);
   }
 };
+provide("addTarget", addAccount);
 
 // 目標列表
 const allAccountList = ref();
 const getAccountList = async () => {
-  allAccountList.value = [
-    { id: 1, name: "qwe" },
-    { id: 2, name: "asd" },
-    { id: 3, name: "zxc" },
-    { id: 4, name: "rty" },
-    { id: 5, name: "bgfb" },
-  ];
+  const targets = await axios({
+    method: "get",
+    url: `${getApiUrlBase()}/heybear/api/automation/platform-target?client=${
+      client.value
+    }&adLevel=${adLevel.value}`,
+    withCredentials: true,
+    headers: {
+      Authorization: getToken(),
+    },
+  });
+  console.log(targets.data.data);
+  allAccountList.value = targets.data.data;
 };
-const filterItem = computed(() => "name");
-const accountList = computed(() => {
-  const filterText = accountFilterText.value.toLowerCase();
+const filterAccountList = computed(() => {
+  const filterText = accountFilterText.value.trim().toLowerCase();
 
-  return allAccountList.value.filter((acc) =>
-    acc[filterItem.value].toLowerCase().includes(filterText)
-  );
+  const isMatching = (item) => item.name.toLowerCase().includes(filterText);
+
+  const findMatchingItems = (items) => {
+    let matchingItems = [];
+
+    for (const item of items) {
+      if (isMatching(item) && (!item.children || item.children.length === 0)) {
+        matchingItems.push(item);
+      }
+
+      if (item.children && item.children.length > 0) {
+        const childMatches = findMatchingItems(item.children);
+        if (childMatches.length > 0) {
+          matchingItems.push({
+            id: item.id,
+            name: item.name,
+            children: childMatches,
+          });
+        }
+      }
+    }
+
+    return matchingItems;
+  };
+
+  const filteredItems = [];
+  for (const account of allAccountList.value) {
+    if (account.children) {
+      const matchingItems = findMatchingItems(account.children);
+      if (matchingItems.length > 0) {
+        filteredItems.push({
+          id: account.id,
+          name: account.name,
+          children: matchingItems,
+        });
+      }
+    } else {
+      filteredItems.push({
+        id: account.id,
+        name: account.name,
+      });
+    }
+  }
+
+  return filteredItems;
 });
 
+const getAccountLoading = ref(false);
+// 全選
+const selectAllAccount = () => {
+  const filteredItems = filterAccountList.value;
+  const selectAll = (items) => {
+    for (const item of items) {
+      if (item.children && item.children.length > 0) {
+        selectAll(item.children);
+      } else {
+        condition.value.target.push(item);
+      }
+    }
+  };
+
+  if (!condition.value.target.length) {
+    condition.value.target = [];
+    selectAll(filteredItems);
+  } else {
+    condition.value.target = [];
+  }
+};
 // 選擇目標視窗
 const showAccountModal = async () => {
-  await getAccountList();
   addAccountModal.value = true;
+  getAccountLoading.value = true;
+  await getAccountList();
+  getAccountLoading.value = false;
 };
-
 // 目標搜尋
 const accountFilterText = ref("");
 
 const accountModalLoading = ref(false);
 onMounted(() => {
   accountModalLoading.value = true;
+});
+
+function calculatePreviousTimeRange(timeRange) {
+  const startTime = new Date(timeRange.start);
+  const endTime = new Date(timeRange.end);
+
+  // 计算前一个时间段的开始时间
+  const newEndTime = new Date(startTime - 1);
+
+  // 计算前一个时间段的结束时间（不包括原始结束时间）
+  const newStartTime = new Date(newEndTime - (endTime - startTime));
+
+  // 格式化日期为 "YYYY/MM/DD" 格式
+  const formatOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
+  const newStartTimeFormatted = newStartTime.toLocaleDateString(
+    "zh-TW",
+    formatOptions
+  );
+  const newEndTimeFormatted = newEndTime.toLocaleDateString(
+    "zh-TW",
+    formatOptions
+  );
+
+  // 组合成所需格式
+  const formattedRange = `${newStartTimeFormatted}-${newEndTimeFormatted}`;
+
+  return formattedRange;
+}
+
+// 比較區間顯示文字
+const comparisonDateLabel = computed(() => {
+  if (!props.modelValue.comparison) return "";
+  if (dateRangeType.value === -1)
+    return condition.value.dateRange
+      ? `與${calculatePreviousTimeRange(condition.value.dateRange)}相比`
+      : "";
+  const dateRangeTypeLabel = {
+    [DateRangeType.Today]: "與作天相比",
+    [DateRangeType.Yesterday]: "與前一天相比",
+    [DateRangeType.Last3Days]: "與前3天相比",
+    [DateRangeType.Last7Days]: "與前7天相比",
+    [DateRangeType.ThisMonth]: "與上個月相比",
+  };
+  return dateRangeTypeLabel[dateRangeType.value];
 });
 </script>
 
@@ -300,17 +439,24 @@ onMounted(() => {
         </label>
       </div>
       <div
-        class="flex flex-col"
+        class="flex flex-col my-2"
         v-if="targetType === EventActionTargetType.ForID"
       >
-        <label class="flex items-center gap-2">
+        <label class="flex items-center gap-2 relative">
           <span class="p4-b">指定目標</span>
           <div
-            class="p4-r px-1.5 py-0.5 text-true-blue-2 rounded bg-true-blue-5 flex w-fit cursor-pointer hover:bg-true-blue-4"
+            class="p4-r px-1.5 z-[2] py-0.5 text-true-blue-2 rounded bg-true-blue-5 flex w-fit cursor-pointer hover:bg-true-blue-4"
             @click="showAccountModal"
           >
             編輯
           </div>
+          <input
+            v-if="condition?.target"
+            type="text"
+            class="opacity-0 absolute left-0 top-0"
+            required
+            :value="condition?.target.length ? '123' : ''"
+          />
         </label>
         <div v-if="targetType === EventActionTargetType.ForID">
           <span
@@ -325,43 +471,39 @@ onMounted(() => {
       <!-- 選擇帳號彈窗 -->
       <Teleport to="#editor-container" v-if="accountModalLoading">
         <div
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center items-center bg-dark-3 rounded bg-opacity-50 z-[2]"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center bg-dark-3 rounded bg-opacity-50 z-[2]"
           v-if="addAccountModal"
         >
           <div
-            class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4 min-h-[300px] h-fit"
+            class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4 max-h-[90%] flex flex-col"
           >
-            <div
-              class="absolute top-1 right-2 cursor-pointer"
-              @click="addAccountModal = false"
-            >
-              X
-            </div>
             <span class="p1-b flex justify-center mb-1">請選擇目標</span>
             <TextInput v-model="accountFilterText" />
-            <div class="flex flex-col gap-2 mt-2">
-              <div
-                class="border border-dark-5 rounded py-1 px-3 flex gap-1 hover:border-transparent hover:bg-true-blue-5 cursor-pointer"
-                v-for="account in accountList"
-                :key="account.id"
-                @click="addAccount(account)"
-              >
-                <div class="flex flex-col flex-1">
-                  <span class="p3-b">{{ account.id }}</span>
-                  <span class="p4-r">{{ account.name }}</span>
-                </div>
-                <div
-                  class="rounded h-3 w-3 border"
-                  :class="[
-                    condition.target
-                      ? condition?.target.find((ac) => ac.id === account.id)
-                        ? 'bg-red-1'
-                        : ''
-                      : '',
-                  ]"
-                ></div>
-              </div>
+            <div
+              class="mt-2 flex w-fit ml-auto justify-end p4-b text-true-blue-3 cursor-pointer"
+              @click="selectAllAccount"
+            >
+              全選
             </div>
+            <div v-if="getAccountLoading">loading...</div>
+            <template v-else>
+              <div class="flex flex-col gap-2 mt-2 flex-1 overflow-y-auto">
+                <EventActionTargetItem
+                  v-for="target in filterAccountList"
+                  :key="target.id"
+                  :target="target"
+                  :targets="condition?.target"
+                />
+              </div>
+              <div class="flex gap-3 items-center justify-center mt-4">
+                <div
+                  class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 px-1.5 py-0.5 text-light-5 hover:bg-true-blue-1"
+                  @click="addAccountModal = false"
+                >
+                  確定
+                </div>
+              </div>
+            </template>
           </div>
         </div>
       </Teleport>
@@ -399,17 +541,33 @@ onMounted(() => {
               </template>
             </select>
           </label>
+          <div
+            class="p4-b flex items-center justify-center"
+            v-if="modelValue.comparison && comparisonDateLabel !== ''"
+          >
+            {{ comparisonDateLabel }}
+          </div>
           <div v-if="dateRangeType == DateRangeType.SpecifiedTime">
-            <DatePicker v-model.range="condition.dateRange" mode="date">
+            <DatePicker
+              v-model.range="condition.dateRange"
+              mode="date"
+              is-required
+            >
               <template #default="{ togglePopover, inputValue }">
                 <button
-                  class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
+                  class="p3-b flex relative cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
                   @click="togglePopover"
                 >
+                  <input
+                    :value="inputValue.end"
+                    required
+                    class="opacity-0 absolute w-full h-full pointer-events-none"
+                  />
+
                   {{
                     inputValue.start && inputValue.end
                       ? `${inputValue.start}-${inputValue.end}`
-                      : "請選定執行日期"
+                      : "請選定區間"
                   }}
                 </button>
               </template>
@@ -446,14 +604,18 @@ onMounted(() => {
             </template>
           </select>
         </label>
-        <TextInput
-          v-model="condition.value"
-          :type="'number'"
-          v-if="valueType != unSelected"
-          :required="true"
-        />
+        <div class="flex gap-1 items-center" v-if="valueType != unSelected">
+          <TextInput
+            v-model="condition.value"
+            :type="'number'"
+            :required="true"
+          />
+          <span>{{
+            condition.valueType === ValueType.Percentage ? "%" : "元"
+          }}</span>
+        </div>
       </div>
-      <div class="flex items-center gap-2" v-if="conditionType != unSelected">
+      <div class="flex items-center gap-2" v-if="dateRangeType != unSelected">
         <input
           type="checkbox"
           v-model="modelValue.comparison"

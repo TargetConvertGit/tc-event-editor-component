@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import TextInput from "./TextInput.vue";
 import OuterBlock from "./OuterBlock.vue";
+import axios from "axios";
+import { getApiUrlBase, getToken } from "../apiConfig";
+import EventActionTargetItem from "./EventActionTargetItem.vue";
 
 import {
   ClientType,
@@ -72,19 +75,20 @@ const actionOptionsMap: any = {
       LowerBudget: ActionType.LowerBudget,
       OpenProject: ActionType.OpenProject,
       SuspendProject: ActionType.SuspendProject,
-      None: ActionType.None,
     },
     [AdLevelTypeGoogle.AdGroup]: {
+      OpenProject: ActionType.OpenProject,
       SuspendProject: ActionType.SuspendProject,
-      None: ActionType.None,
     },
     [AdLevelTypeGoogle.AdTag]: {
+      OpenProject: ActionType.OpenProject,
+
       SuspendProject: ActionType.SuspendProject,
-      None: ActionType.None,
     },
     [AdLevelTypeGoogle.Ad]: {
+      OpenProject: ActionType.OpenProject,
+
       SuspendProject: ActionType.SuspendProject,
-      None: ActionType.None,
     },
   },
   [ClientType.Facebook]: {
@@ -94,7 +98,6 @@ const actionOptionsMap: any = {
       LowerBudget: ActionType.LowerBudget,
       OpenProject: ActionType.OpenProject,
       SuspendProject: ActionType.SuspendProject,
-      None: ActionType.None,
     },
     [AdLevelTypeFacebook.AdGroup]: {
       SetNewBudget: ActionType.SetNewBudget,
@@ -102,15 +105,16 @@ const actionOptionsMap: any = {
       LowerBudget: ActionType.LowerBudget,
       OpenProject: ActionType.OpenProject,
       SuspendProject: ActionType.SuspendProject,
-      None: ActionType.None,
     },
     [AdLevelTypeFacebook.AdTag]: {
+      OpenProject: ActionType.OpenProject,
+
       SuspendProject: ActionType.SuspendProject,
-      None: ActionType.None,
     },
     [AdLevelTypeFacebook.Ad]: {
+      OpenProject: ActionType.OpenProject,
+
       SuspendProject: ActionType.SuspendProject,
-      None: ActionType.None,
     },
   },
 };
@@ -140,19 +144,15 @@ const valueTypeOptionsMap: any = {
       [ActionType.LowerBudget]: [ValueType.Percentage, ValueType.Value],
       [ActionType.OpenProject]: [ValueType.Percentage, ValueType.Value],
       [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
-      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
     },
     [AdLevelTypeGoogle.AdGroup]: {
       [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
-      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
     },
     [AdLevelTypeGoogle.AdTag]: {
       [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
-      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
     },
     [AdLevelTypeGoogle.Ad]: {
       [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
-      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
     },
   },
   [ClientType.Facebook]: {
@@ -162,7 +162,6 @@ const valueTypeOptionsMap: any = {
       [ActionType.LowerBudget]: [ValueType.Percentage, ValueType.Value],
       [ActionType.OpenProject]: [ValueType.Percentage, ValueType.Value],
       [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
-      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
     },
     [AdLevelTypeFacebook.AdGroup]: {
       [ActionType.SetNewBudget]: [ValueType.Value],
@@ -170,15 +169,12 @@ const valueTypeOptionsMap: any = {
       [ActionType.LowerBudget]: [ValueType.Percentage, ValueType.Value],
       [ActionType.OpenProject]: [ValueType.Percentage, ValueType.Value],
       [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
-      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
     },
     [AdLevelTypeFacebook.AdTag]: {
       [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
-      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
     },
     [AdLevelTypeFacebook.Ad]: {
       [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
-      [ActionType.None]: [ValueType.Percentage, ValueType.Value],
     },
   },
 };
@@ -204,6 +200,12 @@ const valueTypeOption = computed(() => {
   return [ValueType.Percentage, ValueType.Value]; // 默认值
 });
 
+const resetData = {
+  target: {
+    value: "",
+  },
+};
+
 // 平台
 const client = computed(() => {
   if (action.value.client) return action.value.client;
@@ -213,6 +215,7 @@ const setClient = (v) => {
   action.value.client = Number(v.target.value);
   // 不可跨平台選目標
   delete action.value.target;
+  setAdLevel(resetData);
 };
 // 層級
 const adLevel = computed(() => {
@@ -225,6 +228,7 @@ const setAdLevel = (v) => {
   delete action.value.action;
   // 不可跨層級選目標
   delete action.value.target;
+  setTargetType(resetData);
 };
 // 目標類型
 const targetType = computed(() => {
@@ -234,16 +238,21 @@ const targetType = computed(() => {
 const setTargetType = (v) => {
   action.value.targetType = Number(v.target.value);
   // 調整階層就預設不執行動作
-  delete action.value.action;
+  // delete action.value.action;
   // 不可跨平台選目標
-  delete action.value.target;
+  // delete action.value.target;
+  // if (action.value.targetType === EventActionTargetType.ForID) {
+  //   action.value.target = [];
+  // }
 };
 // 執行
 const actionValue = computed(() => {
   if (action.value.action) return action.value.action;
   return "";
 });
-const setActionValue = (v) => (action.value.action = Number(v.target.value));
+const setActionValue = (v) => {
+  action.value.action = Number(v.target.value);
+};
 // 執行
 const paramsBudgetType = computed(() => {
   if (!action.value?.params) action.value.params = {};
@@ -264,6 +273,7 @@ const setParamsValueType = (v) =>
 const addAccountModal = ref(false);
 // 新增目標
 const addAccount = (account) => {
+  console.log(account);
   if (!action.value?.target) action.value.target = [];
 
   const existingIndex = action.value.target.findIndex(
@@ -271,43 +281,117 @@ const addAccount = (account) => {
   );
 
   if (existingIndex === -1) {
-    action.value.target.push(account);
+    action.value.target.push({
+      id: account.id,
+      name: account.name,
+    });
   } else {
     action.value.target.splice(existingIndex, 1);
   }
 };
-
+provide("addTarget", addAccount);
 // 目標列表
 const allAccountList = ref();
 const getAccountList = async () => {
-  allAccountList.value = [
-    { id: 1, name: "qwe" },
-    { id: 2, name: "asd" },
-    { id: 3, name: "zxc" },
-    { id: 4, name: "rty" },
-    { id: 5, name: "bgfb" },
-  ];
+  const targets = await axios({
+    method: "get",
+    url: `${getApiUrlBase()}/heybear/api/automation/platform-target?client=${
+      client.value
+    }&adLevel=${adLevel.value}`,
+    withCredentials: true,
+    headers: {
+      Authorization: getToken(),
+    },
+  });
+  // console.log(targets.data.data);
+  for (const item of targets.data.data) {
+    console.log(item);
+  }
+  allAccountList.value = targets.data.data;
 };
-const filterItem = computed(() => "name");
-const accountList = computed(() => {
-  const filterText = accountFilterText.value.toLowerCase();
 
-  return allAccountList.value.filter((acc) =>
-    acc[filterItem.value].toLowerCase().includes(filterText)
-  );
+const getAccountLoading = ref(false);
+
+const filterAccountList = computed(() => {
+  const filterText = accountFilterText.value.trim().toLowerCase();
+
+  const isMatching = (item) => item.name.toLowerCase().includes(filterText);
+
+  const findMatchingItems = (items) => {
+    let matchingItems = [];
+
+    for (const item of items) {
+      if (isMatching(item) && (!item.children || item.children.length === 0)) {
+        matchingItems.push(item);
+      }
+
+      if (item.children && item.children.length > 0) {
+        const childMatches = findMatchingItems(item.children);
+        if (childMatches.length > 0) {
+          matchingItems.push({
+            id: item.id,
+            name: item.name,
+            children: childMatches,
+          });
+        }
+      }
+    }
+
+    return matchingItems;
+  };
+
+  const filteredItems = [];
+  for (const account of allAccountList.value) {
+    if (account.children) {
+      const matchingItems = findMatchingItems(account.children);
+      if (matchingItems.length > 0) {
+        filteredItems.push({
+          id: account.id,
+          name: account.name,
+          children: matchingItems,
+        });
+      }
+    } else {
+      filteredItems.push({
+        id: account.id,
+        name: account.name,
+      });
+    }
+  }
+
+  return filteredItems;
 });
 
 // 選擇目標視窗
 const showAccountModal = async () => {
-  await getAccountList();
   addAccountModal.value = true;
+  getAccountLoading.value = true;
+  await getAccountList();
+  getAccountLoading.value = false;
 };
-
+watch(addAccountModal, (val) => {
+  if (!val) accountFilterText.value = "";
+});
 // 目標搜尋
 const accountFilterText = ref("");
 // 全選
 const selectAllAccount = () => {
-  action.value.target = accountList.value;
+  const filteredItems = filterAccountList.value;
+  const selectAll = (items) => {
+    for (const item of items) {
+      if (item.children && item.children.length > 0) {
+        selectAll(item.children);
+      } else {
+        action.value.target.push(item);
+      }
+    }
+  };
+  if (!action.value.target.length) {
+    action.value.target = [];
+    selectAll(filteredItems);
+  } else {
+    action.value.target = [];
+  }
 };
 
 const accountModalLoading = ref(false);
@@ -328,7 +412,6 @@ const budgetTips = computed(() => {
   const clientValue = client.value;
   const adLevelValue = action.value.adLevel;
   const paramsBudgetTypeValue = paramsBudgetType.value;
-  console.log("object");
   const isGoogleCampaign =
     clientValue === ClientType.Google &&
     adLevelValue === AdLevelTypeGoogle.Campaign;
@@ -345,7 +428,9 @@ const budgetTips = computed(() => {
     paramsBudgetTypeValue === BudgetType.DailyBudget ? "日預算" : "總預算";
   const clientAndAdLevel = `${ClientType[clientValue]}${adLevelOption.value[adLevelValue]}`;
   const msg = show
-    ? `若${t(clientAndAdLevel)}設定為${budgetType}，則不會變更`
+    ? `若${t(clientAndAdLevel)}設定為${
+        paramsBudgetTypeValue !== unSelected ? budgetType : ""
+      }，則不會變更`
     : "";
 
   return { show, msg };
@@ -420,17 +505,24 @@ const budgetTips = computed(() => {
         </label>
       </div>
       <div
-        class="flex flex-col"
+        class="flex flex-col my-2"
         v-if="targetType === EventActionTargetType.ForID"
       >
-        <label class="flex items-center gap-2">
+        <label class="flex items-center gap-2 relative">
           <span class="p4-b">指定目標</span>
           <div
-            class="p4-r px-1.5 py-0.5 text-true-blue-2 rounded bg-true-blue-5 flex w-fit cursor-pointer hover:bg-true-blue-4"
+            class="p4-r px-1.5 py-0.5 text-true-blue-2 rounded bg-true-blue-5 flex w-fit cursor-pointer hover:bg-true-blue-4 z-[2]"
             @click="showAccountModal"
           >
             編輯
           </div>
+          <input
+            v-if="action?.target"
+            type="text"
+            class="opacity-0 absolute left-0 top-0"
+            required
+            :value="action?.target.length ? '123' : ''"
+          />
         </label>
         <div v-if="targetType === EventActionTargetType.ForID">
           <span
@@ -444,49 +536,39 @@ const budgetTips = computed(() => {
       <!-- 選擇帳號彈窗 -->
       <Teleport to="#editor-container" v-if="accountModalLoading">
         <div
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center items-center bg-dark-3 rounded bg-opacity-50 z-[2]"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center bg-dark-3 rounded bg-opacity-50 z-[2]"
           v-if="addAccountModal"
         >
           <div
-            class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4 min-h-[300px] h-fit"
+            class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4 max-h-[90%] flex flex-col"
           >
-            <div
-              class="absolute top-1 right-2 cursor-pointer"
-              @click="addAccountModal = false"
-            >
-              X
-            </div>
             <span class="p1-b flex justify-center mb-1">請選擇目標</span>
             <TextInput v-model="accountFilterText" />
             <div
-              class="mt-2 flex w-full justify-end p4-b text-true-blue-3"
+              class="mt-2 flex w-fit ml-auto justify-end p4-b text-true-blue-3 cursor-pointer"
               @click="selectAllAccount"
             >
               全選
             </div>
-            <div class="flex flex-col gap-2 mt-2">
-              <div
-                class="border border-dark-5 rounded py-1 px-3 flex gap-1 hover:border-transparent hover:bg-true-blue-5 cursor-pointer"
-                v-for="account in accountList"
-                :key="account.id"
-                @click="addAccount(account)"
-              >
-                <div class="flex flex-col flex-1">
-                  <span class="p3-b">{{ account.id }}</span>
-                  <span class="p4-r">{{ account.name }}</span>
-                </div>
-                <div
-                  class="rounded h-3 w-3 border"
-                  :class="[
-                    action.target
-                      ? action?.target.find((ac) => ac.id === account.id)
-                        ? 'bg-red-1'
-                        : ''
-                      : '',
-                  ]"
-                ></div>
+            <div v-if="getAccountLoading">loading...</div>
+            <template v-else>
+              <div class="flex flex-col gap-2 mt-2 flex-1 overflow-y-auto">
+                <EventActionTargetItem
+                  v-for="target in filterAccountList"
+                  :key="target.id"
+                  :target="target"
+                  :targets="action?.target"
+                />
               </div>
-            </div>
+              <div class="flex gap-3 items-center justify-center mt-4">
+                <div
+                  class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 px-1.5 py-0.5 text-light-5 hover:bg-true-blue-1"
+                  @click="addAccountModal = false"
+                >
+                  確定
+                </div>
+              </div>
+            </template>
           </div>
         </div>
       </Teleport>
@@ -512,7 +594,13 @@ const budgetTips = computed(() => {
           v-if="adLevel != unSelected"
         >
           <!-- 新預算 -->
-          <template v-if="action.action == ActionType.SetNewBudget">
+          <template
+            v-if="
+              action.action == ActionType.SetNewBudget ||
+              action.action == ActionType.IncreaseBudget ||
+              action.action == ActionType.LowerBudget
+            "
+          >
             <label class="flex items-center gap-2">
               <span class="p4-b">類型</span>
               <select
@@ -528,7 +616,11 @@ const budgetTips = computed(() => {
                   </option>
                 </template>
               </select>
+              <span v-if="budgetTips.show" class="p4-r">
+                {{ budgetTips.msg }}
+              </span>
             </label>
+
             <label
               class="flex items-center gap-2"
               v-if="paramsBudgetType != unSelected"
@@ -548,6 +640,7 @@ const budgetTips = computed(() => {
                 </template>
               </select>
             </label>
+
             <label
               class="flex items-center gap-2"
               v-if="paramsValueType != unSelected"
@@ -561,153 +654,36 @@ const budgetTips = computed(() => {
                 action.params.valueType === ValueType.Percentage ? "%" : "元"
               }}</span>
             </label>
-          </template>
-          <!-- 提升預算 -->
-          <template v-else-if="action.action == ActionType.IncreaseBudget">
-            <label class="flex items-center gap-2">
-              <span class="p4-b">類型</span>
-              <select
-                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-                v-model="paramsBudgetType"
-                @change="setParamsBudgetType"
-                required
+            <template
+              v-if="
+                action.action == ActionType.IncreaseBudget ||
+                action.action == ActionType.LowerBudget
+              "
+            >
+              <label
+                class="flex items-center gap-2 w-full"
+                v-if="action.params.valueType === ValueType.Percentage"
               >
-                <option value="" disabled>請選擇</option>
-                <template v-for="(value, key) in BudgetType" :key="key">
-                  <option v-if="!Number.isInteger(value)" :value="value">
-                    {{ t(value) }}
-                  </option>
-                </template>
-              </select>
-            </label>
-            <label
-              class="flex items-center gap-2"
-              v-if="paramsBudgetType != unSelected"
-            >
-              <span class="p4-b">調整</span>
-              <select
-                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-                v-model="paramsValueType"
-                @change="setParamsValueType"
-                required
-              >
-                <option value="" disabled>請選擇</option>
-                <template v-for="(value, key) in valueTypeOption" :key="key">
-                  <option :value="value">
-                    {{ t(`action${value}`) }}
-                  </option>
-                </template>
-              </select>
-            </label>
-            <label
-              class="flex items-center gap-2"
-              v-if="paramsValueType != unSelected"
-            >
-              <TextInput
-                v-model="action.params.value"
-                :type="'number'"
-                :required="true"
-              />
-              <span>{{
-                action.params.valueType === ValueType.Percentage ? "%" : "元"
-              }}</span>
-            </label>
-            <label
-              class="flex items-center gap-2 w-full"
-              v-if="action.params.valueType === ValueType.Percentage"
-            >
-              <div class="flex flex-col gap-2">
-                <div class="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    v-model="hasLimitBudget"
-                    id="maxBudget"
-                  />
-                  <label for="maxBudget">設定預算上限</label>
-                  <div class="flex gap-2 items-center" v-if="hasLimitBudget">
-                    <TextInput
-                      v-model="action.params.limit"
-                      :type="'number'"
-                      :required="true"
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      v-model="hasLimitBudget"
+                      id="maxBudget"
                     />
-                    <span>元</span>
+                    <label for="maxBudget">設定預算上限</label>
+                    <div class="flex gap-2 items-center" v-if="hasLimitBudget">
+                      <TextInput
+                        v-model="action.params.limit"
+                        :type="'number'"
+                        :required="true"
+                      />
+                      <span>元</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </label>
-          </template>
-          <!-- 降低預算 -->
-          <template v-else-if="action.action == ActionType.LowerBudget">
-            <label class="flex items-center gap-2">
-              <span class="p4-b">類型</span>
-              <select
-                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-                v-model="paramsBudgetType"
-                @change="setParamsBudgetType"
-                required
-              >
-                <option value="" disabled>請選擇</option>
-                <template v-for="(value, key) in BudgetType" :key="key">
-                  <option v-if="!Number.isInteger(value)" :value="value">
-                    {{ t(value) }}
-                  </option>
-                </template>
-              </select>
-            </label>
-            <label
-              class="flex items-center gap-2"
-              v-if="paramsBudgetType != unSelected"
-            >
-              <span class="p4-b">調整</span>
-              <select
-                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-                v-model="paramsValueType"
-                @change="setParamsValueType"
-              >
-                <option value="" disabled>請選擇</option>
-                <template v-for="(value, key) in valueTypeOption" :key="key">
-                  <option :value="value">
-                    {{ t(`action${value}`) }}
-                  </option>
-                </template>
-              </select>
-            </label>
-            <label
-              class="flex items-center gap-2"
-              v-if="paramsValueType != unSelected"
-            >
-              <TextInput
-                v-model="action.params.value"
-                :type="'number'"
-                :required="true"
-              />
-              <span>{{
-                action.params.valueType === ValueType.Percentage ? "%" : "元"
-              }}</span>
-            </label>
-            <div
-              class="flex items-center gap-2 w-full"
-              v-if="action.params.valueType === ValueType.Percentage"
-            >
-              <div class="flex flex-col gap-2">
-                <div class="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    v-model="hasLimitBudget"
-                    id="maxBudget"
-                  />
-                  <label for="maxBudget" class="p3-b">設定預算下限</label>
-                  <div class="flex gap-2 items-center" v-if="hasLimitBudget">
-                    <TextInput
-                      v-model="action.params.limit"
-                      :type="'number'"
-                      :required="true"
-                    />
-                    <span>元</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </label>
+            </template>
           </template>
         </div>
       </div>

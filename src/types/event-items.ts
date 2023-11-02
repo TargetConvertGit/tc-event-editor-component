@@ -106,20 +106,20 @@ export type AdLevelType = AdLevelTypeGoogle | AdLevelTypeFacebook;
  * Google 層級
  */
 export enum AdLevelTypeGoogle {
-  Campaign = 1,
-  AdGroup = 2,
-  Ad = 3,
-  AdTag = 4,
+  Campaign = 2,
+  AdGroup = 3,
+  Ad = 4,
+  AdTag = 5,
 }
 
 /**
  * Facebook 層級
  */
 export enum AdLevelTypeFacebook {
-  Campaign = 1,
-  AdGroup = 2,
-  Ad = 3,
-  AdTag = 4,
+  Campaign = 2,
+  AdGroup = 3,
+  Ad = 4,
+  AdTag = 5,
 }
 
 /**

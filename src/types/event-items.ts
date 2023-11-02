@@ -100,9 +100,9 @@ export interface EventNotify {
  * Email通知
  */
 export enum EmailNotify {
-  None = -1,
-  All = 1,
-  Error = 2
+  None = -1,  // 不寄送
+  All = 1,    // 僅執行動作或錯誤時
+  Error = 2   //僅出現錯誤時
 }
 
 /**

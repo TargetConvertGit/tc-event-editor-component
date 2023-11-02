@@ -43,6 +43,7 @@ export interface EventItem {
   action?: EventAction; // 執行動作
   conditions?: EventCondition[]; // 條件
   notify: EventNotify; // 通知
+  lasttime_at: string // 上次執行時間
 }
 
 /**

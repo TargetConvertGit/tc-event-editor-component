@@ -273,18 +273,14 @@ const setParamsValueType = (v) =>
 const addAccountModal = ref(false);
 // 新增目標
 const addAccount = (account) => {
-  console.log(account);
   if (!action.value?.target) action.value.target = [];
 
   const existingIndex = action.value.target.findIndex(
-    (item) => item.id === account.id
+    (item) => item === account.id
   );
 
   if (existingIndex === -1) {
-    action.value.target.push({
-      id: account.id,
-      name: account.name,
-    });
+    action.value.target.push(account.id);
   } else {
     action.value.target.splice(existingIndex, 1);
   }
@@ -382,7 +378,7 @@ const selectAllAccount = () => {
       if (item.children && item.children.length > 0) {
         selectAll(item.children);
       } else {
-        action.value.target.push(item);
+        action.value.target.push(item.id);
       }
     }
   };
@@ -525,12 +521,11 @@ const budgetTips = computed(() => {
           />
         </label>
         <div v-if="targetType === EventActionTargetType.ForID">
-          <span
-            class="p4-r text-true-blue-3 px-0.5"
-            v-for="(acc, i) in action.target"
-            :key="acc.id"
-            >{{ acc.name }}{{ i !== action.target.length - 1 ? "," : "" }}</span
-          >
+          <span class="p4-r text-true-blue-3 px-0.5">{{
+            action.target && action.target.length
+              ? `已選${action.target.length}個目標`
+              : "尚未選擇目標"
+          }}</span>
         </div>
       </div>
       <!-- 選擇帳號彈窗 -->
@@ -557,7 +552,7 @@ const budgetTips = computed(() => {
                   v-for="target in filterAccountList"
                   :key="target.id"
                   :target="target"
-                  :targets="action?.target"
+                  :targets="action?.target ?? []"
                 />
               </div>
               <div class="flex gap-3 items-center justify-center mt-4">

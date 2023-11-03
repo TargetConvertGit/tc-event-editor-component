@@ -140,7 +140,7 @@ defineExpose({
 <template>
   <form
     v-if="props.data"
-    class="flex flex-col gap-5 relative"
+    class="flex flex-col gap-5 relative p-5"
     id="editor-container"
     @submit.prevent="save"
   >
@@ -171,7 +171,7 @@ defineExpose({
     <span v-if="checkDataValid.length" class="text-red-1">資料未填寫完整</span>
     <button
       ref="submitBtn"
-      class="p-2 px-3 rounded bg-slate-100 hover:bg-sky-500 hover:text-white"
+      class="p-2 px-3 rounded bg-slate-100 hover:bg-sky-500 hover:text-white hidden"
     >
       保存
     </button>

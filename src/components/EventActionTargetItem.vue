@@ -33,7 +33,7 @@ const expend = ref(true);
           weight="bold"
           class="opacity-0 text-dark-2"
           :class="{
-            ' opacity-100': targets.find((ac) => ac.id === target.id),
+            ' opacity-100': targets.find((ac) => ac === target.id),
           }"
         />
       </div>

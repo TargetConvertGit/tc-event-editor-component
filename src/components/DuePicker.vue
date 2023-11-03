@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
+import moment from "moment";
 
 export interface Props {
   modelValue: string | null | Date | undefined;
@@ -54,7 +55,11 @@ onUnmounted(() => {
             class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
             @click="togglePopover"
           >
-            {{ inputValue ? inputValue : "請選定結束日期" }}
+            {{
+              inputValue
+                ? moment.utc(inputValue).local().format("YYYY-MM-DD HH:mm")
+                : "請選定結束日期"
+            }}
           </button>
         </template>
       </DatePicker>

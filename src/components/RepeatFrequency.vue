@@ -6,6 +6,7 @@ import TextInput from "./TextInput.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
 import { i18n } from "../i18n";
+import moment from "moment";
 const { t } = i18n.global;
 interface Props {
   frequency?: FrequencyType;
@@ -125,7 +126,7 @@ watch(
         <DatePicker
           v-model="eventData.start"
           mode="dateTime"
-          :timezone="'UTC'"
+          timezone="UTC"
           :min-Date="new Date()"
           is-required
           is24hr
@@ -140,7 +141,14 @@ watch(
                 required
                 class="opacity-0 absolute w-full h-full pointer-events-none"
               />
-              {{ inputValue ? inputValue : "請選定執行日期" }}
+              {{
+                inputValue
+                  ? moment
+                      .utc(inputValue, "YYYY-MM-DD HH:mm")
+                      .local()
+                      .format("YYYY-MM-DD HH:mm")
+                  : "請選定執行日期"
+              }}
             </button>
           </template>
         </DatePicker>

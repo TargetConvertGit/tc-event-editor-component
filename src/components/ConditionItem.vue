@@ -6,6 +6,7 @@ import "v-calendar/style.css";
 import axios from "axios";
 import { getApiUrlBase, getToken } from "../apiConfig";
 import EventActionTargetItem from "./EventActionTargetItem.vue";
+import moment from "moment";
 
 import {
   EventCondition,
@@ -376,6 +377,14 @@ const comparisonDateLabel = computed(() => {
   };
   return dateRangeTypeLabel[dateRangeType.value];
 });
+
+watch(
+  condition,
+  (val) => {
+    console.log(val.dateRange);
+  },
+  { deep: true }
+);
 </script>
 
 <template>
@@ -548,11 +557,7 @@ const comparisonDateLabel = computed(() => {
             {{ comparisonDateLabel }}
           </div>
           <div v-if="dateRangeType == DateRangeType.SpecifiedTime">
-            <DatePicker
-              v-model.range="condition.dateRange"
-              mode="date"
-              is-required
-            >
+            <DatePicker v-model.range="condition.dateRange">
               <template #default="{ togglePopover, inputValue }">
                 <button
                   class="p3-b flex relative cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
@@ -566,7 +571,13 @@ const comparisonDateLabel = computed(() => {
 
                   {{
                     inputValue.start && inputValue.end
-                      ? `${inputValue.start}-${inputValue.end}`
+                      ? `${moment
+                          .utc(inputValue.start)
+                          .local()
+                          .format("YYYY-MM-DD")}-${moment
+                          .utc(inputValue.end)
+                          .local()
+                          .format("YYYY-MM-DD")}`
                       : "請選定區間"
                   }}
                 </button>

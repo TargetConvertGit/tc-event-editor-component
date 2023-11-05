@@ -408,6 +408,7 @@ const budgetTips = computed(() => {
   const clientValue = client.value;
   const adLevelValue = action.value.adLevel;
   const paramsBudgetTypeValue = paramsBudgetType.value;
+  if (paramsBudgetTypeValue === "") return { show: false };
   const isGoogleCampaign =
     clientValue === ClientType.Google &&
     adLevelValue === AdLevelTypeGoogle.Campaign;

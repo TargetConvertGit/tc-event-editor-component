@@ -126,7 +126,6 @@ watch(
         <DatePicker
           v-model="eventData.start"
           mode="dateTime"
-          timezone="UTC"
           :min-Date="new Date()"
           is-required
           is24hr
@@ -141,14 +140,7 @@ watch(
                 required
                 class="opacity-0 absolute w-full h-full pointer-events-none"
               />
-              {{
-                inputValue
-                  ? moment
-                      .utc(inputValue, "YYYY-MM-DD HH:mm")
-                      .local()
-                      .format("YYYY-MM-DD HH:mm")
-                  : "請選定執行日期"
-              }}
+              {{ inputValue ? inputValue : "請選定執行日期" }}
             </button>
           </template>
         </DatePicker>

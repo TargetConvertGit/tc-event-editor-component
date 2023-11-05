@@ -1,3 +1,9 @@
+import {
+  FrequencyType,
+  WeekdaysType,
+  WeekOrdinalWordsType,
+} from "./types/event-items";
+
 const dt = {
   every: "每",
 
@@ -22,7 +28,7 @@ const dt = {
     Weekend: "週末",
   },
 
-  week_ordinal: {
+  weekOrdinal: {
     First: "第一週",
     Second: "第二週",
     Third: "第三週",
@@ -33,46 +39,50 @@ const dt = {
 };
 
 export function getDescription(event) {
-  const startDate = event.start;
-  const endDate = event.due ? event.due : null;
+  const startDate = new Date(event.start).toLocaleString("zh-TW", {
+    hour12: false,
+  });
+  const endDate = event.due
+    ? new Date(event.due).toLocaleString("zh-TW", { hour12: false })
+    : null;
+  if (event.frequency === FrequencyType.Never) return `於 ${startDate} 起`;
 
-  if (event.frequency === "Never") return `於 ${startDate} 執行`;
-
-  const frequencyText = dt.frequency[event.frequency];
+  const frequencyText = dt.frequency[FrequencyType[event.frequency]];
 
   const weekdaysText = event.weekdays
-    ? event.weekdays.map((day) => dt.weekdays[day]).join("、")
+    ? event.weekdays.map((day) => dt.weekdays[WeekdaysType[day]]).join("、")
     : "";
   const weekOrdinalText = event.weekOrdinal
-    ? event.week_ordinal.map((ord) => dt.week_ordinal[ord]).join("、")
+    ? event.weekOrdinal
+        .map((ord) => dt.weekOrdinal[WeekOrdinalWordsType[ord]])
+        .join("、")
     : "";
   const monthDateText = event.monthDate
-    ? `第${event.month_date.join("、")}天`
+    ? `第${event.monthDate.join("、")}號`.replace("-1", "最後一天")
     : "";
   const yearMonthsText = event.yearMonths
-    ? `第${event.year_months.reverse().join("、")}個月`
+    ? `第${event.yearMonths.reverse().join("、")}個月`
     : "";
-  let description = `從 ${startDate} 開始，${dt.every}${event.interval}${frequencyText}`;
-
+  // let description = `${dt.every}${event.interval}${frequencyText}`;
+  let description = `於 ${startDate} 起，${dt.every}${event.interval}${frequencyText}`;
   if (weekOrdinalText || weekdaysText || monthDateText || yearMonthsText) {
     description += "的";
     const parts = [];
-    if (weekOrdinalText) {
-      parts.push(`${weekOrdinalText}的`);
-    }
-    if (weekdaysText) {
-      parts.push(weekdaysText);
-    }
     if (yearMonthsText) {
       parts.push(`${yearMonthsText}的`);
     }
     if (monthDateText) {
       parts.push(monthDateText);
     }
+    if (weekOrdinalText) {
+      parts.push(`${weekOrdinalText}的`);
+    }
+    if (weekdaysText) {
+      parts.push(weekdaysText);
+    }
+
     description += parts.join("");
   }
-
-  description += "各執行一次";
 
   if (endDate) {
     description += `，並於 ${endDate} 結束循環`;
@@ -80,17 +90,3 @@ export function getDescription(event) {
 
   return description;
 }
-
-// 示例事件物件
-const event = {
-  start: "2023-09-03 09:04:11",
-  frequency: "Day",
-  interval: 4,
-  weekdays: null,
-  week_ordinal: null,
-  month_date: null,
-  year_months: null,
-  due: "2023-12-10 22:41:35",
-};
-
-console.log(getDescription(event));

@@ -8,6 +8,9 @@ import OuterBlock from "./OuterBlock.vue";
 import Notification from "./Notification.vue";
 
 import { getDescription } from "../description.js";
+import { getActionDescription } from "../action.js";
+import { getNotifyDescription } from "../notify.js";
+
 interface Props {
   data?: string;
 }
@@ -119,7 +122,9 @@ const save = (e) => {
   // console.log(errors);
   emit("update:data", formatData(json.value));
 
-  // console.log(getDescription(json.value));
+  console.log(getDescription(json.value));
+  // console.log(getActionDescription(json.value?.action));
+  // console.log(getNotifyDescription(json.value.notify));
 };
 
 const saveData = (e) => {

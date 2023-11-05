@@ -15,7 +15,7 @@ watch(
   (val: number) => {
     eventData.value.notify = val;
   },
-  { deep: true }
+  { deep: true, immediate: true }
 );
 </script>
 

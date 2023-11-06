@@ -114,7 +114,7 @@ defineExpose({
 <template>
   <form
     v-if="props.data"
-    class="flex flex-col gap-5 relative p-5"
+    class="flex flex-col gap-5 relative p-5 h-fit"
     id="editor-container"
     @submit.prevent="save"
   >

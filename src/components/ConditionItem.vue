@@ -389,7 +389,7 @@ const comparisonDateLabel = computed(() => {
 
       <div class="flex items-center gap-2">
         <label class="flex items-center gap-2">
-          <span class="p3-b">平台</span>
+          <span class="p4-b">平台</span>
           <select
             class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="client"
@@ -405,7 +405,7 @@ const comparisonDateLabel = computed(() => {
           </select>
         </label>
         <label class="flex items-center gap-2" v-if="client != unSelected">
-          <span class="p3-b">層級</span>
+          <span class="p4-b">層級</span>
           <select
             class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="adLevel"
@@ -469,7 +469,7 @@ const comparisonDateLabel = computed(() => {
       <!-- 選擇帳號彈窗 -->
       <Teleport to="#editor-container" v-if="accountModalLoading">
         <div
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center bg-dark-3 rounded bg-opacity-50 z-[2]"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center bg-dark-3 bg-opacity-50 z-[2]"
           v-if="addAccountModal"
         >
           <div
@@ -607,7 +607,7 @@ const comparisonDateLabel = computed(() => {
             :type="'number'"
             :required="true"
           />
-          <span>{{
+          <span class="p4-b">{{
             condition.valueType === ValueType.Percentage ? "%" : "元"
           }}</span>
         </div>

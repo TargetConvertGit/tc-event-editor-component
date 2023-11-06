@@ -24,6 +24,19 @@ const addCondition = () => {
   conditions.value.push({});
   addConditionModal.value = false;
 };
+// 範例條件
+const selectDemoCondition = async (id: number) => {
+  const res = await axios({
+    method: "get",
+    url: `${getApiUrlBase()}/heybear/api/automation/ad-events/template/${id}`,
+    withCredentials: true,
+    headers: {
+      Authorization: getToken(),
+    },
+  });
+  conditions.value.push(res.data.data);
+  addConditionModal.value = false;
+};
 // 刪除條件
 const removeItem = (index: number) => {
   conditions.value.splice(index, 1);
@@ -35,7 +48,7 @@ const getDemoCondition = async () => {
   const res = await axios({
     method: "get",
     url: `${getApiUrlBase()}/heybear/api/automation/template`,
-    data: { type: 2 },
+    params: { type: 2 },
     withCredentials: true,
     headers: {
       Authorization: getToken(),
@@ -82,28 +95,38 @@ const showConditionModal = async () => {
     + 加入條件
   </div>
   <div
-    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center items-center bg-dark-3 rounded bg-opacity-50 z-[2]"
+    class="absolute top-0 left-0 pt-4 right-0 bottom-0 w-full h-full flex justify-center bg-dark-3 bg-opacity-50 z-[2]"
     v-if="addConditionModal"
   >
-    <div class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4">
+    <div
+      class="sticky flex flex-col max-h-[80%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4"
+    >
       <span class="p1-b flex justify-center mb-1">請選擇條件</span>
       <TextInput
         :placeholder="'輸入關鍵字搜尋 ex: 轉換數'"
         v-model="demoConditionFilterText"
       />
-      <div class="flex flex-col gap-2 mt-2">
-        <div
-          class="border border-dark-5 rounded items-center py-1 px-3 flex gap-1 hover:bg-true-blue-5 cursor-pointer"
-          v-for="condition in demoCondition"
-          :key="condition.id"
-        >
-          <div class="flex flex-col flex-1">
-            <span class="p3-b">{{ condition.title }}</span>
-            <span class="p4-r text-dark-4">{{ condition.description }}</span>
+      <div v-if="getAccountLoading">loading...</div>
+      <template v-else>
+        <div class="flex flex-col gap-2 mt-2 overflow-y-auto flex-1">
+          <div
+            class="border border-dark-5 rounded items-center py-1 px-3 flex gap-1 hover:bg-true-blue-5 cursor-pointer"
+            v-for="condition in demoCondition"
+            :key="condition.id"
+            @click="selectDemoCondition(condition.id)"
+          >
+            <div class="flex flex-col flex-1">
+              <span class="p3-b">{{ condition.title }}</span>
+              <span class="p4-r text-dark-4">{{ condition.description }}</span>
+            </div>
+            <ph-caret-circle-right
+              :size="18"
+              class="text-dark-3"
+              weight="bold"
+            />
           </div>
-          <ph-caret-circle-right :size="18" class="text-dark-3" weight="bold" />
         </div>
-      </div>
+      </template>
       <div
         class="border ml-auto mt-2 border-true-blue-3 text-true-blue-3 rounded px-1 w-fit p3-r cursor-pointer hover:text-true-blue-2 hover:border-true-blue-2"
         @click="addCondition"

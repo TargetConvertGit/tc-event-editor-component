@@ -528,11 +528,11 @@ const budgetTips = computed(() => {
       <!-- 選擇帳號彈窗 -->
       <Teleport to="#editor-container" v-if="accountModalLoading">
         <div
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex justify-center bg-dark-3 rounded bg-opacity-50 z-[2]"
+          class="absolute top-0 left-0 pt-4 right-0 bottom-0 w-full h-full flex justify-center bg-dark-3 bg-opacity-50 z-[2]"
           v-if="addAccountModal"
         >
           <div
-            class="relative bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4 max-h-[90%] flex flex-col"
+            class="sticky flex flex-col max-h-[80%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4"
           >
             <span class="p1-b flex justify-center mb-1">請選擇目標</span>
             <TextInput v-model="accountFilterText" />
@@ -552,15 +552,15 @@ const budgetTips = computed(() => {
                   :targets="action?.target ?? []"
                 />
               </div>
-              <div class="flex gap-3 items-center justify-center mt-4">
-                <div
-                  class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 px-1.5 py-0.5 text-light-5 hover:bg-true-blue-1"
-                  @click="addAccountModal = false"
-                >
-                  確定
-                </div>
-              </div>
             </template>
+            <div class="flex gap-3 items-center justify-center mt-4">
+              <div
+                class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 px-1.5 py-0.5 text-light-5 hover:bg-true-blue-1"
+                @click="addAccountModal = false"
+              >
+                確定
+              </div>
+            </div>
           </div>
         </div>
       </Teleport>
@@ -639,7 +639,7 @@ const budgetTips = computed(() => {
                 :type="'number'"
                 :required="true"
               />
-              <span>{{
+              <span class="p4-b">{{
                 action.params.valueType === ValueType.Percentage ? "%" : "元"
               }}</span>
             </label>

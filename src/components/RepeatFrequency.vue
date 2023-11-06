@@ -6,7 +6,6 @@ import TextInput from "./TextInput.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
 import { i18n } from "../i18n";
-import moment from "moment";
 const { t } = i18n.global;
 interface Props {
   frequency?: FrequencyType;
@@ -127,11 +126,11 @@ watch(
           v-model="eventData.start"
           mode="dateTime"
           :min-Date="new Date()"
-          is-required
           is24hr
+          :timezone="Intl.DateTimeFormat().resolvedOptions().timeZone"
         >
           <template #default="{ togglePopover, inputValue }">
-            <button
+            <div
               class="p3-b flex w-fit cursor-pointer relative items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
               @click="togglePopover"
             >
@@ -141,7 +140,7 @@ watch(
                 class="opacity-0 absolute w-full h-full pointer-events-none"
               />
               {{ inputValue ? inputValue : "請選定執行日期" }}
-            </button>
+            </div>
           </template>
         </DatePicker>
       </div>

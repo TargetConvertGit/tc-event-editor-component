@@ -81,53 +81,21 @@ const checkData = (
   return { checkedData, errors };
 };
 
-const rules: FieldCheckRule[] = [
-  { name: "title", type: "string" },
-  {
-    name: "start",
-    type: "string",
-  },
-  { name: "frequency", type: "number" },
-  { name: "interval", type: "number" },
-  {
-    name: "notification",
-    child: [{ name: "email", type: "number" }],
-  },
-  // {
-  //   name: "action",
-  //   child: [
-  //     { name: "client", type: "number" },
-  //     { name: "adLevel", type: "number" },
-  //     { name: "targetType", type: "number" },
-  //     { name: "action", type: "number" },
-  //   ],
-  // },
-  // {
-  //   name: "conditions",
-  //   child: [
-  //     { name: "client", type: "number" },
-  //     { name: "adLevel", type: "number" },
-  //     { name: "action", type: "number" },
-  //     { name: "target", type: "array" },
-  //   ],
-  // },
-];
-
 // const save = () => emit("update:data", formatData(checkData(json.value)));
 const checkDataValid = ref([]);
 const save = (e) => {
   e.preventDefault();
-  // const { checkedData, errors } = checkData(json.value, rules);
-  // checkDataValid.value = errors;
-  // console.log(errors);
   emit("update:data", formatData(json.value));
-
-  console.log(getDescription(json.value));
-  // console.log(getActionDescription(json.value?.action));
-  // console.log(getNotifyDescription(json.value.notify));
 };
 
-const saveData = (e) => {
+const saveData = () => {
+  for (const el of document
+    .getElementById("editor-container")
+    .querySelectorAll("[required]")) {
+    if (!el.reportValidity()) {
+      return;
+    }
+  }
   submitBtn.value?.click();
 };
 provide("eventData", json);

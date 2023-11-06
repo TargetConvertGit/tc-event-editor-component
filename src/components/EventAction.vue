@@ -299,10 +299,7 @@ const getAccountList = async () => {
       Authorization: getToken(),
     },
   });
-  // console.log(targets.data.data);
-  for (const item of targets.data.data) {
-    console.log(item);
-  }
+
   allAccountList.value = targets.data.data;
 };
 
@@ -514,11 +511,10 @@ const budgetTips = computed(() => {
             編輯
           </div>
           <input
-            v-if="action?.target"
             type="text"
             class="opacity-0 absolute left-0 top-0"
             required
-            :value="action?.target.length ? '123' : ''"
+            :value="action?.target ? (action?.target.length ? '123' : '') : ''"
           />
         </label>
         <div v-if="targetType === EventActionTargetType.ForID">

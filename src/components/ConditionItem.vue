@@ -245,7 +245,6 @@ const getAccountList = async () => {
       Authorization: getToken(),
     },
   });
-  console.log(targets.data.data);
   allAccountList.value = targets.data.data;
 };
 const filterAccountList = computed(() => {
@@ -377,14 +376,6 @@ const comparisonDateLabel = computed(() => {
   };
   return dateRangeTypeLabel[dateRangeType.value];
 });
-
-watch(
-  condition,
-  (val) => {
-    console.log(val.dateRange);
-  },
-  { deep: true }
-);
 </script>
 
 <template>
@@ -557,9 +548,12 @@ watch(
             {{ comparisonDateLabel }}
           </div>
           <div v-if="dateRangeType == DateRangeType.SpecifiedTime">
-            <DatePicker v-model.range="condition.dateRange">
+            <DatePicker
+              v-model.range="condition.dateRange"
+              :timezone="Intl.DateTimeFormat().resolvedOptions().timeZone"
+            >
               <template #default="{ togglePopover, inputValue }">
-                <button
+                <div
                   class="p3-b flex relative cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
                   @click="togglePopover"
                 >
@@ -571,16 +565,10 @@ watch(
 
                   {{
                     inputValue.start && inputValue.end
-                      ? `${moment
-                          .utc(inputValue.start)
-                          .local()
-                          .format("YYYY-MM-DD")}-${moment
-                          .utc(inputValue.end)
-                          .local()
-                          .format("YYYY-MM-DD")}`
+                      ? `${inputValue.start}-${inputValue.end}`
                       : "請選定區間"
                   }}
-                </button>
+                </div>
               </template>
             </DatePicker>
           </div>

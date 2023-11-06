@@ -3,7 +3,7 @@ declare const _default: import("vue").DefineComponent<{
         type: globalThis.PropType<string>;
     };
 }, {
-    saveData: (e: any) => void;
+    saveData: () => void;
 }, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, "update:data"[], "update:data", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     data: {
         type: globalThis.PropType<string>;

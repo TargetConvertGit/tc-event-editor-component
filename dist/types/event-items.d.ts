@@ -33,7 +33,7 @@ export interface EventItem {
     action?: EventAction;
     conditions?: EventCondition[];
     notify: EventNotify;
-    lasttime_at: string;
+    lastTimeAt: string;
 }
 /**
  * 執行動作

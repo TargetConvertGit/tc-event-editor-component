@@ -106,7 +106,7 @@ const showConditionModal = async () => {
         :placeholder="'輸入關鍵字搜尋 ex: 轉換數'"
         v-model="demoConditionFilterText"
       />
-      <div v-if="getAccountLoading">loading...</div>
+      <div v-if="getDemoConditionLoading">loading...</div>
       <template v-else>
         <div class="flex flex-col gap-2 mt-2 overflow-y-auto flex-1">
           <div

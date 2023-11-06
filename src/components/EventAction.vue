@@ -581,10 +581,7 @@ const budgetTips = computed(() => {
             </template>
           </select>
         </label>
-        <div
-          class="flex gap-x-2 gap-y-3 flex-wrap"
-          v-if="adLevel != unSelected"
-        >
+        <div class="flex gap-2 flex-wrap" v-if="adLevel != unSelected">
           <!-- 新預算 -->
           <template
             v-if="

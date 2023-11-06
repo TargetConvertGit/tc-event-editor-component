@@ -12807,7 +12807,7 @@ const Zo = Qe, KI = ["width", "height", "fill", "transform"], qI = { key: 0 }, Z
   disabled: ""
 }, "請選擇", -1), uS = ["value"], cS = {
   key: 0,
-  class: "flex gap-x-2 gap-y-3 flex-wrap"
+  class: "flex gap-2 flex-wrap"
 }, dS = { class: "flex items-center gap-2" }, fS = /* @__PURE__ */ O("span", { class: "p4-b" }, "類型", -1), vS = /* @__PURE__ */ O("option", {
   value: "",
   disabled: ""

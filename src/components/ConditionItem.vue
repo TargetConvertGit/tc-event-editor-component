@@ -22,13 +22,9 @@ import {
 import { i18n } from "../i18n";
 
 const { t } = i18n.global;
-interface Condition extends EventCondition {
-  adLevel: ConditionAdLevelType;
-  client: ClientType;
-}
 
 interface Props {
-  modelValue: Condition;
+  modelValue: EventCondition;
   index: number | string;
 }
 

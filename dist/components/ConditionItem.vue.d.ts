@@ -1,12 +1,8 @@
 import "v-calendar/style.css";
-import { EventCondition, ClientType, ConditionAdLevelType } from "../types/event-items";
-interface Condition extends EventCondition {
-    adLevel: ConditionAdLevelType;
-    client: ClientType;
-}
+import { EventCondition } from "../types/event-items";
 declare const _default: import("vue").DefineComponent<{
     modelValue: {
-        type: globalThis.PropType<Condition>;
+        type: globalThis.PropType<EventCondition>;
         required: true;
     };
     index: {
@@ -15,7 +11,7 @@ declare const _default: import("vue").DefineComponent<{
     };
 }, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("update:modelValue" | "removeItem")[], "update:modelValue" | "removeItem", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     modelValue: {
-        type: globalThis.PropType<Condition>;
+        type: globalThis.PropType<EventCondition>;
         required: true;
     };
     index: {

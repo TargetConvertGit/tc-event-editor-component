@@ -6,7 +6,6 @@ import "v-calendar/style.css";
 import axios from "axios";
 import { getApiUrlBase, getToken } from "../apiConfig";
 import EventActionTargetItem from "./EventActionTargetItem.vue";
-import moment from "moment";
 
 import {
   EventCondition,
@@ -451,21 +450,20 @@ const comparisonDateLabel = computed(() => {
             編輯
           </div>
           <input
-            v-if="condition?.target"
             type="text"
             class="opacity-0 absolute left-0 top-0"
             required
-            :value="condition?.target.length ? '123' : ''"
+            :value="
+              condition?.target ? (condition?.target.length ? '123' : '') : ''
+            "
           />
         </label>
         <div v-if="targetType === EventActionTargetType.ForID">
-          <span
-            class="p4-r text-true-blue-3 px-0.5"
-            v-for="(acc, i) in condition.target"
-            :key="acc.id"
-            >{{ acc.name
-            }}{{ i !== condition.target.length - 1 ? "," : "" }}</span
-          >
+          <span class="p4-r text-true-blue-3 px-0.5">{{
+            condition.target && condition.target.length
+              ? `已選${condition.target.length}個目標`
+              : "尚未選擇目標"
+          }}</span>
         </div>
       </div>
       <!-- 選擇帳號彈窗 -->

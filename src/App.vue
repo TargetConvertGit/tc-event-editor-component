@@ -91,6 +91,7 @@ setToken("Bearer 7|IMZYBXtkk2b4DXnscSaexanLbcBbjvd7dP5Djj6Q");
 
 const submit = () => {
   editor?.value.saveData();
+  console.log("123");
 };
 </script>
 

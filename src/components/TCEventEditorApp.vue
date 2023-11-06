@@ -93,6 +93,7 @@ const saveData = () => {
     .getElementById("editor-container")
     .querySelectorAll("[required]")) {
     if (!el.reportValidity()) {
+      throw new Error("未填寫完畢");
       return;
     }
   }

@@ -32,6 +32,14 @@ watch(frequency, (val) => {
   emit("update:frequency", val);
 });
 
+const startTime = computed({
+  get: () =>
+    eventData.value.start ? new Date(eventData.value.start).toISOString() : "",
+  set: (value) => {
+    eventData.value.start = value;
+  },
+});
+
 //#region 日期相關參數
 const weekdays = computed({
   get: () => eventData.value.weekdays ?? [],
@@ -123,7 +131,7 @@ watch(
       <div class="flex gap-2 items-center">
         <span class="p4-b">開始</span>
         <DatePicker
-          v-model="eventData.start"
+          v-model="startTime"
           mode="dateTime"
           :min-Date="new Date()"
           is24hr

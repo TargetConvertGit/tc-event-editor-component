@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<Props>(), {});
 const emit = defineEmits(["update:modelValue"]);
 
 const localModelValue = computed({
-  get: () => props.modelValue,
+  get: () => (props.modelValue ? new Date(props.modelValue).toISOString() : ""),
   set: (value) => emit("update:modelValue", value),
 });
 

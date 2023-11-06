@@ -535,14 +535,18 @@ const budgetTips = computed(() => {
             class="sticky flex flex-col max-h-[80%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4"
           >
             <span class="p1-b flex justify-center mb-1">請選擇目標</span>
-            <TextInput v-model="accountFilterText" />
+            <TextInput v-model="accountFilterText" :placeholder="'搜尋'" />
             <div
               class="mt-2 flex w-fit ml-auto justify-end p4-b text-true-blue-3 cursor-pointer"
               @click="selectAllAccount"
             >
               全選
             </div>
-            <div v-if="getAccountLoading">loading...</div>
+
+            <div
+              class="h-4 w-4 mx-auto animate-spin rounded-full border-2 border-solid border-blue-400 border-t-transparent"
+              v-if="getAccountLoading"
+            ></div>
             <template v-else>
               <div class="flex flex-col gap-2 mt-2 flex-1 overflow-y-auto">
                 <EventActionTargetItem

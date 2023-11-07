@@ -4,6 +4,7 @@ export interface Props {
     type?: string | number;
     maxLength?: number;
     required?: boolean;
+    inputClass?: string;
 }
 declare const _default: import("vue").DefineComponent<{
     type: {
@@ -22,6 +23,9 @@ declare const _default: import("vue").DefineComponent<{
     maxLength: {
         type: globalThis.PropType<number>;
     };
+    inputClass: {
+        type: globalThis.PropType<string>;
+    };
 }, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, "update:modelValue"[], "update:modelValue", import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     type: {
         type: globalThis.PropType<string | number>;
@@ -38,6 +42,9 @@ declare const _default: import("vue").DefineComponent<{
     };
     maxLength: {
         type: globalThis.PropType<number>;
+    };
+    inputClass: {
+        type: globalThis.PropType<string>;
     };
 }>> & {
     "onUpdate:modelValue"?: ((...args: any[]) => any) | undefined;

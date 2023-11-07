@@ -5,6 +5,7 @@ export interface Props {
   type?: string | number;
   maxLength?: number;
   required?: boolean;
+  inputClass?: string;
 }
 const props = withDefaults(defineProps<Props>(), {
   type: "string",
@@ -28,7 +29,8 @@ function onInput(e: any) {
       :value="modelValue"
       @input="onInput"
       :type="type"
-      class="p3-b w-full border-none outline-none shadow-none placeholder:text-dark-5"
+      :class="inputClass"
+      class="p3-r w-full border-none outline-none shadow-none placeholder:text-dark-5"
       :placeholder="placeholder"
       :maxLength="maxLength"
       :required="required"

@@ -123,13 +123,13 @@ watch(
 
 <template>
   <div class="flex flex-col gap-3">
-    <div class="flex items-center justify-center gap-3 my-2">
+    <!-- <div class="flex items-center justify-center gap-3 my-2">
       <p class="p4-b">日期時間</p>
       <div class="h-[1px] flex-1 bg-light-3"></div>
-    </div>
+    </div> -->
     <div class="flex flex-col gap-2">
       <div class="flex gap-2 items-center">
-        <span class="p4-b">開始</span>
+        <span class="p4-b">開始於</span>
         <DatePicker
           v-model="startTime"
           mode="dateTime"
@@ -139,7 +139,7 @@ watch(
         >
           <template #default="{ togglePopover, inputValue }">
             <div
-              class="p3-b flex w-fit cursor-pointer relative items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
+              class="p4-b text-dark-3 flex w-fit cursor-pointer relative items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
               @click="togglePopover"
             >
               <input
@@ -147,21 +147,21 @@ watch(
                 required
                 class="opacity-0 absolute w-full h-full pointer-events-none"
               />
-              {{ inputValue ? inputValue : "請選定執行日期" }}
+              {{ inputValue ? inputValue : "未設定" }}
             </div>
           </template>
         </DatePicker>
       </div>
     </div>
     <div class="flex items-center justify-center gap-3 w-full my-2">
-      <p class="p4-b">重複頻率</p>
+      <p class="p4-b text-dark-2">執行頻率</p>
       <div class="h-[1px] flex-1 bg-light-3"></div>
     </div>
     <div class="flex space-x-2 items-center">
       <label class="flex items-center gap-2">
         <span class="p4-b">重複</span>
         <select
-          class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+          class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="repeat"
         >
           <template v-for="(value, key) in FrequencyType" :key="key">
@@ -181,7 +181,7 @@ watch(
       <label class="flex items-center gap-2">
         <span class="p4-b">頻率</span>
         <select
-          class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+          class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="frequency"
         >
           <option value="-1" disabled>請選擇</option>
@@ -197,7 +197,12 @@ watch(
       </label>
       <label class="flex items-center gap-2" v-if="frequency != -1">
         <span class="p4-b">每</span>
-        <TextInput class="!w-10 text-center" v-model="interval" type="number" />
+        <TextInput
+          class="!w-10 text-center text-dark-3"
+          :inputClass="'p4-r'"
+          v-model="interval"
+          type="number"
+        />
         <span class="p4-b">{{ t(`s${FrequencyType[frequency]}`) }}</span>
       </label>
     </div>

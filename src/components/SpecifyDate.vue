@@ -314,9 +314,9 @@ onBeforeUnmount(() => {
     />
   </div>
   <div class="flex gap-2 items-center" v-if="showTypeSelector">
-    <span class="p3-r">指定</span>
+    <span class="p4-b">指定</span>
     <select
-      class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+      class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
       v-model="selectType"
     >
       <template v-for="(value, key) in specifyDateType" :key="key">
@@ -327,7 +327,10 @@ onBeforeUnmount(() => {
     </select>
   </div>
 
-  <div class="flex gap-4 flex-wrap">
+  <div
+    class="flex gap-4 flex-wrap border-light-1 border rounded p-2"
+    v-if="options"
+  >
     <div class="flex gap-1 flex-wrap" v-for="option in options" :key="option">
       <Checkbox
         v-for="opt in option.options"

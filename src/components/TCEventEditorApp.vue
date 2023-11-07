@@ -114,16 +114,17 @@ defineExpose({
 <template>
   <form
     v-if="props.data"
-    class="flex flex-col gap-5 relative p-5 h-fit"
+    class="flex flex-col gap-5 relative p-5 h-fit text-dark-1"
     id="editor-container"
     @submit.prevent="save"
   >
     <div class="p1-b">建立自動化規則</div>
     <OuterBlock :title="'基本資料'">
       <div>
-        <span class="p4-b">規則名稱*</span>
+        <span class="p4-b text-dark-1">規則名稱*</span>
         <TextInput
           v-model="json.title"
+          :inputClass="'text-dark-3'"
           :maxLength="titleMaxLength"
           :required="true"
         />

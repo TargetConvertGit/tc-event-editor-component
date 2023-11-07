@@ -6,6 +6,7 @@ import "v-calendar/style.css";
 import axios from "axios";
 import { getApiUrlBase, getToken } from "../apiConfig";
 import EventActionTargetItem from "./EventActionTargetItem.vue";
+import { PhX } from "@phosphor-icons/vue";
 
 import {
   EventCondition,
@@ -16,7 +17,6 @@ import {
   ClientType,
   ConditionAdLevelTypeFacebook,
   ConditionAdLevelTypeGoogle,
-  ConditionAdLevelType,
   EventActionTargetType,
 } from "../types/event-items";
 import { i18n } from "../i18n";
@@ -332,13 +332,10 @@ function calculatePreviousTimeRange(timeRange) {
   const startTime = new Date(timeRange.start);
   const endTime = new Date(timeRange.end);
 
-  // 计算前一个时间段的开始时间
   const newEndTime = new Date(startTime - 1);
 
-  // 计算前一个时间段的结束时间（不包括原始结束时间）
   const newStartTime = new Date(newEndTime - (endTime - startTime));
 
-  // 格式化日期为 "YYYY/MM/DD" 格式
   const formatOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
   const newStartTimeFormatted = newStartTime.toLocaleDateString(
     "zh-TW",
@@ -383,11 +380,11 @@ const comparisonDateLabel = computed(() => {
         刪除
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 flex-wrap">
         <label class="flex items-center gap-2">
           <span class="p4-b">平台</span>
           <select
-            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="client"
             @change="setClient"
             required
@@ -403,7 +400,7 @@ const comparisonDateLabel = computed(() => {
         <label class="flex items-center gap-2" v-if="client != unSelected">
           <span class="p4-b">層級</span>
           <select
-            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="adLevel"
             @change="setAdLevel"
             required
@@ -419,7 +416,7 @@ const comparisonDateLabel = computed(() => {
         <label class="flex items-center gap-2" v-if="adLevel != unSelected">
           <span class="p4-b">目標</span>
           <select
-            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="targetType"
             @change="setTargetType"
             required
@@ -471,8 +468,17 @@ const comparisonDateLabel = computed(() => {
           <div
             class="sticky flex flex-col max-h-[80%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4"
           >
-            <span class="p1-b flex justify-center mb-1">請選擇目標</span>
-            <TextInput v-model="accountFilterText" />
+            <ph-x
+              class="absolute top-1 right-1 cursor-pointer text-dark-2 hover:text-dark-1"
+              @click="addAccountModal = false"
+              size="18"
+              weight="bold"
+            />
+            <span class="p2-b flex justify-center mb-3 text-dark-2"
+              >請選擇目標</span
+            >
+
+            <TextInput :placeholder="'搜尋'" v-model="accountFilterText" />
             <div
               class="mt-2 flex w-fit ml-auto justify-end p4-b text-true-blue-3 cursor-pointer"
               @click="selectAllAccount"
@@ -484,7 +490,7 @@ const comparisonDateLabel = computed(() => {
               v-if="getAccountLoading"
             ></div>
             <template v-else>
-              <div class="flex flex-col gap-2 mt-2 flex-1 overflow-y-auto">
+              <div class="flex flex-col gap-2 mt-4 flex-1 overflow-y-auto">
                 <EventActionTargetItem
                   v-for="target in filterAccountList"
                   :key="target.id"
@@ -493,21 +499,13 @@ const comparisonDateLabel = computed(() => {
                 />
               </div>
             </template>
-            <div class="flex gap-3 items-center justify-center mt-4">
-              <div
-                class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 px-1.5 py-0.5 text-light-5 hover:bg-true-blue-1"
-                @click="addAccountModal = false"
-              >
-                確定
-              </div>
-            </div>
           </div>
         </div>
       </Teleport>
       <label class="flex items-center gap-1" v-if="targetType != unSelected">
-        <span class="p3-b">條件</span>
+        <span class="p4-b">條件</span>
         <select
-          class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+          class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="conditionType"
           @change="setConditionType"
           required
@@ -521,11 +519,11 @@ const comparisonDateLabel = computed(() => {
         </select>
       </label>
       <div class="flex gap-2 flex-wrap" v-if="conditionType != unSelected">
-        <div class="flex gap-2">
+        <div class="flex gap-2 flex-wrap">
           <label class="flex items-center gap-1">
-            <span class="p3-b">運算</span>
+            <span class="p4-b">運算</span>
             <select
-              class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+              class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
               v-model="dateRangeType"
               @change="setDateRangeType"
               required
@@ -538,41 +536,43 @@ const comparisonDateLabel = computed(() => {
               </template>
             </select>
           </label>
-          <div
-            class="p4-b flex items-center justify-center"
-            v-if="modelValue.comparison && comparisonDateLabel !== ''"
-          >
-            {{ comparisonDateLabel }}
-          </div>
-          <div v-if="dateRangeType == DateRangeType.SpecifiedTime">
-            <DatePicker
-              v-model.range="condition.dateRange"
-              :timezone="Intl.DateTimeFormat().resolvedOptions().timeZone"
-            >
-              <template #default="{ togglePopover, inputValue }">
-                <div
-                  class="p3-b flex relative cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
-                  @click="togglePopover"
-                >
-                  <input
-                    :value="inputValue.end"
-                    required
-                    class="opacity-0 absolute w-full h-full pointer-events-none"
-                  />
+          <div class="flex gap-2">
+            <div v-if="dateRangeType == DateRangeType.SpecifiedTime">
+              <DatePicker
+                v-model.range="condition.dateRange"
+                :timezone="Intl.DateTimeFormat().resolvedOptions().timeZone"
+              >
+                <template #default="{ togglePopover, inputValue }">
+                  <div
+                    class="p4-b text-dark-3 flex relative cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
+                    @click="togglePopover"
+                  >
+                    <input
+                      :value="inputValue.end"
+                      required
+                      class="opacity-0 absolute w-full h-full pointer-events-none"
+                    />
 
-                  {{
-                    inputValue.start && inputValue.end
-                      ? `${inputValue.start}-${inputValue.end}`
-                      : "請選定區間"
-                  }}
-                </div>
-              </template>
-            </DatePicker>
+                    {{
+                      inputValue.start && inputValue.end
+                        ? `${inputValue.start}-${inputValue.end}`
+                        : "請選定區間"
+                    }}
+                  </div>
+                </template>
+              </DatePicker>
+            </div>
+            <div
+              class="p4-b text-dark-3 flex items-center justify-center"
+              v-if="modelValue.comparison && comparisonDateLabel !== ''"
+            >
+              {{ comparisonDateLabel }}
+            </div>
           </div>
         </div>
         <label class="flex items-center gap-1" v-if="dateRangeType != ''">
           <select
-            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="operation"
             @change="setOperation"
             required
@@ -587,7 +587,7 @@ const comparisonDateLabel = computed(() => {
         </label>
         <label class="flex items-center gap-1" v-if="operation != unSelected">
           <select
-            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="valueType"
             @change="setValueType"
             required
@@ -603,6 +603,7 @@ const comparisonDateLabel = computed(() => {
         <div class="flex gap-1 items-center" v-if="valueType != unSelected">
           <TextInput
             v-model="condition.value"
+            :inputClass="'p4-r'"
             :type="'number'"
             :required="true"
           />
@@ -617,7 +618,7 @@ const comparisonDateLabel = computed(() => {
           v-model="modelValue.comparison"
           id="comparison"
         />
-        <label for="comparison">加入比較區間</label>
+        <label class="p4-b" for="comparison">加入比較區間</label>
       </div>
     </div>
   </OuterBlock>

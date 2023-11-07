@@ -24,7 +24,7 @@ watch(
     <label class="flex items-center gap-2">
       <span class="p4-b">以電子郵件寄出結果</span>
       <select
-        class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+        class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
         v-model="notification.email"
       >
         <option value="" disabled>請選擇</option>

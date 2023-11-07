@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TextInput from "./TextInput.vue";
-import { PhCaretCircleRight } from "@phosphor-icons/vue";
+import { PhX } from "@phosphor-icons/vue";
 import axios from "axios";
 import { getApiUrlBase, getToken } from "../apiConfig";
 
@@ -99,9 +99,16 @@ const showConditionModal = async () => {
     v-if="addConditionModal"
   >
     <div
-      class="sticky flex flex-col max-h-[80%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4"
+      class="sticky flex flex-col max-h-[90%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4"
     >
-      <span class="p1-b flex justify-center mb-1">請選擇條件</span>
+      <ph-x
+        class="absolute top-1 right-1 cursor-pointer text-dark-2 hover:text-dark-1"
+        @click="addConditionModal = false"
+        size="18"
+        weight="bold"
+      />
+
+      <span class="p2-b flex justify-center mb-3 text-dark-2">請選擇條件</span>
       <TextInput
         :placeholder="'輸入關鍵字搜尋 ex: 轉換數'"
         v-model="demoConditionFilterText"
@@ -111,38 +118,25 @@ const showConditionModal = async () => {
         v-if="getDemoConditionLoading"
       ></div>
       <template v-else>
-        <div class="flex flex-col gap-2 mt-2 overflow-y-auto flex-1">
+        <div class="flex flex-col gap-2 mt-4 overflow-y-auto flex-1">
           <div
-            class="border border-dark-5 rounded items-center py-1 px-3 flex gap-1 hover:bg-true-blue-5 cursor-pointer"
+            class="border border-light-1 rounded items-center py-1 px-3 flex gap-1 hover:bg-true-blue-5 cursor-pointer"
             v-for="condition in demoCondition"
             :key="condition.id"
             @click="selectDemoCondition(condition.id)"
           >
-            <div class="flex flex-col flex-1">
-              <span class="p3-b">{{ condition.title }}</span>
+            <div class="flex flex-col flex-1 gap-1">
+              <span class="p4-b">{{ condition.title }}</span>
               <span class="p4-r text-dark-4">{{ condition.description }}</span>
             </div>
-            <ph-caret-circle-right
-              :size="18"
-              class="text-dark-3"
-              weight="bold"
-            />
           </div>
         </div>
       </template>
       <div
-        class="border ml-auto mt-2 border-true-blue-3 text-true-blue-3 rounded px-1 w-fit p3-r cursor-pointer hover:text-true-blue-2 hover:border-true-blue-2"
+        class="border ml-auto mt-2 border-true-blue-3 text-true-blue-3 rounded px-1 w-fit p3-b cursor-pointer hover:text-true-blue-2 hover:border-true-blue-2"
         @click="addCondition"
       >
         自訂
-      </div>
-      <div class="flex gap-3 items-center justify-center mt-4">
-        <div
-          class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 px-1.5 py-0.5 text-light-5 hover:bg-true-blue-1"
-          @click="addConditionModal = false"
-        >
-          確定
-        </div>
       </div>
     </div>
   </div>

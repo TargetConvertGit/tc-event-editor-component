@@ -4,6 +4,7 @@ import OuterBlock from "./OuterBlock.vue";
 import axios from "axios";
 import { getApiUrlBase, getToken } from "../apiConfig";
 import EventActionTargetItem from "./EventActionTargetItem.vue";
+import { PhX } from "@phosphor-icons/vue";
 
 import {
   ClientType,
@@ -237,13 +238,6 @@ const targetType = computed(() => {
 });
 const setTargetType = (v) => {
   action.value.targetType = Number(v.target.value);
-  // 調整階層就預設不執行動作
-  // delete action.value.action;
-  // 不可跨平台選目標
-  // delete action.value.target;
-  // if (action.value.targetType === EventActionTargetType.ForID) {
-  //   action.value.target = [];
-  // }
 };
 // 執行
 const actionValue = computed(() => {
@@ -442,7 +436,7 @@ const budgetTips = computed(() => {
   <!-- 層級不同 可執行項目也不同 還有註解 -->
   <OuterBlock :title="'動作'" v-else>
     <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2 relative pt-2">
+      <div class="flex flex-wrap items-center gap-2 relative pt-2">
         <div
           class="cursor-pointer text-dark-4 absolute -top-2.5 -right-1.5 p4-b"
           @click="removeAction"
@@ -452,7 +446,7 @@ const budgetTips = computed(() => {
         <label class="flex items-center gap-2">
           <span class="p4-b">平台</span>
           <select
-            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="client"
             @change="setClient"
             required
@@ -468,7 +462,7 @@ const budgetTips = computed(() => {
         <label class="flex items-center gap-2" v-if="client != unSelected">
           <span class="p4-b">層級</span>
           <select
-            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="adLevel"
             @change="setAdLevel"
             required
@@ -484,7 +478,7 @@ const budgetTips = computed(() => {
         <label class="flex items-center gap-2" v-if="adLevel != unSelected">
           <span class="p4-b">目標</span>
           <select
-            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="targetType"
             @change="setTargetType"
             required
@@ -534,7 +528,15 @@ const budgetTips = computed(() => {
           <div
             class="sticky flex flex-col max-h-[80%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4"
           >
-            <span class="p1-b flex justify-center mb-1">請選擇目標</span>
+            <ph-x
+              class="absolute top-1 right-1 cursor-pointer text-dark-2 hover:text-dark-1"
+              @click="addAccountModal = false"
+              size="18"
+              weight="bold"
+            />
+            <span class="p2-b flex justify-center mb-3 text-dark-2"
+              >請選擇目標</span
+            >
             <TextInput v-model="accountFilterText" :placeholder="'搜尋'" />
             <div
               class="mt-2 flex w-fit ml-auto justify-end p4-b text-true-blue-3 cursor-pointer"
@@ -548,7 +550,7 @@ const budgetTips = computed(() => {
               v-if="getAccountLoading"
             ></div>
             <template v-else>
-              <div class="flex flex-col gap-2 mt-2 flex-1 overflow-y-auto">
+              <div class="flex flex-col gap-2 mt-4 flex-1 overflow-y-auto">
                 <EventActionTargetItem
                   v-for="target in filterAccountList"
                   :key="target.id"
@@ -557,22 +559,14 @@ const budgetTips = computed(() => {
                 />
               </div>
             </template>
-            <div class="flex gap-3 items-center justify-center mt-4">
-              <div
-                class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 px-1.5 py-0.5 text-light-5 hover:bg-true-blue-1"
-                @click="addAccountModal = false"
-              >
-                確定
-              </div>
-            </div>
           </div>
         </div>
       </Teleport>
-      <div class="flex flex-col gap-2" v-if="targetType !== unSelected">
+      <div class="flex flex-wrap gap-2" v-if="targetType !== unSelected">
         <label class="flex items-center gap-2">
           <span class="p4-b">執行</span>
           <select
-            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="actionValue"
             @change="setActionValue"
             required
@@ -597,7 +591,7 @@ const budgetTips = computed(() => {
             <label class="flex items-center gap-2">
               <span class="p4-b">類型</span>
               <select
-                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
                 v-model="paramsBudgetType"
                 @change="setParamsBudgetType"
                 required
@@ -609,7 +603,7 @@ const budgetTips = computed(() => {
                   </option>
                 </template>
               </select>
-              <span v-if="budgetTips.show" class="p4-r">
+              <span v-if="budgetTips.show" class="p4-b">
                 {{ budgetTips.msg }}
               </span>
             </label>
@@ -620,7 +614,7 @@ const budgetTips = computed(() => {
             >
               <span class="p4-b">調整</span>
               <select
-                class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
                 v-model="paramsValueType"
                 @change="setParamsValueType"
                 required
@@ -639,11 +633,12 @@ const budgetTips = computed(() => {
               v-if="paramsValueType != unSelected"
             >
               <TextInput
+                :inputClass="'p4-r'"
                 v-model="action.params.value"
                 :type="'number'"
                 :required="true"
               />
-              <span class="p4-b">{{
+              <span class="p4-b to-dark-3">{{
                 action.params.valueType === ValueType.Percentage ? "%" : "元"
               }}</span>
             </label>
@@ -664,14 +659,15 @@ const budgetTips = computed(() => {
                       v-model="hasLimitBudget"
                       id="maxBudget"
                     />
-                    <label for="maxBudget">設定預算上限</label>
+                    <label class="p4-b" for="maxBudget">設定預算上限</label>
                     <div class="flex gap-2 items-center" v-if="hasLimitBudget">
                       <TextInput
+                        :inputClass="'p4-r'"
                         v-model="action.params.limit"
                         :type="'number'"
                         :required="true"
                       />
-                      <span>元</span>
+                      <span class="text-dark-3 p4-b">元</span>
                     </div>
                   </div>
                 </div>

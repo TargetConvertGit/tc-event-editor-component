@@ -38,9 +38,9 @@ onUnmounted(() => {
 
 <template>
   <div class="flex flex-col gap-2">
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-1">
       <input type="checkbox" v-model="setDeadline" id="due" />
-      <label for="due" class="p3-b">結束於指定日期</label>
+      <label for="due" class="p4-b text-dark-2">指定結束日期</label>
       <DatePicker
         v-if="setDeadline"
         v-model="localModelValue"
@@ -51,10 +51,10 @@ onUnmounted(() => {
       >
         <template #default="{ togglePopover, inputValue }">
           <div
-            class="p3-b flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
+            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
             @click="togglePopover"
           >
-            {{ inputValue ? inputValue : "請選定結束日期" }}
+            {{ inputValue ? inputValue : "未設定" }}
           </div>
         </template>
       </DatePicker>

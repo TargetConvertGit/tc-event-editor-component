@@ -7,7 +7,7 @@ const props = withDefaults(defineProps<Props>(), {});
 
 <template>
   <div class="relative border rounded border-light-3 py-4 px-3">
-    <div class="p3-b absolute left-2 -top-3 text-dark-3 bg-light-5">
+    <div class="p3-b absolute left-2 -top-3 text-dark-2 bg-light-5">
       {{ title }}
     </div>
     <slot />

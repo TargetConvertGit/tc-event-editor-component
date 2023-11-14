@@ -24,7 +24,7 @@ const expend = ref(true);
   <div class="py-1 flex gap-1 items-center flex-col justify-center">
     <div class="border-b border-light-3 flex-1 flex gap-2 pb-2 w-full">
       <div
-        class="rounded p-0.5 border border-dark-3"
+        class="rounded p-0.5 border border-dark-2 cursor-pointer hover:border-dark-3"
         v-if="!target?.children"
         @click="addTarget(target)"
       >

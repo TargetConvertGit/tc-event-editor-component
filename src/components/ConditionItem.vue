@@ -210,17 +210,15 @@ const actionOption = computed(() => {
 const addAccountModal = ref(false);
 // 新增目標
 const addAccount = (account) => {
+  console.log(account);
   if (!condition.value?.target) condition.value.target = [];
 
   const existingIndex = condition.value.target.findIndex(
-    (item) => item.id === account.id
+    (item) => item === account.id
   );
 
   if (existingIndex === -1) {
-    condition.value.target.push({
-      id: account.id,
-      name: account.name,
-    });
+    condition.value.target.push(account.id);
   } else {
     condition.value.target.splice(existingIndex, 1);
   }
@@ -301,7 +299,7 @@ const selectAllAccount = () => {
       if (item.children && item.children.length > 0) {
         selectAll(item.children);
       } else {
-        condition.value.target.push(item);
+        condition.value.target.push(item.id);
       }
     }
   };
@@ -497,6 +495,12 @@ const comparisonDateLabel = computed(() => {
                   :target="target"
                   :targets="condition?.target"
                 />
+              </div>
+              <div
+                class="p4-b flex cursor-pointer items-center mx-auto gap-1 rounded bg-true-blue-2 px-1.5 py-0.5 text-light-5 hover:bg-true-blue-1"
+                @click="addAccountModal = false"
+              >
+                確定
               </div>
             </template>
           </div>

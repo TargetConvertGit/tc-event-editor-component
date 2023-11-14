@@ -558,6 +558,12 @@ const budgetTips = computed(() => {
                   :targets="action?.target ?? []"
                 />
               </div>
+              <div
+                class="p4-b flex cursor-pointer items-center mx-auto gap-1 rounded bg-true-blue-2 px-1.5 py-0.5 text-light-5 hover:bg-true-blue-1"
+                @click="addAccountModal = false"
+              >
+                確定
+              </div>
             </template>
           </div>
         </div>

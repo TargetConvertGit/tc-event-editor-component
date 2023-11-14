@@ -114,7 +114,7 @@ const showConditionModal = async () => {
         v-model="demoConditionFilterText"
       />
       <div
-        class="h-4 w-4 mx-auto animate-spin rounded-full border-2 border-solid border-blue-400 border-t-transparent"
+        class="h-4 mt-4 w-4 mx-auto animate-spin rounded-full border-2 border-solid border-blue-400 border-t-transparent"
         v-if="getDemoConditionLoading"
       ></div>
       <template v-else>

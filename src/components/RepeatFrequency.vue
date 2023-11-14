@@ -157,7 +157,7 @@ watch(
       <p class="p4-b text-dark-2">執行頻率</p>
       <div class="h-[1px] flex-1 bg-light-3"></div>
     </div>
-    <div class="flex space-x-2 items-center">
+    <div class="flex gap-2 items-center">
       <label class="flex items-center gap-2">
         <span class="p4-b">重複</span>
         <select

@@ -6,7 +6,7 @@ const { t } = i18n.global;
 const eventData = inject("eventData");
 const notification = ref(
   eventData.value.notify ?? {
-    email: EmailNotify.All,
+    email: EmailNotify.ActionOrError,
   }
 );
 

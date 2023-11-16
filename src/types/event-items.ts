@@ -102,8 +102,9 @@ export interface EventNotify {
  */
 export enum EmailNotify {
   None = -1, // 不寄送
-  All = 1, // 僅執行動作或錯誤時
-  Error = 2, //僅出現錯誤時
+  All = 1, // 任何情況都寄送
+  ActionOrError = 2, // 僅執行動作或錯誤時
+  Error = 3, //僅出現錯誤時
 }
 
 /**

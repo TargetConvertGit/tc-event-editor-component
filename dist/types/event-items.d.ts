@@ -87,7 +87,8 @@ export interface EventNotify {
 export declare enum EmailNotify {
     None = -1,
     All = 1,
-    Error = 2
+    ActionOrError = 2,
+    Error = 3
 }
 /**
  * 訊息開關

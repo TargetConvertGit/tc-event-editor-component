@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import EventActionTargetItem from "./EventActionTargetItem.vue";
-import {
-  PhCheck,
-  PhCaretCircleDown,
-  PhCaretCircleUp,
-} from "@phosphor-icons/vue";
+import { PhCaretDown, PhCaretUp } from "@phosphor-icons/vue";
+import { Checkbox } from "../shadcn/components/ui/checkbox";
 
 export interface Props {
   target: {
@@ -21,37 +18,41 @@ const expend = ref(true);
 </script>
 
 <template>
-  <div class="py-1 flex gap-1 items-center flex-col justify-center">
-    <div class="border-b border-light-3 flex-1 flex gap-2 pb-2 w-full">
-      <div
-        class="rounded p-0.5 border border-dark-2 cursor-pointer hover:border-dark-3"
+  <div class="flex items-center flex-col justify-center py-2">
+    <div
+      class="item flex-1 flex gap-2 w-full items-center relative"
+      @click="target?.children ? (expend = !expend) : null"
+    >
+      <Checkbox
+        class="rounded data-[state=checked]:bg-true-blue-3 border-true-blue-5"
+        :id="`target-${target.id}`"
         v-if="!target?.children"
-        @click="addTarget(target)"
-      >
-        <ph-check
-          size="12"
-          weight="bold"
-          class="opacity-0 text-dark-2"
-          :class="{
-            ' opacity-100': targets.find((ac) => ac === target.id),
-          }"
-        />
-      </div>
-      <div class="flex justify-between w-full items-center">
-        <span class="p4-r flex-1">{{ target.name }}</span>
-
-        <div
-          v-if="target?.children"
-          @click="expend = !expend"
-          class="flex-shrink-0 cursor-pointer"
-        >
-          <ph-caret-circle-down :size="14" v-if="expend" />
-          <ph-caret-circle-up :size="14" v-else />
+        :checked="targets.some((ac) => ac === target.id)"
+        @update:checked="addTarget(target)"
+      />
+      <div class="flex justify-start gap-2 w-full items-center">
+        <div v-if="target?.children" class="flex-shrink-0 cursor-pointer">
+          <ph-caret-down class="text-dark-3" :size="16" v-if="expend" />
+          <ph-caret-up class="text-dark-4" :size="16" v-else />
         </div>
+        <label
+          :for="`target-${target.id}`"
+          class="flex-1 cursor-pointer flex items-center gap-1"
+          :class="[!target?.children ? 'p3-r' : 'p3-b']"
+        >
+          <div
+            v-if="!target?.children"
+            class="w-2 h-2 rounded-full"
+            :class="[target.enabled ? 'bg-success-green-3' : 'bg-red-3']"
+          ></div>
+          <span :class="[expend ? 'text-dark-3' : 'text-dark-4']">
+            {{ target.name }}
+          </span>
+        </label>
       </div>
     </div>
     <div
-      class="flex flex-col gap-2 pl-4 w-full"
+      class="flex flex-col pl-6 w-full pt-2"
       v-if="target?.children && expend"
     >
       <EventActionTargetItem
@@ -63,4 +64,10 @@ const expend = ref(true);
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.item::after {
+  content: "";
+
+  @apply absolute -bottom-2 h-[1px] w-full bg-light-4;
+}
+</style>

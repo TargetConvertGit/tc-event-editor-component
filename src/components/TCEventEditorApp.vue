@@ -6,11 +6,9 @@ import TextInput from "./TextInput.vue";
 import Condition from "./Condition.vue";
 import OuterBlock from "./OuterBlock.vue";
 import Notification from "./Notification.vue";
+import { i18n } from "../i18n";
 
-import { getDescription } from "../description.js";
-import { getActionDescription } from "../action.js";
-import { getNotifyDescription } from "../notify.js";
-
+const { t } = i18n.global;
 interface Props {
   data?: string;
 }
@@ -92,9 +90,10 @@ const saveData = () => {
   for (const el of document
     .getElementById("editor-container")
     .querySelectorAll("[required]")) {
-    if (!el.reportValidity()) {
-      throw new Error("未填寫完畢");
-      return;
+    if (el.getAttribute("required") == null) {
+      if (!el.reportValidity()) {
+        throw new Error("未填寫完畢");
+      }
     }
   }
   submitBtn.value?.click();
@@ -106,53 +105,65 @@ const titleMaxLength = 100;
 
 const submitBtn = ref();
 
+const lockScroll = ref(false);
+provide("lockScroll", lockScroll);
 defineExpose({
   saveData,
 });
 </script>
 
 <template>
-  <form
+  <div
+    class="flex-1 h-full scroll-smooth"
+    :class="[lockScroll ? 'overflow-y-hidden' : 'overflow-y-auto']"
     v-if="props.data"
-    class="flex flex-col gap-5 relative p-5 h-fit text-dark-1"
-    id="editor-container"
-    @submit.prevent="save"
+    id="editor-container-outer"
   >
-    <div class="p1-b">建立自動化規則</div>
-    <OuterBlock :title="'基本資料'">
-      <div>
-        <span class="p4-b text-dark-1">規則名稱*</span>
-        <TextInput
-          v-model="json.title"
-          :inputClass="'text-dark-3'"
-          :maxLength="titleMaxLength"
-          :required="true"
-        />
-      </div>
-    </OuterBlock>
-    <OuterBlock :title="'執行時間'">
-      <RepeatFrequency
-        v-model:frequency="json.frequency"
-        v-model:interval="json.interval"
-      />
-    </OuterBlock>
-    <OuterBlock :title="'通知'">
-      <Notification />
-    </OuterBlock>
-    <EventAction />
-
-    <Condition />
-
-    <span v-if="checkDataValid.length" class="text-red-1">資料未填寫完整</span>
-    <button
-      ref="submitBtn"
-      class="p-2 px-3 rounded bg-slate-100 hover:bg-sky-500 hover:text-white hidden"
+    <form
+      class="flex flex-col gap-5 relative p-5 h-fit text-dark-1 min-h-full w-full"
+      id="editor-container"
+      @submit.prevent="save"
     >
-      保存
-    </button>
-  </form>
+      <OuterBlock :title="'規則名稱'" :icon="'PhNotepad'" id="name">
+        <div class="space-y-1">
+          <TextInput
+            v-model="json.title"
+            :inputClass="'text-true-blue-3'"
+            :maxLength="titleMaxLength"
+            :required="true"
+          />
+        </div>
+      </OuterBlock>
+      <OuterBlock :title="'執行時間'" :icon="'PhCalendarCheck'" id="time">
+        <RepeatFrequency
+          v-model:frequency="json.frequency"
+          v-model:interval="json.interval"
+        />
+      </OuterBlock>
+      <OuterBlock :title="'通知'" :icon="'PhBellRinging'" id="notification">
+        <Notification />
+      </OuterBlock>
+      <EventAction />
+      <Condition />
+      <span v-if="checkDataValid.length" class="text-red-1"
+        >資料未填寫完整</span
+      >
+      <button
+        ref="submitBtn"
+        class="p-2 px-3 rounded bg-slate-100 hover:bg-sky-500 hover:text-white hidden"
+      >
+        保存
+      </button>
+    </form>
+  </div>
 </template>
 
 <style scoped>
 @import "../style.css";
+</style>
+<style>
+select {
+  appearance: none;
+  text-align: center;
+}
 </style>

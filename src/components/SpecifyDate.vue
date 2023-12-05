@@ -6,6 +6,12 @@ import {
   WeekOrdinalWordsType,
   WeekdaysType,
 } from "../types/event-items";
+import { getDescription } from "../description";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../shadcn/components/ui/popover";
 
 export interface Props {
   type: number;
@@ -47,6 +53,9 @@ const check = (optionId: number, key: any, hasValue = false) => {
   key.value.sort((a: number, b: number) => a - b);
 };
 
+const timeLabel = ref("");
+const eventData = inject("eventData");
+
 watchEffect(() => {
   emit(
     "update:monthDate",
@@ -64,6 +73,7 @@ watchEffect(() => {
     "update:yearMonths",
     yearMonthsOrigin.value.length ? yearMonthsOrigin.value : null
   );
+  timeLabel.value = getDescription(eventData.value, true);
 });
 //指定每週星期幾
 const weekdaysOptions = ref([
@@ -301,45 +311,133 @@ onBeforeUnmount(() => {
   weekdaysOrigin.value = [];
   yearMonthsOrigin.value = [];
 });
+
+const showUnselectedLabel = computed(() => {
+  if (props.type === FrequencyType.Week) {
+    return Boolean(weekdaysOrigin.value.length);
+  }
+  if (props.type === FrequencyType.Month) {
+    if (selectType.value.id == SpecifyDateType.Week) {
+      return (
+        Boolean(weekOrdinalOrigin.value.length) ||
+        Boolean(weekdaysOrigin.value.length)
+      );
+    }
+    if (selectType.value.id == SpecifyDateType.Date) {
+      return Boolean(monthDateOrigin.value.length);
+    }
+  }
+
+  if (props.type === FrequencyType.Annual) {
+    if (selectType.value.id == SpecifyDateType.Week) {
+      return (
+        Boolean(yearMonthsOrigin.value.length) ||
+        Boolean(weekOrdinalOrigin.value.length) ||
+        Boolean(weekdaysOrigin.value.length)
+      );
+    }
+    if (selectType.value.id == SpecifyDateType.Date) {
+      return (
+        Boolean(yearMonthsOrigin.value.length) ||
+        Boolean(monthDateOrigin.value.length)
+      );
+    }
+  }
+});
 </script>
 <template>
-  <div class="flex gap-1.5 flex-wrap" v-if="type === FrequencyType.Annual">
-    <Checkbox
-      v-for="opt in yearMonths"
-      :key="opt.id"
-      :checked="yearMonthsOrigin?.includes(opt.id)"
-      @update:checked="check(opt.id, yearMonthsOrigin, true)"
-      :fieldId="opt.name"
-      :label="opt.name"
-    />
-  </div>
-  <div class="flex gap-2 items-center" v-if="showTypeSelector">
-    <span class="p4-b">指定</span>
-    <select
-      class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-      v-model="selectType"
-    >
-      <template v-for="(value, key) in specifyDateType" :key="key">
-        <option :value="value">
-          {{ value.name }}
-        </option>
-      </template>
-    </select>
-  </div>
-
   <div
-    class="flex gap-4 flex-wrap border-light-1 border rounded p-2"
-    v-if="options"
+    v-if="type === FrequencyType.Annual || options"
+    class="flex items-center gap-2 relative"
   >
-    <div class="flex gap-1 flex-wrap" v-for="option in options" :key="option">
-      <Checkbox
-        v-for="opt in option.options"
-        :key="opt.id"
-        :checked="option.key.value?.includes(opt.id)"
-        @update:checked="check(opt.id, option.key)"
-        :fieldId="opt.name"
-        :label="opt.name"
-      />
-    </div>
+    <span class="p3-r text-dark-4">指定時段</span>
+    <Popover>
+      <PopoverTrigger>
+        <div class="flex gap-6">
+          <span
+            class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            >{{ showUnselectedLabel ? timeLabel : "未設定" }}</span
+          >
+          <template> </template>
+        </div>
+      </PopoverTrigger>
+      <PopoverContent
+        class="shadow-none border-none p-0 w-96"
+        align="start"
+        side="bottom"
+      >
+        <div class="shadow-01 bg-light-5 z-[2] p-2 rounded flex flex-col gap-2">
+          <div
+            class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+          >
+            月份
+          </div>
+          <div class="border-t p-2" v-if="type === FrequencyType.Annual">
+            <div class="flex gap-1.5 flex-wrap">
+              <Checkbox
+                v-for="opt in yearMonths"
+                :key="opt.id"
+                :checked="yearMonthsOrigin?.includes(opt.id)"
+                @update:checked="check(opt.id, yearMonthsOrigin, true)"
+                :fieldId="opt.name"
+                :label="opt.name"
+              />
+            </div>
+          </div>
+          <div
+            class="shadow-01 flex w-fit items-center py-1 px-2 rounded p3-r text-dark-3"
+            v-if="showTypeSelector"
+          >
+            <div
+              class="flex items-center"
+              v-for="(value, index) in specifyDateType"
+              :key="value"
+            >
+              <template v-if="!Number.isInteger(value)">
+                <span
+                  class="cursor-pointer hover:drop-shadow-md"
+                  :class="[
+                    selectType.id == value.id
+                      ? 'text-true-blue-3 drop-shadow-sm p3-b'
+                      : 'p3-r',
+                  ]"
+                  @click="selectType = value"
+                >
+                  {{ value.name }}
+                </span>
+                <div
+                  class="text-dark-5 mx-1"
+                  v-if="
+                    index <
+                    Object.keys(selectType).filter((value) =>
+                      isNaN(Number(value))
+                    ).length -
+                      1
+                  "
+                >
+                  |
+                </div>
+              </template>
+            </div>
+          </div>
+          <div class="flex gap-4 flex-wrap p-2 border-t" v-if="options">
+            <div
+              class="flex gap-1 flex-wrap"
+              v-for="option in options"
+              :key="option"
+            >
+              <Checkbox
+                v-for="opt in option.options"
+                :key="opt.id"
+                :checked="option.key.value?.includes(opt.id)"
+                @update:checked="check(opt.id, option.key)"
+                :fieldId="opt.name"
+                :label="opt.name"
+              />
+            </div>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   </div>
 </template>

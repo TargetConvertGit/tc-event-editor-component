@@ -38,12 +38,22 @@ const dt = {
   },
 };
 
-export function getDescription(event) {
+export function getDescription(event, withRange = false) {
   const startDate = new Date(event.start).toLocaleString("zh-TW", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
     hour12: false,
   });
   const endDate = event.due
-    ? new Date(event.due).toLocaleString("zh-TW", { hour12: false })
+    ? new Date(event.due).toLocaleString("zh-TW", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        hour12: false,
+      })
     : null;
   if (event.frequency === FrequencyType.Never) return `於 ${startDate} 起`;
 
@@ -58,15 +68,20 @@ export function getDescription(event) {
         .join("、")
     : "";
   const monthDateText = event.monthDate
-    ? `第${event.monthDate.join("、")}號`.replace("-1", "最後一天")
+    ? `${event.monthDate.join("、")}號`.replace("-1", "最後一天")
     : "";
   const yearMonthsText = event.yearMonths
-    ? `第${event.yearMonths.reverse().join("、")}個月`
+    ? `${event.yearMonths
+        .sort((a, b) => b - a)
+        .reverse()
+        .join("、")}月`
     : "";
   // let description = `${dt.every}${event.interval}${frequencyText}`;
   let description = `於 ${startDate} 起，${dt.every}${event.interval}${frequencyText}`;
+  let withoutDescription = `${dt.every}${event.interval}${frequencyText}`;
   if (weekOrdinalText || weekdaysText || monthDateText || yearMonthsText) {
     description += "的";
+    withoutDescription += "的";
     const parts = [];
     if (yearMonthsText) {
       parts.push(`${yearMonthsText}的`);
@@ -82,11 +97,12 @@ export function getDescription(event) {
     }
 
     description += parts.join("");
+    withoutDescription += parts.join("");
   }
 
   if (endDate) {
     description += `，並於 ${endDate} 結束循環`;
   }
 
-  return description;
+  return withRange ? withoutDescription : description;
 }

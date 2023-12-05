@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import TextInput from "./TextInput.vue";
-import { PhX } from "@phosphor-icons/vue";
 import axios from "axios";
 import { getApiUrlBase, getToken } from "../apiConfig";
 
@@ -19,10 +18,21 @@ watch(
   { deep: true }
 );
 
+const toBottom = () => {
+  const editor = document.getElementById("editor-container-outer");
+  if (!editor) return;
+  nextTick(() => {
+    setTimeout(() => {
+      editor.scrollTop = editor.scrollHeight;
+    }, 200);
+  });
+};
+
 // 新增條件
 const addCondition = () => {
   conditions.value.push({});
   addConditionModal.value = false;
+  toBottom();
 };
 // 範例條件
 const selectDemoCondition = async (id: number) => {
@@ -36,6 +46,7 @@ const selectDemoCondition = async (id: number) => {
   });
   conditions.value.push(res.data.data);
   addConditionModal.value = false;
+  toBottom();
 };
 // 刪除條件
 const removeItem = (index: number) => {
@@ -83,14 +94,15 @@ const showConditionModal = async () => {
       v-if="index + 1 !== conditions.length"
     >
       <div class="h-[1px] flex-1 bg-light-3"></div>
-      <p class="p4-b to-dark-4">且</p>
+      <p class="p3-b to-dark-4">且</p>
       <div class="h-[1px] flex-1 bg-light-3"></div>
     </div>
   </template>
 
   <div
-    class="p3-b text-true-blue-3 flex ml-auto w-fit cursor-pointer hover:text-true-blue-2"
+    class="p3-b cursor-pointer rounded shadow-01 hover:shadow-02 transition-all bg-light-5 py-1 px-2 text-dark-4 flex items-center justify-center"
     @click="showConditionModal"
+    id="condition"
   >
     + 加入條件
   </div>
@@ -101,15 +113,9 @@ const showConditionModal = async () => {
     <div
       class="sticky flex flex-col max-h-[90%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4"
     >
-      <ph-x
-        class="absolute top-1 right-1 cursor-pointer text-dark-2 hover:text-dark-1"
-        @click="addConditionModal = false"
-        size="18"
-        weight="bold"
-      />
-
       <span class="p2-b flex justify-center mb-3 text-dark-2">請選擇條件</span>
       <TextInput
+        class="max-w-xs min-w-[200px] mx-auto w-full"
         :placeholder="'輸入關鍵字搜尋 ex: 轉換數'"
         v-model="demoConditionFilterText"
       />
@@ -118,16 +124,18 @@ const showConditionModal = async () => {
         v-if="getDemoConditionLoading"
       ></div>
       <template v-else>
-        <div class="flex flex-col gap-2 mt-4 overflow-y-auto flex-1">
+        <div
+          class="flex flex-col gap-2.5 mt-8 overflow-y-auto flex-1 px-1 py-0.5"
+        >
           <div
-            class="border border-light-1 rounded items-center py-1 px-3 flex gap-1 hover:bg-true-blue-5 cursor-pointer"
+            class="shadow-01 rounded items-center py-1 px-3 flex gap-1 hover:bg-true-blue-5 cursor-pointer"
             v-for="condition in demoCondition"
             :key="condition.id"
             @click="selectDemoCondition(condition.id)"
           >
-            <div class="flex flex-col flex-1 gap-1">
-              <span class="p4-b">{{ condition.title }}</span>
-              <span class="p4-r text-dark-4">{{ condition.description }}</span>
+            <div class="flex flex-col flex-1 gap-1.5">
+              <span class="p3-b text-dark-3">{{ condition.title }}</span>
+              <span class="p3-r text-dark-5">{{ condition.description }}</span>
             </div>
           </div>
         </div>
@@ -137,6 +145,14 @@ const showConditionModal = async () => {
         @click="addCondition"
       >
         自訂
+      </div>
+      <div class="mx-auto flex w-fit items-center gap-4 mt-4">
+        <div
+          class="p3-b flex cursor-pointer items-center gap-1 rounded border bg-light-5 border-dark-5 px-2 py-1 text-dark-4 hover:text-light-5 hover:bg-dark-5"
+          @click="addConditionModal = false"
+        >
+          取消
+        </div>
       </div>
     </div>
   </div>

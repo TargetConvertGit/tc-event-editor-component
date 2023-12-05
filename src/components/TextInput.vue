@@ -23,14 +23,14 @@ function onInput(e: any) {
 
 <template>
   <div
-    class="flex w-auto items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-1.5"
+    class="flex w-auto items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 hover:bg-light-3 hover:bg-opacity-50 input-outer"
   >
     <input
       :value="modelValue"
       @input="onInput"
       :type="type"
       :class="inputClass"
-      class="p3-r w-full border-none outline-none shadow-none placeholder:text-dark-5"
+      class="p3-b w-full border-none outline-none shadow-none placeholder:text-dark-5 text-dark-3"
       :placeholder="placeholder"
       :maxLength="maxLength"
       :required="required"
@@ -43,6 +43,13 @@ input {
   text-align: inherit;
   &::placeholder {
     font-weight: 400;
+  }
+}
+.input-outer {
+  &:hover {
+    input {
+      @apply bg-opacity-0 bg-light-3;
+    }
   }
 }
 </style>

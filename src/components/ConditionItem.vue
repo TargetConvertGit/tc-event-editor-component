@@ -6,7 +6,9 @@ import "v-calendar/style.css";
 import axios from "axios";
 import { getApiUrlBase, getToken } from "../apiConfig";
 import EventActionTargetItem from "./EventActionTargetItem.vue";
-import { PhX } from "@phosphor-icons/vue";
+import { PhX, PhTrash } from "@phosphor-icons/vue";
+import { Label } from "../shadcn/components/ui/label";
+import { Checkbox } from "../shadcn/components/ui/checkbox";
 
 import {
   EventCondition,
@@ -58,7 +60,7 @@ const client = computed(() => {
   return "";
 });
 const setClient = (v) => {
-  condition.value.client = Number(v.target.value);
+  condition.value.client = v;
   // 不可跨平台選目標
   delete condition.value.target;
   setAdLevel(resetData);
@@ -208,9 +210,13 @@ const actionOption = computed(() => {
 });
 
 const addAccountModal = ref(false);
+const lockScroll = inject("lockScroll");
+watch(addAccountModal, (val) => {
+  lockScroll.value = val;
+  if (!val) accountFilterText.value = "";
+});
 // 新增目標
 const addAccount = (account) => {
-  console.log(account);
   if (!condition.value?.target) condition.value.target = [];
 
   const existingIndex = condition.value.target.findIndex(
@@ -239,9 +245,11 @@ const getAccountList = async () => {
     },
   });
   allAccountList.value = targets.data.data;
+  accountFilterTabs.value = calculateHierarchyLevels(allAccountList.value);
 };
 const filterAccountList = computed(() => {
   const filterText = accountFilterText.value.trim().toLowerCase();
+  accountCount.value = 0;
 
   const isMatching = (item) => item.name.toLowerCase().includes(filterText);
 
@@ -249,8 +257,20 @@ const filterAccountList = computed(() => {
     let matchingItems = [];
 
     for (const item of items) {
-      if (isMatching(item) && (!item.children || item.children.length === 0)) {
+      let shouldBreak = false;
+      accountFilterTabs.value.forEach((i) => {
+        if (i.label == item.type && i.status == item.enabled && !item.enabled) {
+          shouldBreak = true;
+        }
+      });
+
+      if (
+        isMatching(item) &&
+        (!item.children || item.children.length === 0) &&
+        !shouldBreak
+      ) {
         matchingItems.push(item);
+        accountCount.value++;
       }
 
       if (item.children && item.children.length > 0) {
@@ -261,6 +281,14 @@ const filterAccountList = computed(() => {
             name: item.name,
             children: childMatches,
           });
+        } else {
+          if (shouldBreak) {
+            continue;
+          }
+        }
+      } else {
+        if (shouldBreak) {
+          continue;
         }
       }
     }
@@ -276,6 +304,7 @@ const filterAccountList = computed(() => {
         filteredItems.push({
           id: account.id,
           name: account.name,
+          type: account.type,
           children: matchingItems,
         });
       }
@@ -283,7 +312,9 @@ const filterAccountList = computed(() => {
       filteredItems.push({
         id: account.id,
         name: account.name,
+        type: account.type,
       });
+      accountCount.value++;
     }
   }
 
@@ -311,6 +342,10 @@ const selectAllAccount = () => {
     condition.value.target = [];
   }
 };
+const resetSelectedAccount = () => {
+  condition.value.target = [];
+};
+
 // 選擇目標視窗
 const showAccountModal = async () => {
   addAccountModal.value = true;
@@ -320,11 +355,47 @@ const showAccountModal = async () => {
 };
 // 目標搜尋
 const accountFilterText = ref("");
+const accountCount = ref();
 
+const selectAllAdsStatus = computed(() => {
+  if (!condition.value?.target) condition.value.target = [];
+  return condition.value.target.length == accountCount.value;
+});
 const accountModalLoading = ref(false);
 onMounted(() => {
   accountModalLoading.value = true;
 });
+
+const accountFilterTabs = ref([]);
+
+function calculateHierarchyLevels(data) {
+  const hierarchyLevels = [];
+
+  function calculateLevelsRecursive(node, level) {
+    if (node.type !== 1 && node.type !== 5) {
+      if (!hierarchyLevels[level - 1]) {
+        hierarchyLevels[level - 1] = {
+          label: node.type,
+          status: false,
+        };
+      }
+
+      hierarchyLevels[level - 1].status = true;
+    }
+
+    if (node.children && node.children.length > 0) {
+      for (const childNode of node.children) {
+        calculateLevelsRecursive(childNode, level + 1);
+      }
+    }
+  }
+
+  data.forEach((node) => {
+    calculateLevelsRecursive(node, 1);
+  });
+
+  return hierarchyLevels.filter((level) => level !== undefined);
+}
 
 function calculatePreviousTimeRange(timeRange) {
   const startTime = new Date(timeRange.start);
@@ -350,12 +421,14 @@ function calculatePreviousTimeRange(timeRange) {
   return formattedRange;
 }
 
+const uniqueId = ref(Math.random().toString(16).slice(2));
+
 // 比較區間顯示文字
 const comparisonDateLabel = computed(() => {
   if (!props.modelValue.comparison) return "";
   if (dateRangeType.value === -1)
     return condition.value.dateRange
-      ? `與${calculatePreviousTimeRange(condition.value.dateRange)}相比`
+      ? `${calculatePreviousTimeRange(condition.value.dateRange)}`
       : "";
   const dateRangeTypeLabel = {
     [DateRangeType.Today]: "與作天相比",
@@ -369,147 +442,251 @@ const comparisonDateLabel = computed(() => {
 </script>
 
 <template>
-  <OuterBlock :title="'條件' + (index + 1)">
-    <div class="flex flex-col gap-2 relative pt-2">
-      <div
-        class="cursor-pointer text-dark-4 absolute -top-2.5 -right-1.5 p4-b"
-        @click="emit('removeItem')"
-      >
-        刪除
-      </div>
-
-      <div class="flex items-center gap-2 flex-wrap">
-        <label class="flex items-center gap-2">
-          <span class="p4-b">平台</span>
-          <select
-            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-            v-model="client"
-            @change="setClient"
-            required
-          >
-            <option value="" disabled>請選擇</option>
-            <template v-for="(value, key) in ClientType" :key="key">
-              <option v-if="!Number.isInteger(value)" :value="key">
-                {{ value }}
-              </option>
-            </template>
-          </select>
-        </label>
-        <label class="flex items-center gap-2" v-if="client != unSelected">
-          <span class="p4-b">層級</span>
-          <select
-            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-            v-model="adLevel"
-            @change="setAdLevel"
-            required
-          >
-            <option value="" disabled>請選擇</option>
-            <template v-for="(value, key) in adLevelOption" :key="key">
-              <option v-if="!Number.isInteger(value)" :value="key">
-                {{ t(`${ClientType[client]}${value}`) }}
-              </option>
-            </template>
-          </select>
-        </label>
-        <label class="flex items-center gap-2" v-if="adLevel != unSelected">
-          <span class="p4-b">目標</span>
-          <select
-            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-            v-model="targetType"
-            @change="setTargetType"
-            required
-          >
-            <option value="" disabled>請選擇</option>
-            <template v-for="(value, key) in EventActionTargetType" :key="key">
-              <option v-if="!Number.isInteger(value)" :value="key">
-                {{ t(value) }}
-              </option>
-            </template>
-          </select>
-        </label>
-      </div>
-      <div
-        class="flex flex-col my-2"
-        v-if="targetType === EventActionTargetType.ForID"
-      >
-        <label class="flex items-center gap-2 relative">
-          <span class="p4-b">指定目標</span>
-          <div
-            class="p4-r px-1.5 z-[2] py-0.5 text-true-blue-2 rounded bg-true-blue-5 flex w-fit cursor-pointer hover:bg-true-blue-4"
-            @click="showAccountModal"
-          >
-            編輯
+  <OuterBlock :title="'條件' + (index + 1)" :icon="'PhCheckSquare'">
+    <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-6 pt-2">
+        <div
+          class="cursor-pointer text-dark-4 absolute bottom-4 right-3 hover:text-dark-3 p3-r transition-all"
+          @click="emit('removeItem')"
+        >
+          <PhTrash size="18" weight="bold" />
+        </div>
+        <label class="flex justify-start items-center gap-2">
+          <div class="relative w-fit">
+            <span class="p3-r text-dark-4">平台</span>
+            <input
+              type="text"
+              class="opacity-0 absolute left-0 top-0 pointer-events-none"
+              required
+              :value="client"
+            />
           </div>
-          <input
-            type="text"
-            class="opacity-0 absolute left-0 top-0"
-            required
-            :value="
-              condition?.target ? (condition?.target.length ? '123' : '') : ''
-            "
-          />
+          <div
+            class="shadow-01 flex items-center py-1 px-2 rounded p3-r text-dark-3"
+          >
+            <div
+              class="flex"
+              v-for="(value, key, index) in ClientType"
+              :key="key"
+            >
+              <template v-if="!Number.isInteger(value)">
+                <span
+                  class="cursor-pointer hover:drop-shadow-md"
+                  :class="{
+                    'text-true-blue-3 drop-shadow-sm p3-b': client == key,
+                  }"
+                  @click="setClient(key)"
+                >
+                  {{ value }}
+                </span>
+                <div
+                  class="text-dark-5 mx-1"
+                  v-if="
+                    index <
+                    Object.keys(ClientType).filter((key) => isNaN(Number(key)))
+                      .length -
+                      1
+                  "
+                >
+                  |
+                </div>
+              </template>
+            </div>
+          </div>
         </label>
-        <div v-if="targetType === EventActionTargetType.ForID">
-          <span class="p4-r text-true-blue-3 px-0.5">{{
-            condition.target && condition.target.length
-              ? `已選${condition.target.length}個目標`
-              : "尚未選擇目標"
-          }}</span>
+        <div class="flex gap-6">
+          <label class="flex justify-start items-center gap-2">
+            <span class="p3-r text-dark-4">層級</span>
+            <select
+              class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+              v-model="adLevel"
+              @change="setAdLevel"
+              required
+            >
+              <option value="" disabled>請選擇</option>
+              <template v-for="(value, key) in adLevelOption" :key="key">
+                <option
+                  v-if="!Number.isInteger(value) && client != unSelected"
+                  :value="key"
+                >
+                  {{ t(`${ClientType[client]}${value}`) }}
+                </option>
+              </template>
+            </select>
+          </label>
+          <div class="flex gap-2">
+            <label class="flex justify-start items-center gap-2">
+              <span class="p3-r text-dark-4">項目</span>
+              <select
+                class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                v-model="targetType"
+                @change="setTargetType"
+                required
+              >
+                <option value="" disabled>請選擇</option>
+                <template
+                  v-for="(value, key) in EventActionTargetType"
+                  :key="key"
+                >
+                  <option v-if="!Number.isInteger(value)" :value="key">
+                    {{ t(value) }}
+                  </option>
+                </template>
+              </select>
+            </label>
+            <div
+              v-if="targetType === EventActionTargetType.ForID"
+              class="flex relative"
+            >
+              <template v-if="targetType === EventActionTargetType.ForID">
+                <span
+                  class="p3-b w-fit flex cursor-pointer items-center justify-center z-[2]"
+                  :class="[
+                    condition.target && condition.target.length
+                      ? ` text-true-blue-3`
+                      : 'text-red-2',
+                  ]"
+                  @click="showAccountModal"
+                >
+                  {{
+                    condition.target && condition.target.length
+                      ? `已選${condition.target.length}個項目`
+                      : "未選擇"
+                  }}
+                </span>
+              </template>
+              <input
+                type="text"
+                class="opacity-0 absolute left-0 top-0"
+                required
+                :value="
+                  condition?.target
+                    ? condition?.target.length
+                      ? '123'
+                      : ''
+                    : ''
+                "
+              />
+            </div>
+          </div>
         </div>
       </div>
       <!-- 選擇帳號彈窗 -->
-      <Teleport to="#editor-container" v-if="accountModalLoading">
+      <Teleport to="#editor-container-outer" v-if="accountModalLoading">
         <div
-          class="absolute top-0 left-0 pt-4 right-0 bottom-0 w-full h-full flex justify-center bg-dark-3 bg-opacity-50 z-[2]"
+          class="sticky top-0 left-0 pt-4 right-0 items-start bottom-0 w-full h-full flex justify-center bg-dark-3 bg-opacity-50 z-[2]"
           v-if="addAccountModal"
         >
           <div
-            class="sticky flex flex-col max-h-[80%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4"
+            class="sticky flex flex-col max-h-[95%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-[3%]"
           >
-            <ph-x
-              class="absolute top-1 right-1 cursor-pointer text-dark-2 hover:text-dark-1"
-              @click="addAccountModal = false"
-              size="18"
-              weight="bold"
+            <div class="flex justify-between">
+              <span class="p2-b flex justify-center mb-3 text-dark-2 mr-auto"
+                >請選擇目標</span
+              >
+              <Ph-X
+                class="text-dark-3 cursor-pointer hover:text-dark-2"
+                weight="bold"
+                @click="addAccountModal = false"
+              />
+            </div>
+            <TextInput
+              v-model="accountFilterText"
+              :placeholder="'搜尋'"
+              class="max-w-xs min-w-[200px] mx-auto w-full mb-4"
             />
-            <span class="p2-b flex justify-center mb-3 text-dark-2"
-              >請選擇目標</span
-            >
-
-            <TextInput :placeholder="'搜尋'" v-model="accountFilterText" />
             <div
-              class="mt-2 flex w-fit ml-auto justify-end p4-b text-true-blue-3 cursor-pointer"
-              @click="selectAllAccount"
+              class="flex gap-2 mx-auto empty:hidden mb-8"
+              v-if="!getAccountLoading"
             >
-              全選
+              <label
+                class="p3-r flex cursor-pointer items-center gap-1 rounded bg-light-5 px-1.5 py-0.5 text-dark-3 border"
+                :class="{
+                  'bg-true-blue-3 border-true-blue-3 text-light-5':
+                    !item.status,
+                }"
+                v-for="item in accountFilterTabs"
+                :key="item.label"
+                :for="item.label"
+              >
+                <input
+                  type="checkbox"
+                  v-model="item.status"
+                  :id="item.label"
+                  class="hidden"
+                  @change="resetSelectedAccount"
+                />
+                {{
+                  t(
+                    `${ClientType[client]}${item.status ? "On" : "Off"}${
+                      item.label
+                    }`
+                  )
+                }}
+              </label>
             </div>
             <div
-              class="h-4 w-4 mx-auto animate-spin rounded-full border-2 border-solid border-blue-400 border-t-transparent"
+              class="flex justify-between items-center"
+              v-if="!getAccountLoading"
+            >
+              <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1">
+                  <div
+                    class="w-1.5 h-1.5 rounded-full bg-success-green-3"
+                  ></div>
+                  <span class="p4-r">啟用中</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <div class="w-1.5 h-1.5 rounded-full bg-red-3"></div>
+                  <span class="p4-r">暫停中</span>
+                </div>
+              </div>
+              <div
+                class="flex w-fit items-center gap-1 justify-end p3-r text-true-blue-3 cursor-pointer"
+              >
+                <Checkbox
+                  class="rounded data-[state=checked]:bg-true-blue-3 border-true-blue-5"
+                  id="selectAllAdsStatus"
+                  :checked="selectAllAdsStatus"
+                  @update:checked="selectAllAccount"
+                />
+                <label for="selectAllAdsStatus"> 全選 </label>
+              </div>
+            </div>
+
+            <div
               v-if="getAccountLoading"
+              class="h-4 w-4 mt-4 mx-auto animate-spin rounded-full border-2 border-solid border-blue-400 border-t-transparent"
             ></div>
             <template v-else>
-              <div class="flex flex-col gap-2 mt-4 flex-1 overflow-y-auto">
+              <div class="flex flex-col gap-2 flex-1 overflow-y-auto">
                 <EventActionTargetItem
                   v-for="target in filterAccountList"
                   :key="target.id"
                   :target="target"
-                  :targets="condition?.target"
+                  :targets="condition?.target ?? []"
                 />
               </div>
+            </template>
+            <div
+              class="mx-auto flex w-fit items-center gap-4 mt-4"
+              v-if="!getAccountLoading"
+            >
               <div
-                class="p4-b flex cursor-pointer items-center mx-auto gap-1 rounded bg-true-blue-2 px-1.5 py-0.5 text-light-5 hover:bg-true-blue-1"
+                class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 border border-transparent px-2 py-1 text-light-5 hover:bg-true-blue-3"
                 @click="addAccountModal = false"
               >
                 確定
               </div>
-            </template>
+            </div>
           </div>
         </div>
       </Teleport>
-      <label class="flex items-center gap-1" v-if="targetType != unSelected">
-        <span class="p4-b">條件</span>
+
+      <label class="flex justify-start gap-2 items-center">
+        <span class="p3-r text-dark-4">條件</span>
         <select
-          class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+          class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="conditionType"
           @change="setConditionType"
           required
@@ -522,12 +699,12 @@ const comparisonDateLabel = computed(() => {
           </template>
         </select>
       </label>
-      <div class="flex gap-2 flex-wrap" v-if="conditionType != unSelected">
-        <div class="flex gap-2 flex-wrap">
-          <label class="flex items-center gap-1">
-            <span class="p4-b">運算</span>
+      <div class="flex flex-col gap-6">
+        <div class="flex gap-2">
+          <label class="flex justify-start gap-2 items-center">
+            <span class="p3-r text-dark-4">區間</span>
             <select
-              class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+              class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
               v-model="dateRangeType"
               @change="setDateRangeType"
               required
@@ -540,7 +717,8 @@ const comparisonDateLabel = computed(() => {
               </template>
             </select>
           </label>
-          <div class="flex gap-2">
+
+          <div class="flex gap-2 empty:hidden">
             <div v-if="dateRangeType == DateRangeType.SpecifiedTime">
               <DatePicker
                 v-model.range="condition.dateRange"
@@ -548,7 +726,7 @@ const comparisonDateLabel = computed(() => {
               >
                 <template #default="{ togglePopover, inputValue }">
                   <div
-                    class="p4-b text-dark-3 flex relative cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
+                    class="p3-b text-true-blue-3 flex relative cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
                     @click="togglePopover"
                   >
                     <input
@@ -566,63 +744,83 @@ const comparisonDateLabel = computed(() => {
                 </template>
               </DatePicker>
             </div>
-            <div
-              class="p4-b text-dark-3 flex items-center justify-center"
-              v-if="modelValue.comparison && comparisonDateLabel !== ''"
-            >
-              {{ comparisonDateLabel }}
+            <div class="flex items-center gap-2 empty:hidden">
+              <input
+                type="checkbox"
+                v-model="modelValue.comparison"
+                class="hidden"
+                :id="`comparison-${uniqueId}`"
+              />
+              <label
+                class="p3-b text-dark-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                :for="`comparison-${uniqueId}`"
+                v-if="!modelValue.comparison"
+                >加入比較區間</label
+              >
+              <span class="p3-b text-dark-3" v-if="modelValue.comparison">
+                vs
+              </span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div
+                class="p3-b rounded shadow-01 bg-light-5 py-1 px-2 text-true-blue-3 flex items-center justify-center"
+                v-if="modelValue.comparison && comparisonDateLabel !== ''"
+              >
+                {{ comparisonDateLabel }}
+              </div>
+              <PhX
+                v-if="modelValue.comparison"
+                @click="modelValue.comparison = false"
+                weight="bold"
+                class="text-dark-4 hover:text-dark-3 p3-b cursor-pointer"
+              />
             </div>
           </div>
         </div>
-        <label class="flex items-center gap-1" v-if="dateRangeType != ''">
-          <select
-            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-            v-model="operation"
-            @change="setOperation"
-            required
-          >
-            <option value="" disabled>請選擇</option>
-            <template v-for="(value, key) in OperationType" :key="key">
-              <option v-if="!Number.isInteger(value)" :value="value">
-                {{ t(key) }}
-              </option>
-            </template>
-          </select>
-        </label>
-        <label class="flex items-center gap-1" v-if="operation != unSelected">
-          <select
-            class="p4-b text-dark-3 flex cursor-pointer items-center justify-center gap-2 rounded border border-dark-5 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-            v-model="valueType"
-            @change="setValueType"
-            required
-          >
-            <option value="" disabled>請選擇</option>
-            <template v-for="(value, key) in ValueType" :key="key">
-              <option v-if="!Number.isInteger(value)" :value="value">
-                {{ t(`condition${key}`) }}
-              </option>
-            </template>
-          </select>
-        </label>
-        <div class="flex gap-1 items-center" v-if="valueType != unSelected">
-          <TextInput
-            v-model="condition.value"
-            :inputClass="'p4-r'"
-            :type="'number'"
-            :required="true"
-          />
-          <span class="p4-b">{{
-            condition.valueType === ValueType.Percentage ? "%" : "元"
-          }}</span>
+        <div class="flex justify-start gap-2 items-center">
+          <span class="p3-r text-dark-4">運算</span>
+          <label class="flex items-center gap-2">
+            <select
+              class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+              v-model="operation"
+              @change="setOperation"
+              required
+            >
+              <option value="" disabled>請選擇</option>
+              <template v-for="(value, key) in OperationType" :key="key">
+                <option v-if="!Number.isInteger(value)" :value="value">
+                  {{ t(key) }}
+                </option>
+              </template>
+            </select>
+          </label>
+          <label class="flex items-center gap-1">
+            <select
+              class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+              v-model="valueType"
+              @change="setValueType"
+              required
+            >
+              <option value="" disabled>請選擇</option>
+              <template v-for="(value, key) in ValueType" :key="key">
+                <option v-if="!Number.isInteger(value)" :value="value">
+                  {{ t(`condition${key}`) }}
+                </option>
+              </template>
+            </select>
+          </label>
+          <div class="flex gap-1 items-center w-24">
+            <TextInput
+              v-model="condition.value"
+              :inputClass="'text-true-blue-3'"
+              :type="'number'"
+              :required="true"
+            />
+            <span class="p3-r text-dark-4" v-if="valueType != unSelected">{{
+              condition.valueType === ValueType.Percentage ? "%" : "元"
+            }}</span>
+          </div>
         </div>
-      </div>
-      <div class="flex items-center gap-2" v-if="dateRangeType != unSelected">
-        <input
-          type="checkbox"
-          v-model="modelValue.comparison"
-          id="comparison"
-        />
-        <label class="p4-b" for="comparison">加入比較區間</label>
       </div>
     </div>
   </OuterBlock>

@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
+import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -13,6 +14,12 @@ export default defineConfig({
       imports: ["vue", "vue-i18n"],
     }),
   ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+
   build: {
     lib: {
       // src/index.ts is where we have exported the component(s)

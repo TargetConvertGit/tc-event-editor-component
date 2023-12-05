@@ -86,8 +86,9 @@ export interface EventNotify {
  */
 export declare enum EmailNotify {
     None = -1,
-    All = 1,
-    Error = 2
+    ConditionMet = 2,
+    All = 3,
+    Error = 4
 }
 /**
  * 訊息開關
@@ -113,7 +114,6 @@ export type AdLevelType = AdLevelTypeGoogle | AdLevelTypeFacebook;
 export declare enum AdLevelTypeGoogle {
     Campaign = 2,
     AdGroup = 3,
-    Ad = 4,
     AdTag = 5
 }
 /**

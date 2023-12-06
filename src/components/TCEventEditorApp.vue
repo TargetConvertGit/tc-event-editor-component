@@ -158,6 +158,6 @@ defineExpose({
   </div>
 </template>
 
-<style>
+<style scoped>
 @import "../style.css";
 </style>

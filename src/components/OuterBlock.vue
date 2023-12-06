@@ -84,7 +84,7 @@ function leave(element) {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .expand-enter-active,
 .expand-leave-active {
   transition:

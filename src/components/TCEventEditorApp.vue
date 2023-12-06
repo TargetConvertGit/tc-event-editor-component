@@ -113,7 +113,6 @@ defineExpose({
 
 <template>
   <div
-    class="flex-1 h-full scroll-smooth"
     :class="[lockScroll ? 'overflow-y-hidden' : 'overflow-y-auto']"
     v-if="props.data"
     id="editor-container-outer"
@@ -156,3 +155,8 @@ defineExpose({
     </form>
   </div>
 </template>
+<style lang="scss" scoped>
+#editor-container-outer {
+  @apply flex-1 h-full scroll-smooth;
+}
+</style>

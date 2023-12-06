@@ -19,7 +19,6 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-
   build: {
     lib: {
       // src/index.ts is where we have exported the component(s)

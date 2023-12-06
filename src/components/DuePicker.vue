@@ -2,6 +2,9 @@
 import { PhX } from "@phosphor-icons/vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
+import { i18n } from "../i18n";
+
+const { t } = i18n.global;
 export interface Props {
   modelValue: string | null | Date | undefined;
 }
@@ -48,7 +51,7 @@ onUnmounted(() => {
         for="due"
         class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
         v-if="!setDeadline"
-        >持續執行</label
+        >{{ t("持續執行") }}</label
       >
       <DatePicker
         v-if="setDeadline"
@@ -66,7 +69,7 @@ onUnmounted(() => {
             class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
             @click="togglePopover"
           >
-            {{ inputValue ? inputValue : "未設定" }}
+            {{ inputValue ? inputValue : t("未設定") }}
           </div>
         </template>
       </DatePicker>

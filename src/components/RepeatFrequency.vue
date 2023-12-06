@@ -70,42 +70,42 @@ const yearMonths = computed({
 // 顯示文字
 const repeatLabel = computed(() => {
   if (repeat.value == FrequencyType.Never) {
-    return "只執行一次";
+    return t("只執行一次");
   }
   if (repeat.value == FrequencyType.Hour) {
-    return "每小時執行一次";
+    return t("每小時執行一次");
   }
   if (repeat.value == FrequencyType.Day) {
-    return "每日執行一次";
+    return t("每日執行一次");
   }
   if (repeat.value == FrequencyType.Week) {
-    return "每週執行一次";
+    return t("每週執行一次");
   }
   if (repeat.value == FrequencyType.Month) {
-    return "每月執行一次";
+    return t("每月執行一次");
   }
   if (repeat.value == FrequencyType.Annual) {
-    return "每年執行一次";
+    return t("每年執行一次");
   }
   const label = {
-    1: "小時",
-    2: "日",
-    3: "週",
-    4: "月",
-    5: "年",
+    1: t("小時"),
+    2: t("日"),
+    3: t("週"),
+    4: t("月"),
+    5: t("年"),
   };
   const date = {
     1: "",
     2: "",
-    3: ``,
+    3: "",
     4: "",
     5: "",
   };
 
   if (repeat.value == 0) {
-    return `每${interval.value ?? ""}${label[frequency.value] ?? ""}${
+    return `${t("每")}${interval.value ?? ""}${label[frequency.value] ?? ""}${
       date[frequency.value] ?? ""
-    }執行一次`;
+    }${t("執行一次")}`;
   }
   return "";
 });
@@ -140,7 +140,7 @@ watch(
     <div class="flex gap-6">
       <div class="flex flex-col gap-2">
         <div class="flex items-center justify-start gap-2">
-          <span class="p3-r text-dark-4">開始</span>
+          <span class="p3-r text-dark-4">{{ t("開始") }}</span>
           <DatePicker
             v-model="startTime"
             mode="dateTime"
@@ -161,7 +161,7 @@ watch(
                   required
                   class="opacity-0 absolute w-full h-full pointer-events-none"
                 />
-                {{ inputValue ? inputValue : "未設定" }}
+                {{ inputValue ? inputValue : t("未設定") }}
               </div>
             </template>
           </DatePicker>
@@ -169,7 +169,7 @@ watch(
       </div>
 
       <label class="flex items-center justify-start gap-2">
-        <span class="p3-r text-dark-4">執行頻率</span>
+        <span class="p3-r text-dark-4">{{ t("執行頻率") }}</span>
         <div class="flex gap-6">
           <div class="flex items-center gap-2">
             <select
@@ -181,7 +181,7 @@ watch(
                   {{ t(key) }}
                 </option>
               </template>
-              <option :value="0">自訂</option>
+              <option :value="0">{{ t("自訂") }}</option>
             </select>
           </div>
         </div>
@@ -191,7 +191,7 @@ watch(
           class="flex items-center justify-start gap-2"
           v-if="frequency !== -1"
         >
-          <span class="p3-r text-dark-4">結束</span>
+          <span class="p3-r text-dark-4">{{ t("結束") }}</span>
           <DuePicker v-model="eventData.due" />
         </div>
       </div>
@@ -201,7 +201,7 @@ watch(
       v-if="FrequencyType[repeat] == undefined"
     >
       <div class="flex gap-2 items-center">
-        <span class="p3-r text-dark-4">每</span>
+        <span class="p3-r text-dark-4">{{ t("每") }}</span>
         <TextInput
           class="!w-10 text-center text-dark-3"
           :inputClass="'text-true-blue-3'"
@@ -212,7 +212,7 @@ watch(
           class="p3-b text-true-blue-3 w-14 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="frequency"
         >
-          <option value="-1" disabled>未設定</option>
+          <option value="-1" disabled>{{ t("未設定") }}</option>
           <template v-for="(value, key) in FrequencyType" :key="key">
             <option
               v-if="value != FrequencyType.Never && Number.isInteger(value)"

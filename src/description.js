@@ -3,6 +3,7 @@ import {
   WeekdaysType,
   WeekOrdinalWordsType,
 } from "./types/event-items";
+import { i18n } from "./i18n";
 
 const dt = {
   every: "每",
@@ -39,6 +40,7 @@ const dt = {
 };
 
 export function getDescription(event, withRange = false) {
+  const { t } = i18n.global;
   const startDate = new Date(event.start).toLocaleString("zh-TW", {
     year: "numeric",
     month: "long",
@@ -57,18 +59,18 @@ export function getDescription(event, withRange = false) {
     : null;
   if (event.frequency === FrequencyType.Never) return `於 ${startDate} 起`;
 
-  const frequencyText = dt.frequency[FrequencyType[event.frequency]];
+  const frequencyText = t(dt.frequency[FrequencyType[event.frequency]]);
 
   const weekdaysText = event.weekdays
-    ? event.weekdays.map((day) => dt.weekdays[WeekdaysType[day]]).join("、")
+    ? event.weekdays.map((day) => t(dt.weekdays[WeekdaysType[day]])).join("、")
     : "";
   const weekOrdinalText = event.weekOrdinal
     ? event.weekOrdinal
-        .map((ord) => dt.weekOrdinal[WeekOrdinalWordsType[ord]])
+        .map((ord) => t(dt.weekOrdinal[WeekOrdinalWordsType[ord]]))
         .join("、")
     : "";
   const monthDateText = event.monthDate
-    ? `${event.monthDate.join("、")}號`.replace("-1", "最後一天")
+    ? `${event.monthDate.join("、")}號`.replace("-1", t())
     : "";
   const yearMonthsText = event.yearMonths
     ? `${event.yearMonths
@@ -76,7 +78,6 @@ export function getDescription(event, withRange = false) {
         .reverse()
         .join("、")}月`
     : "";
-  // let description = `${dt.every}${event.interval}${frequencyText}`;
   let description = `於 ${startDate} 起，${dt.every}${event.interval}${frequencyText}`;
   let withoutDescription = `${dt.every}${event.interval}${frequencyText}`;
   if (weekOrdinalText || weekdaysText || monthDateText || yearMonthsText) {

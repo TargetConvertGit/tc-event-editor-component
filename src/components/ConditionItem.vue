@@ -431,18 +431,21 @@ const comparisonDateLabel = computed(() => {
       ? `${calculatePreviousTimeRange(condition.value.dateRange)}`
       : "";
   const dateRangeTypeLabel = {
-    [DateRangeType.Today]: "與作天相比",
-    [DateRangeType.Yesterday]: "與前一天相比",
-    [DateRangeType.Last3Days]: "與前3天相比",
-    [DateRangeType.Last7Days]: "與前7天相比",
-    [DateRangeType.ThisMonth]: "與上個月相比",
+    [DateRangeType.Today]: t("與作天相比"),
+    [DateRangeType.Yesterday]: t("與前一天相比"),
+    [DateRangeType.Last3Days]: t("與前3天相比"),
+    [DateRangeType.Last7Days]: t("與前7天相比"),
+    [DateRangeType.ThisMonth]: t("與上個月相比"),
   };
   return dateRangeTypeLabel[dateRangeType.value];
 });
 </script>
 
 <template>
-  <OuterBlock :title="'條件' + (index + 1)" :icon="'PhCheckSquare'">
+  <OuterBlock
+    :title="t('條件 {count}', { count: index + 1 })"
+    :icon="'PhCheckSquare'"
+  >
     <div class="flex flex-col gap-6">
       <div class="flex flex-col gap-6 pt-2">
         <div
@@ -453,7 +456,7 @@ const comparisonDateLabel = computed(() => {
         </div>
         <label class="flex justify-start items-center gap-2">
           <div class="relative w-fit">
-            <span class="p3-r text-dark-4">平台</span>
+            <span class="p3-r text-dark-4">{{ t("平台") }}</span>
             <input
               type="text"
               class="opacity-0 absolute left-0 top-0 pointer-events-none"
@@ -496,14 +499,14 @@ const comparisonDateLabel = computed(() => {
         </label>
         <div class="flex gap-6">
           <label class="flex justify-start items-center gap-2">
-            <span class="p3-r text-dark-4">層級</span>
+            <span class="p3-r text-dark-4">{{ t("層級") }}</span>
             <select
               class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
               v-model="adLevel"
               @change="setAdLevel"
               required
             >
-              <option value="" disabled>請選擇</option>
+              <option value="" disabled>{{ t("請選擇") }}</option>
               <template v-for="(value, key) in adLevelOption" :key="key">
                 <option
                   v-if="!Number.isInteger(value) && client != unSelected"
@@ -516,14 +519,15 @@ const comparisonDateLabel = computed(() => {
           </label>
           <div class="flex gap-2">
             <label class="flex justify-start items-center gap-2">
-              <span class="p3-r text-dark-4">項目</span>
+              <span class="p3-r text-dark-4">{{ t("項目") }}</span>
               <select
                 class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
                 v-model="targetType"
                 @change="setTargetType"
                 required
               >
-                <option value="" disabled>請選擇</option>
+                <option value="" disabled>{{ t("請選擇") }}</option>
+
                 <template
                   v-for="(value, key) in EventActionTargetType"
                   :key="key"
@@ -550,8 +554,10 @@ const comparisonDateLabel = computed(() => {
                 >
                   {{
                     condition.target && condition.target.length
-                      ? `已選${condition.target.length}個項目`
-                      : "未選擇"
+                      ? `${t("已選${count}個項目", {
+                          count: condition.target.length,
+                        })}`
+                      : t("未選擇")
                   }}
                 </span>
               </template>
@@ -581,9 +587,9 @@ const comparisonDateLabel = computed(() => {
             class="sticky flex flex-col max-h-[95%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-[3%]"
           >
             <div class="flex justify-between">
-              <span class="p2-b flex justify-center mb-3 text-dark-2 mr-auto"
-                >請選擇目標</span
-              >
+              <span class="p2-b flex justify-center mb-3 text-dark-2 mr-auto">
+                {{ t("請選擇目標") }}
+              </span>
               <Ph-X
                 class="text-dark-3 cursor-pointer hover:text-dark-2"
                 weight="bold"
@@ -592,14 +598,14 @@ const comparisonDateLabel = computed(() => {
             </div>
             <TextInput
               v-model="accountFilterText"
-              :placeholder="'搜尋'"
+              :placeholder="t('搜尋')"
               class="max-w-xs min-w-[200px] mx-auto w-full mb-4"
             />
             <div
               class="flex gap-2 mx-auto items-center empty:hidden mb-8"
               v-if="!getAccountLoading && accountFilterTabs.length"
             >
-              <span class="p3-r text-dark-3">篩選器</span>
+              <span class="p3-r text-dark-3">{{ t("篩選") }}</span>
               <label
                 class="p3-r flex cursor-pointer items-center gap-1 rounded bg-light-5 px-1.5 py-0.5 text-dark-3 border"
                 :class="{
@@ -635,11 +641,11 @@ const comparisonDateLabel = computed(() => {
                   <div
                     class="w-1.5 h-1.5 rounded-full bg-success-green-3"
                   ></div>
-                  <span class="p4-r">啟用中</span>
+                  <span class="p4-r">{{ t("啟用中") }}</span>
                 </div>
                 <div class="flex items-center gap-1">
                   <div class="w-1.5 h-1.5 rounded-full bg-red-3"></div>
-                  <span class="p4-r">暫停中</span>
+                  <span class="p4-r">{{ t("暫停中") }}</span>
                 </div>
               </div>
               <div
@@ -651,7 +657,7 @@ const comparisonDateLabel = computed(() => {
                   :checked="selectAllAdsStatus"
                   @update:checked="selectAllAccount"
                 />
-                <label for="selectAllAdsStatus"> 全選 </label>
+                <label for="selectAllAdsStatus"> {{ t("全選") }} </label>
               </div>
             </div>
 
@@ -677,7 +683,7 @@ const comparisonDateLabel = computed(() => {
                 class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 border border-transparent px-2 py-1 text-light-5 hover:bg-true-blue-3"
                 @click="addAccountModal = false"
               >
-                確定
+                {{ t("確定") }}
               </div>
             </div>
           </div>
@@ -685,14 +691,14 @@ const comparisonDateLabel = computed(() => {
       </Teleport>
 
       <label class="flex justify-start gap-2 items-center">
-        <span class="p3-r text-dark-4">條件</span>
+        <span class="p3-r text-dark-4">{{ t("條件") }}</span>
         <select
           class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           v-model="conditionType"
           @change="setConditionType"
           required
         >
-          <option value="" disabled>請選擇</option>
+          <option value="" disabled>{{ t("請選擇") }}</option>
           <template v-for="(value, key) in actionOption" :key="key">
             <option :value="value">
               {{ t(key) }}
@@ -703,14 +709,14 @@ const comparisonDateLabel = computed(() => {
       <div class="flex flex-col gap-6">
         <div class="flex gap-2">
           <label class="flex justify-start gap-2 items-center">
-            <span class="p3-r text-dark-4">區間</span>
+            <span class="p3-r text-dark-4">{{ t("區間") }}</span>
             <select
               class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
               v-model="dateRangeType"
               @change="setDateRangeType"
               required
             >
-              <option value="" disabled>請選擇</option>
+              <option value="" disabled>{{ t("請選擇") }}</option>
               <template v-for="(value, key) in DateRangeType" :key="key">
                 <option v-if="!Number.isInteger(value)" :value="key">
                   {{ t(value) }}
@@ -739,7 +745,7 @@ const comparisonDateLabel = computed(() => {
                     {{
                       inputValue.start && inputValue.end
                         ? `${inputValue.start}-${inputValue.end}`
-                        : "請選定區間"
+                        : t("請選定區間")
                     }}
                   </div>
                 </template>
@@ -756,7 +762,7 @@ const comparisonDateLabel = computed(() => {
                 class="p3-b text-dark-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
                 :for="`comparison-${uniqueId}`"
                 v-if="!modelValue.comparison"
-                >加入比較區間</label
+                >{{ t("加入比較區間") }}</label
               >
               <span class="p3-b text-dark-3" v-if="modelValue.comparison">
                 vs
@@ -779,7 +785,7 @@ const comparisonDateLabel = computed(() => {
           </div>
         </div>
         <div class="flex justify-start gap-2 items-center">
-          <span class="p3-r text-dark-4">運算</span>
+          <span class="p3-r text-dark-4">{{ t("運算") }}</span>
           <label class="flex items-center gap-2">
             <select
               class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
@@ -787,7 +793,7 @@ const comparisonDateLabel = computed(() => {
               @change="setOperation"
               required
             >
-              <option value="" disabled>請選擇</option>
+              <option value="" disabled>{{ t("請選擇") }}</option>
               <template v-for="(value, key) in OperationType" :key="key">
                 <option v-if="!Number.isInteger(value)" :value="value">
                   {{ t(key) }}
@@ -802,7 +808,7 @@ const comparisonDateLabel = computed(() => {
               @change="setValueType"
               required
             >
-              <option value="" disabled>請選擇</option>
+              <option value="" disabled>{{ t("請選擇") }}</option>
               <template v-for="(value, key) in ValueType" :key="key">
                 <option v-if="!Number.isInteger(value)" :value="value">
                   {{ t(`condition${key}`) }}
@@ -818,7 +824,7 @@ const comparisonDateLabel = computed(() => {
               :required="true"
             />
             <span class="p3-r text-dark-4" v-if="valueType != unSelected">{{
-              condition.valueType === ValueType.Percentage ? "%" : "元"
+              condition.valueType === ValueType.Percentage ? "%" : t("元")
             }}</span>
           </div>
         </div>

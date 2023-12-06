@@ -12,7 +12,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../shadcn/components/ui/popover";
+import { i18n } from "../i18n";
 
+const { t } = i18n.global;
 export interface Props {
   type: number;
   weekdays?: WeekdaysType[];
@@ -77,25 +79,25 @@ watchEffect(() => {
 });
 //指定每週星期幾
 const weekdaysOptions = ref([
-  { name: "星期日", id: WeekdaysType.Sunday },
-  { name: "星期一", id: WeekdaysType.Monday },
-  { name: "星期二", id: WeekdaysType.Tuesday },
-  { name: "星期三", id: WeekdaysType.Wednesday },
-  { name: "星期四", id: WeekdaysType.Thursday },
-  { name: "星期五", id: WeekdaysType.Friday },
-  { name: "星期六", id: WeekdaysType.Saturday },
-  { name: "平日", id: WeekdaysType.Weekday },
-  { name: "週末", id: WeekdaysType.Weekend },
+  { name: t("週日"), id: WeekdaysType.Sunday },
+  { name: t("週一"), id: WeekdaysType.Monday },
+  { name: t("週二"), id: WeekdaysType.Tuesday },
+  { name: t("週三"), id: WeekdaysType.Wednesday },
+  { name: t("週四"), id: WeekdaysType.Thursday },
+  { name: t("週五"), id: WeekdaysType.Friday },
+  { name: t("週六"), id: WeekdaysType.Saturday },
+  { name: t("平日"), id: WeekdaysType.Weekday },
+  { name: t("週末"), id: WeekdaysType.Weekend },
 ]);
 
 //指定每月第幾週
 const weekOrdinal = ref([
-  { name: "第一週", id: WeekOrdinalWordsType.First },
-  { name: "第二週", id: WeekOrdinalWordsType.Second },
-  { name: "第三週", id: WeekOrdinalWordsType.Third },
-  { name: "第四週", id: WeekOrdinalWordsType.Fourth },
-  { name: "第五週", id: WeekOrdinalWordsType.Fifth },
-  { name: "最後一週", id: WeekOrdinalWordsType.Last },
+  { name: t("第一週"), id: WeekOrdinalWordsType.First },
+  { name: t("第二週"), id: WeekOrdinalWordsType.Second },
+  { name: t("第三週"), id: WeekOrdinalWordsType.Third },
+  { name: t("第四週"), id: WeekOrdinalWordsType.Fourth },
+  { name: t("第五週"), id: WeekOrdinalWordsType.Fifth },
+  { name: t("最後一週"), id: WeekOrdinalWordsType.Last },
 ]);
 // 每個月第幾天(1 - 31), -1表示最後一天
 const monthDate = ref([
@@ -130,56 +132,56 @@ const monthDate = ref([
   { name: "29", id: 29 },
   { name: "30", id: 30 },
   { name: "31", id: 31 },
-  { name: "最後一天", id: -1 },
+  { name: t("最後一天"), id: -1 },
 ]);
 // 每年的第幾個月
 const yearMonths = ref([
   {
-    name: "一月",
+    name: t("一月"),
     id: MonthType.January,
   },
   {
-    name: "二月",
+    name: t("二月"),
     id: MonthType.February,
   },
   {
-    name: "三月",
+    name: t("三月"),
     id: MonthType.March,
   },
   {
-    name: "四月",
+    name: t("四月"),
     id: MonthType.April,
   },
   {
-    name: "五月",
+    name: t("五月"),
     id: MonthType.May,
   },
   {
-    name: "六月",
+    name: t("六月"),
     id: MonthType.June,
   },
   {
-    name: "七月",
+    name: t("七月"),
     id: MonthType.July,
   },
   {
-    name: "八月",
+    name: t("八月"),
     id: MonthType.August,
   },
   {
-    name: "九月",
+    name: t("九月"),
     id: MonthType.September,
   },
   {
-    name: "十月",
+    name: t("十月"),
     id: MonthType.October,
   },
   {
-    name: "十一月",
+    name: t("十一月"),
     id: MonthType.November,
   },
   {
-    name: "十二月",
+    name: t("十二月"),
     id: MonthType.December,
   },
 ]);
@@ -273,8 +275,8 @@ enum SpecifyDateType {
 
 // 選擇日期類型
 const specifyDateType = ref([
-  { name: "星期", id: SpecifyDateType.Week },
-  { name: "日期", id: SpecifyDateType.Date },
+  { name: t("星期"), id: SpecifyDateType.Week },
+  { name: t("日期"), id: SpecifyDateType.Date },
 ]);
 const selectType = ref(specifyDateType.value[0]);
 watch(selectType, (val: { name: string; id: SpecifyDateType }) => {
@@ -350,13 +352,13 @@ const showUnselectedLabel = computed(() => {
     v-if="type === FrequencyType.Annual || options"
     class="flex items-center gap-2 relative"
   >
-    <span class="p3-r text-dark-4">指定時段</span>
+    <span class="p3-r text-dark-4">{{ t("指定時段") }}</span>
     <Popover>
       <PopoverTrigger>
         <div class="flex gap-6">
           <span
             class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-            >{{ showUnselectedLabel ? timeLabel : "未設定" }}</span
+            >{{ showUnselectedLabel ? timeLabel : t("未設定") }}</span
           >
           <template> </template>
         </div>
@@ -370,7 +372,7 @@ const showUnselectedLabel = computed(() => {
           <div
             class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
           >
-            月份
+            {{ t("月份") }}
           </div>
           <div class="border-t p-2" v-if="type === FrequencyType.Annual">
             <div class="flex gap-1.5 flex-wrap">

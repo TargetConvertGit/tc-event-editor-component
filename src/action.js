@@ -19,20 +19,20 @@ export function getActionDescription(action) {
   // 所有
   if (action.targetType === EventActionTargetType.ForAll) {
     description =
-      "所有的" +
+      t("所有的") +
       t(`${ClientType[action.client]}${adLevelType[action.adLevel]}`);
   }
   // 已開啟
   if (action.targetType === EventActionTargetType.ForActive) {
     description =
-      "已開啟的" +
+      t("已開啟的") +
       t(`${ClientType[action.client]}${adLevelType[action.adLevel]}`);
   }
   // 自選目標
   if (action.targetType === EventActionTargetType.ForID) {
     const count = action.target.length;
     description =
-      `${count}個` +
+      `${count}${t("個")}` +
       t(`${ClientType[action.client]}${adLevelType[action.adLevel]}`);
   }
   return description;

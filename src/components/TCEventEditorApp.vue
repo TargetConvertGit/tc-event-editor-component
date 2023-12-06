@@ -122,7 +122,7 @@ defineExpose({
       id="editor-container"
       @submit.prevent="save"
     >
-      <OuterBlock :title="'規則名稱'" :icon="'PhNotepad'" id="name">
+      <OuterBlock :title="t('規則名稱')" :icon="'PhNotepad'" id="name">
         <div class="space-y-1">
           <TextInput
             v-model="json.title"
@@ -132,25 +132,25 @@ defineExpose({
           />
         </div>
       </OuterBlock>
-      <OuterBlock :title="'執行時間'" :icon="'PhCalendarCheck'" id="time">
+      <OuterBlock :title="t('執行時間')" :icon="'PhCalendarCheck'" id="time">
         <RepeatFrequency
           v-model:frequency="json.frequency"
           v-model:interval="json.interval"
         />
       </OuterBlock>
-      <OuterBlock :title="'通知'" :icon="'PhBellRinging'" id="notification">
+      <OuterBlock :title="t('通知')" :icon="'PhBellRinging'" id="notification">
         <Notification />
       </OuterBlock>
       <EventAction />
       <Condition />
-      <span v-if="checkDataValid.length" class="text-red-1"
-        >資料未填寫完整</span
-      >
+      <span v-if="checkDataValid.length" class="text-red-1">{{
+        t("資料未填寫完整")
+      }}</span>
       <button
         ref="submitBtn"
         class="p-2 px-3 rounded bg-slate-100 hover:bg-sky-500 hover:text-white hidden"
       >
-        保存
+        {{ t("保存") }}
       </button>
     </form>
   </div>

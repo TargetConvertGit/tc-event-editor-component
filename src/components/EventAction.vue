@@ -478,13 +478,22 @@ const budgetTips = computed(() => {
   const show = isGoogleCampaign || isFacebookCampaign || isFacebookAdGroup;
 
   const budgetType =
-    paramsBudgetTypeValue === BudgetType.DailyBudget ? "日預算" : "總預算";
+    paramsBudgetTypeValue === BudgetType.DailyBudget
+      ? t("日預算")
+      : t("總預算");
   const clientAndAdLevel = `${ClientType[clientValue]}${adLevelOption.value[adLevelValue]}`;
   const msg = show
-    ? `若${t(clientAndAdLevel)}設定為${
-        paramsBudgetTypeValue !== unSelected ? budgetType : ""
-      }，則不會變更`
+    ? `${t("若{clientAndAdLevel}設定為{paramsBudgetTypeValue}，則不會變更", {
+        clientAndAdLevel: clientAndAdLevel,
+        paramsBudgetTypeValue:
+          paramsBudgetTypeValue !== unSelected ? budgetType : "",
+      })}`
     : "";
+  // const msg = show
+  //   ? `若${t(clientAndAdLevel)}設定為${
+  //       paramsBudgetTypeValue !== unSelected ? budgetType : ""
+  //     }，則不會變更`
+  //   : "";
 
   return { show, msg };
 });
@@ -500,11 +509,11 @@ onMounted(() => {
     @click="actionEnable = true"
     v-if="!actionEnable"
   >
-    + 加入動作
+    + {{ t("加入動作") }}
   </div>
 
   <!-- 層級不同 可執行項目也不同 還有註解 -->
-  <OuterBlock :title="'動作'" :icon="'PhNavigationArrow'" id="action" v-else>
+  <OuterBlock :title="t('動作')" :icon="'PhNavigationArrow'" id="action" v-else>
     <div class="flex flex-col gap-6">
       <div class="flex flex-col gap-6 pt-2">
         <div
@@ -515,7 +524,7 @@ onMounted(() => {
         </div>
         <label class="flex justify-start items-center gap-2">
           <div class="relative w-fit">
-            <span class="p3-r text-dark-4">平台</span>
+            <span class="p3-r text-dark-4">{{ t("平台") }}</span>
             <input
               type="text"
               class="opacity-0 absolute left-0 top-0 pointer-events-none"
@@ -558,14 +567,14 @@ onMounted(() => {
         </label>
         <div class="flex gap-6">
           <label class="flex justify-start items-center gap-2">
-            <span class="p3-r text-dark-4">層級</span>
+            <span class="p3-r text-dark-4">{{ t("層級") }}</span>
             <select
               class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
               v-model="adLevel"
               @change="setAdLevel"
               required
             >
-              <option value="" disabled>請選擇</option>
+              <option value="" disabled>{{ t("請選擇") }}</option>
               <template v-for="(value, key) in adLevelOption" :key="key">
                 <option
                   v-if="!Number.isInteger(value) && client != unSelected"
@@ -578,14 +587,14 @@ onMounted(() => {
           </label>
           <div class="flex gap-2">
             <label class="flex justify-start items-center gap-2">
-              <span class="p3-r text-dark-4">項目</span>
+              <span class="p3-r text-dark-4">{{ t("項目") }}</span>
               <select
                 class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
                 v-model="targetType"
                 @change="setTargetType"
                 required
               >
-                <option value="" disabled>請選擇</option>
+                <option value="" disabled>{{ t("請選擇") }}</option>
                 <template
                   v-for="(value, key) in EventActionTargetType"
                   :key="key"
@@ -612,8 +621,10 @@ onMounted(() => {
                 >
                   {{
                     action.target && action.target.length
-                      ? `已選${action.target.length}個項目`
-                      : "未選擇"
+                      ? `${t("已選${count}個項目", {
+                          count: action.target.length,
+                        })}`
+                      : t("未選擇")
                   }}
                 </span>
               </template>
@@ -640,9 +651,9 @@ onMounted(() => {
             class="sticky flex flex-col max-h-[95%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-[3%]"
           >
             <div class="flex justify-between">
-              <span class="p2-b flex justify-center mb-3 text-dark-2 mr-auto"
-                >請選擇目標</span
-              >
+              <span class="p2-b flex justify-center mb-3 text-dark-2 mr-auto">{{
+                t("請選擇目標")
+              }}</span>
               <Ph-X
                 class="text-dark-3 cursor-pointer hover:text-dark-2"
                 weight="bold"
@@ -651,14 +662,14 @@ onMounted(() => {
             </div>
             <TextInput
               v-model="accountFilterText"
-              :placeholder="'搜尋'"
+              :placeholder="t('搜尋')"
               class="max-w-xs min-w-[200px] mx-auto w-full mb-4"
             />
             <div
               class="flex gap-2 mx-auto empty:hidden mb-8 items-center"
               v-if="!getAccountLoading && accountFilterTabs.length"
             >
-              <span class="p3-r text-dark-3">篩選器</span>
+              <span class="p3-r text-dark-3">{{ t("篩選") }}</span>
               <label
                 class="p3-r flex cursor-pointer items-center gap-1 rounded bg-light-5 px-1.5 py-0.5 text-dark-3 border"
                 :class="{
@@ -694,11 +705,11 @@ onMounted(() => {
                   <div
                     class="w-1.5 h-1.5 rounded-full bg-success-green-3"
                   ></div>
-                  <span class="p4-r">啟用中</span>
+                  <span class="p4-r">{{ t("啟用中") }}</span>
                 </div>
                 <div class="flex items-center gap-1">
                   <div class="w-1.5 h-1.5 rounded-full bg-red-3"></div>
-                  <span class="p4-r">暫停中</span>
+                  <span class="p4-r">{{ t("暫停中") }}</span>
                 </div>
               </div>
               <div
@@ -710,7 +721,7 @@ onMounted(() => {
                   :checked="selectAllAdsStatus"
                   @update:checked="selectAllAccount"
                 />
-                <label for="selectAllAdsStatus"> 全選 </label>
+                <label for="selectAllAdsStatus"> {{ t("全選") }} </label>
               </div>
             </div>
 
@@ -736,7 +747,7 @@ onMounted(() => {
                 class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 border border-transparent px-2 py-1 text-light-5 hover:bg-true-blue-3"
                 @click="addAccountModal = false"
               >
-                確定
+                {{ t("確定") }}
               </div>
             </div>
           </div>
@@ -744,14 +755,14 @@ onMounted(() => {
       </Teleport>
       <div class="flex flex-col gap-6">
         <label class="flex justify-start items-center gap-2">
-          <span class="p3-r text-dark-4">執行</span>
+          <span class="p3-r text-dark-4">{{ t("執行") }}</span>
           <select
             class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
             v-model="actionValue"
             @change="setActionValue"
             required
           >
-            <option value="" disabled>請選擇</option>
+            <option value="" disabled>{{ t("請選擇") }}</option>
             <template v-for="(value, key) in actionOption" :key="key">
               <option :value="value">
                 {{ t(key) }}
@@ -768,7 +779,7 @@ onMounted(() => {
           "
         >
           <label class="flex justify-start gap-2 items-center">
-            <span class="p3-r text-dark-4">類型</span>
+            <span class="p3-r text-dark-4">{{ t("類型") }}</span>
             <div
               class="shadow-01 flex items-center py-1 px-2 rounded p3-r text-dark-3"
             >
@@ -811,7 +822,9 @@ onMounted(() => {
 
           <div class="flex gap-6 w-full">
             <div class="flex justify-start items-center gap-2">
-              <span class="p3-r text-dark-4 flex-shrink-0">調整</span>
+              <span class="p3-r text-dark-4 flex-shrink-0">{{
+                t("調整")
+              }}</span>
               <div class="flex gap-10 w-full">
                 <div class="flex gap-2 flex-1">
                   <div
@@ -855,7 +868,7 @@ onMounted(() => {
                     <span class="p3-r text-dark-4">{{
                       action.params.valueType === ValueType.Percentage
                         ? "%"
-                        : "元"
+                        : t("元")
                     }}</span>
                   </label>
                 </div>
@@ -872,14 +885,14 @@ onMounted(() => {
                 class="flex gap-2 items-center"
                 v-if="action.params.valueType === ValueType.Percentage"
               >
-                <span class="p3-r text-dark-4">預算上限</span>
+                <span class="p3-r text-dark-4">{{ t("預算上限") }}</span>
                 <div class="flex items-center gap-1">
                   <div
                     class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
                     @click="hasLimitBudget = true"
                     v-if="!hasLimitBudget"
                   >
-                    未設定
+                    {{ t("未設定") }}
                   </div>
 
                   <div

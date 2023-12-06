@@ -4,7 +4,9 @@ import axios from "axios";
 import { getApiUrlBase, getToken } from "../apiConfig";
 import { PhX } from "@phosphor-icons/vue";
 import ConditionItem from "./ConditionItem.vue";
+import { i18n } from "../i18n";
 
+const { t } = i18n.global;
 const eventData = inject("eventData");
 const conditions = ref(eventData.value.conditions ?? []);
 const addConditionModal = ref(false);
@@ -93,7 +95,7 @@ const showConditionModal = async () => {
       v-if="index + 1 !== conditions.length"
     >
       <div class="h-[1px] flex-1 bg-light-3"></div>
-      <p class="p3-b to-dark-4">且</p>
+      <p class="p3-b to-dark-4">{{ t("且") }}</p>
       <div class="h-[1px] flex-1 bg-light-3"></div>
     </div>
   </template>
@@ -103,7 +105,7 @@ const showConditionModal = async () => {
     @click="showConditionModal"
     id="condition"
   >
-    + 加入條件
+    + {{ t("加入條件") }}
   </div>
   <div
     class="absolute top-0 left-0 pt-4 right-0 bottom-0 w-full h-full flex justify-center bg-dark-3 bg-opacity-50 z-[2]"
@@ -113,9 +115,9 @@ const showConditionModal = async () => {
       class="sticky flex flex-col max-h-[90%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4"
     >
       <div class="flex justify-between">
-        <span class="p2-b flex justify-center mb-3 text-dark-2 mr-auto"
-          >請選擇條件</span
-        >
+        <span class="p2-b flex justify-center mb-3 text-dark-2 mr-auto">{{
+          t("請選擇條件")
+        }}</span>
         <Ph-X
           class="text-dark-3 cursor-pointer hover:text-dark-2"
           weight="bold"
@@ -124,7 +126,7 @@ const showConditionModal = async () => {
       </div>
       <TextInput
         class="max-w-xs min-w-[200px] mx-auto w-full"
-        :placeholder="'輸入關鍵字搜尋 ex: 轉換數'"
+        :placeholder="t('輸入關鍵字搜尋 ex: 轉換數')"
         v-model="demoConditionFilterText"
       />
       <div
@@ -153,7 +155,7 @@ const showConditionModal = async () => {
         @click="addCondition"
         v-if="!getDemoConditionLoading"
       >
-        自訂
+        {{ t("自訂") }}
       </div>
       <div
         class="mx-auto flex w-fit items-center gap-4 mt-4"
@@ -163,7 +165,7 @@ const showConditionModal = async () => {
           class="p3-b flex cursor-pointer items-center gap-1 rounded border bg-light-5 border-dark-5 px-2 py-1 text-dark-4 hover:text-light-5 hover:bg-dark-5"
           @click="addConditionModal = false"
         >
-          取消
+          {{ t("取消") }}
         </div>
       </div>
     </div>

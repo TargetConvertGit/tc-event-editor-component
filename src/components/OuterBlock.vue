@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PhCaretDown, PhCaretCircleUp } from "@phosphor-icons/vue";
+import { PhCaretDown } from "@phosphor-icons/vue";
 export interface Props {
   id?: string;
   title: string;
@@ -84,7 +84,7 @@ function leave(element) {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .expand-enter-active,
 .expand-leave-active {
   transition:

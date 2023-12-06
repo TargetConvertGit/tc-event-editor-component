@@ -158,12 +158,6 @@ defineExpose({
   </div>
 </template>
 
-<style scoped>
-@import "../style.css";
-</style>
 <style>
-select {
-  appearance: none;
-  text-align: center;
-}
+@import "../style.css";
 </style>

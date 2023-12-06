@@ -38,7 +38,7 @@ function onInput(e: any) {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 input {
   text-align: inherit;
   &::placeholder {

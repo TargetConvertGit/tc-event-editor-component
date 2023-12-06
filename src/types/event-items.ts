@@ -312,12 +312,3 @@ export enum OperationType {
   LessThan = "<",
   LessThanOrEqualTo = "<=",
 }
-
-/**
- * email通知
- */
-export enum emailType {
-  AbnormalityOrError = 1,
-  Error = 2,
-  None = -1,
-}

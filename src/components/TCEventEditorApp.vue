@@ -156,8 +156,6 @@ defineExpose({
   </div>
 </template>
 <style lang="scss" scoped>
-// @import "../style.css";
-
 #editor-container-outer {
   @apply flex-1 h-full scroll-smooth;
 }

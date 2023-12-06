@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { emailType, EmailNotify } from "../types/event-items";
+import { EmailNotify } from "../types/event-items";
 import { i18n } from "../i18n";
 
 const { t } = i18n.global;

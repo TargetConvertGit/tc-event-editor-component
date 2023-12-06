@@ -3,17 +3,15 @@ import TextInput from "./TextInput.vue";
 import axios from "axios";
 import { getApiUrlBase, getToken } from "../apiConfig";
 import { PhX } from "@phosphor-icons/vue";
-
 import ConditionItem from "./ConditionItem.vue";
-
-const addConditionModal = ref(false);
 
 const eventData = inject("eventData");
 const conditions = ref(eventData.value.conditions ?? []);
+const addConditionModal = ref(false);
 
 watch(
   conditions,
-  (val) => {
+  (val: any) => {
     eventData.value.conditions = val;
   },
   { deep: true }
@@ -84,7 +82,7 @@ const showConditionModal = async () => {
 </script>
 
 <template>
-  <template v-for="(condition, index) in conditions" :key="index">
+  <template v-for="(_, index) in conditions" :key="index">
     <ConditionItem
       :index="index"
       v-model="conditions[index]"
@@ -171,5 +169,3 @@ const showConditionModal = async () => {
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped></style>

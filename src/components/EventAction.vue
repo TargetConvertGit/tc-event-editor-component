@@ -7,7 +7,6 @@ import EventActionTargetItem from "./EventActionTargetItem.vue";
 import { PhX, PhTrash } from "@phosphor-icons/vue";
 import { Label } from "../shadcn/components/ui/label";
 import { Checkbox } from "../shadcn/components/ui/checkbox";
-
 import {
   ClientType,
   AdLevelTypeGoogle,
@@ -451,9 +450,6 @@ function calculateHierarchyLevels(data) {
 }
 
 const accountModalLoading = ref(false);
-onMounted(() => {
-  accountModalLoading.value = true;
-});
 
 const removeAction = () => {
   actionEnable.value = false;
@@ -491,6 +487,10 @@ const budgetTips = computed(() => {
     : "";
 
   return { show, msg };
+});
+
+onMounted(() => {
+  accountModalLoading.value = true;
 });
 </script>
 

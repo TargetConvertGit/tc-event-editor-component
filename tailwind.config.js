@@ -8,6 +8,8 @@ module.exports = {
     "./components/**/*.{ts,tsx,vue}",
     "./app/**/*.{ts,tsx,vue}",
     "./src/**/*.{ts,tsx,vue}",
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
     container: {

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import { TCEventEditorApp, setApiUrlBase, setToken } from "./index";
 
 const dd = ref(`{
@@ -22,5 +21,3 @@ const submit = () => {
     </div>
   </div>
 </template>
-
-<style scoped></style>

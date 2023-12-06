@@ -79,7 +79,6 @@ const checkData = (
   return { checkedData, errors };
 };
 
-// const save = () => emit("update:data", formatData(checkData(json.value)));
 const checkDataValid = ref([]);
 const save = (e) => {
   e.preventDefault();
@@ -157,7 +156,3 @@ defineExpose({
     </form>
   </div>
 </template>
-
-<style scoped>
-@import "../style.css";
-</style>

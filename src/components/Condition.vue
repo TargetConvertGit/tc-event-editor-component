@@ -2,6 +2,7 @@
 import TextInput from "./TextInput.vue";
 import axios from "axios";
 import { getApiUrlBase, getToken } from "../apiConfig";
+import { PhX } from "@phosphor-icons/vue";
 
 import ConditionItem from "./ConditionItem.vue";
 
@@ -113,7 +114,16 @@ const showConditionModal = async () => {
     <div
       class="sticky flex flex-col max-h-[90%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-4"
     >
-      <span class="p2-b flex justify-center mb-3 text-dark-2">請選擇條件</span>
+      <div class="flex justify-between">
+        <span class="p2-b flex justify-center mb-3 text-dark-2 mr-auto"
+          >請選擇條件</span
+        >
+        <Ph-X
+          class="text-dark-3 cursor-pointer hover:text-dark-2"
+          weight="bold"
+          @click="addConditionModal = false"
+        />
+      </div>
       <TextInput
         class="max-w-xs min-w-[200px] mx-auto w-full"
         :placeholder="'輸入關鍵字搜尋 ex: 轉換數'"
@@ -143,10 +153,14 @@ const showConditionModal = async () => {
       <div
         class="border ml-auto mt-2 border-true-blue-3 text-true-blue-3 rounded px-1 w-fit p3-b cursor-pointer hover:text-true-blue-2 hover:border-true-blue-2"
         @click="addCondition"
+        v-if="!getDemoConditionLoading"
       >
         自訂
       </div>
-      <div class="mx-auto flex w-fit items-center gap-4 mt-4">
+      <div
+        class="mx-auto flex w-fit items-center gap-4 mt-4"
+        v-if="!getDemoConditionLoading"
+      >
         <div
           class="p3-b flex cursor-pointer items-center gap-1 rounded border bg-light-5 border-dark-5 px-2 py-1 text-dark-4 hover:text-light-5 hover:bg-dark-5"
           @click="addConditionModal = false"

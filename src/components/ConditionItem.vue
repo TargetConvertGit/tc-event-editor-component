@@ -596,9 +596,10 @@ const comparisonDateLabel = computed(() => {
               class="max-w-xs min-w-[200px] mx-auto w-full mb-4"
             />
             <div
-              class="flex gap-2 mx-auto empty:hidden mb-8"
-              v-if="!getAccountLoading"
+              class="flex gap-2 mx-auto items-center empty:hidden mb-8"
+              v-if="!getAccountLoading && accountFilterTabs.length"
             >
+              <span class="p3-r text-dark-3">篩選器</span>
               <label
                 class="p3-r flex cursor-pointer items-center gap-1 rounded bg-light-5 px-1.5 py-0.5 text-dark-3 border"
                 :class="{

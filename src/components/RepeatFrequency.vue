@@ -147,7 +147,7 @@ watch(
             :min-Date="new Date()"
             is24hr
             hide-time-header
-            :time-accuracy="1"
+            :time-accuracy="2"
             :timezone="Intl.DateTimeFormat().resolvedOptions().timeZone"
             :popover="false"
           >

@@ -56,7 +56,7 @@ onUnmounted(() => {
         mode="dateTime"
         :timezone="Intl.DateTimeFormat().resolvedOptions().timeZone"
         :min-Date="new Date()"
-        :time-accuracy="1"
+        :time-accuracy="2"
         is24hr
         hide-time-header
       >

@@ -782,9 +782,9 @@ onMounted(() => {
                     class="cursor-pointer hover:drop-shadow-md"
                     :class="{
                       'text-true-blue-3 drop-shadow-sm p3-b':
-                        paramsBudgetType == key,
+                        paramsBudgetType == BudgetType[key],
                     }"
-                    @click="setParamsBudgetType(key)"
+                    @click="setParamsBudgetType(BudgetType[key])"
                   >
                     {{ t(value) }}
                   </span>

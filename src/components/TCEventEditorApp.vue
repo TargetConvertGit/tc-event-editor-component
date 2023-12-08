@@ -142,7 +142,7 @@ defineExpose({
         <Notification />
       </OuterBlock>
       <EventAction />
-      <Condition />
+      <!-- <Condition /> -->
       <span v-if="checkDataValid.length" class="text-red-1">{{
         t("資料未填寫完整")
       }}</span>

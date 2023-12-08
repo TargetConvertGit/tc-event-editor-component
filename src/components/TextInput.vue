@@ -29,6 +29,7 @@ function onInput(e: any) {
       :value="modelValue"
       @input="onInput"
       :type="type"
+      min="0"
       :class="inputClass"
       class="p3-b w-full border-none outline-none shadow-none placeholder:text-dark-5 text-dark-3"
       :placeholder="placeholder"

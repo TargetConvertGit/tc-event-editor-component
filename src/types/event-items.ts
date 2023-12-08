@@ -102,7 +102,7 @@ export interface EventNotify {
  */
 export enum EmailNotify {
   None = -1, // 不寄送
-  ConditionMet = 2, // 當符合條件時
+  // ConditionMet = 2, // 當符合條件時
   All = 3, // 僅執行動作或錯誤時
   Error = 4, //僅出現錯誤時
 }
@@ -189,9 +189,9 @@ export enum FrequencyType {
   Never = -1,
   Hour = 1,
   Day = 2,
-  Week = 3,
-  Month = 4,
-  Annual = 5,
+  // Week = 3,
+  // Month = 4,
+  // Annual = 5,
 }
 
 /**

@@ -4,9 +4,10 @@ import TCEventEditorApp from "./components/TCEventEditorApp.vue";
 import { getDescription } from "./description.js";
 import { getActionDescription } from "./action.js";
 import { getNotifyDescription } from "./notify.js";
+import setLang from "./langSetting.js";
 import "./style.css";
 declare const _default: {
     install: (app: any) => void;
 };
 export default _default;
-export { setApiUrlBase, setToken, TCEventEditorApp, TCEventItems, getDescription, getActionDescription, getNotifyDescription, };
+export { setApiUrlBase, setToken, TCEventEditorApp, TCEventItems, getDescription, getActionDescription, getNotifyDescription, setLang, };

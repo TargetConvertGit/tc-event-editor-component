@@ -4,9 +4,8 @@ import OuterBlock from "./OuterBlock.vue";
 import axios from "axios";
 import { getApiUrlBase, getToken } from "../apiConfig";
 import EventActionTargetItem from "./EventActionTargetItem.vue";
-import { PhX, PhTrash } from "@phosphor-icons/vue";
+import { PhX, PhTrash, PhNote } from "@phosphor-icons/vue";
 import { Label } from "../shadcn/components/ui/label";
-import { Checkbox } from "../shadcn/components/ui/checkbox";
 import {
   ClientType,
   AdLevelTypeGoogle,
@@ -47,8 +46,9 @@ watchEffect(() => {
     //刪除多餘資料
     delete action.value.params;
   }
+
   // 是否有限制
-  hasLimitBudget.value = Boolean(action.value?.params?.limit);
+  hasLimitBudget.value = !isNaN(action.value?.params?.limit);
 });
 
 watch(
@@ -303,8 +303,6 @@ const getAccountLoading = ref(false);
 
 const filterAccountList = computed(() => {
   const filterText = accountFilterText.value.trim().toLowerCase();
-  accountCount.value = 0;
-  const isMatching = (item) => item.name.toLowerCase().includes(filterText);
 
   const findMatchingItems = (items) => {
     let matchingItems = [];
@@ -316,14 +314,9 @@ const filterAccountList = computed(() => {
           shouldBreak = true;
         }
       });
-
-      if (
-        isMatching(item) &&
-        (!item.children || item.children.length === 0) &&
-        !shouldBreak
-      ) {
+      if (shouldBreak) continue;
+      if (!item.children || item.children.length === 0) {
         matchingItems.push(item);
-        accountCount.value++;
       }
 
       if (item.children && item.children.length > 0) {
@@ -333,15 +326,8 @@ const filterAccountList = computed(() => {
             id: item.id,
             name: item.name,
             children: childMatches,
+            enabled: item.enabled,
           });
-        } else {
-          if (shouldBreak) {
-            continue;
-          }
-        }
-      } else {
-        if (shouldBreak) {
-          continue;
         }
       }
     }
@@ -367,10 +353,52 @@ const filterAccountList = computed(() => {
         name: account.name,
         type: account.type,
       });
-      accountCount.value++;
     }
   }
-  return filteredItems;
+  function filterData(data, searchText) {
+    accountCount.value = 0;
+
+    function countLeafNodes(node) {
+      if (!node.children || node.children.length === 0) {
+        accountCount.value++;
+      } else {
+        node.children.forEach((child) => countLeafNodes(child));
+      }
+    }
+
+    function filterNodes(node, text) {
+      const newItem = { ...node };
+      const children = newItem.children;
+
+      if (newItem.name.toLowerCase().includes(text)) {
+        const filteredChildren = (children || []).filter((child) =>
+          child.name.toLowerCase().includes(text)
+        );
+        if (filteredChildren.length > 0) {
+          newItem.children = filteredChildren;
+        }
+        return newItem;
+      } else if (children) {
+        const filteredChildren = children
+          .map((child) => filterNodes(child, text))
+          .filter(Boolean);
+        if (filteredChildren.length > 0) {
+          newItem.children = filteredChildren;
+          return newItem;
+        }
+      }
+
+      return null;
+    }
+
+    const filteredData = data
+      .map((node) => filterNodes(node, searchText))
+      .filter(Boolean);
+
+    filteredData.forEach((item) => countLeafNodes(item));
+    return filteredData;
+  }
+  return filterData(filteredItems, filterText);
 });
 
 const resetSelectedAccount = () => {
@@ -394,7 +422,10 @@ const accountFilterText = ref("");
 const accountCount = ref();
 const selectAllAdsStatus = computed(() => {
   if (!action.value?.target) action.value.target = [];
-  return action.value.target.length == accountCount.value;
+  return (
+    action.value.target.length > 0 &&
+    action.value.target.length == accountCount.value
+  );
 });
 
 // 全選
@@ -522,7 +553,7 @@ onMounted(() => {
         >
           <PhTrash size="18" weight="bold" />
         </div>
-        <label class="flex justify-start items-center gap-2">
+        <label class="flex justify-start items-center gap-4">
           <div class="relative w-fit">
             <span class="p3-r text-dark-4">{{ t("平台") }}</span>
             <input
@@ -566,10 +597,14 @@ onMounted(() => {
           </div>
         </label>
         <div class="flex gap-6">
-          <label class="flex justify-start items-center gap-2">
+          <label
+            class="flex justify-start items-center gap-4"
+            :class="{ 'pointer-events-none': client == unSelected }"
+          >
             <span class="p3-r text-dark-4">{{ t("層級") }}</span>
             <select
-              class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+              class="p3-b text-true-blue-3 min-w-[5rem] w-20 flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+              :class="{ '!w-fit': adLevel != unSelected }"
               v-model="adLevel"
               @change="setAdLevel"
               required
@@ -585,11 +620,15 @@ onMounted(() => {
               </template>
             </select>
           </label>
-          <div class="flex gap-2">
-            <label class="flex justify-start items-center gap-2">
+          <div class="flex gap-4">
+            <label
+              class="flex justify-start items-center gap-4"
+              :class="{ 'pointer-events-none': adLevel == unSelected }"
+            >
               <span class="p3-r text-dark-4">{{ t("項目") }}</span>
               <select
-                class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                class="p3-b text-true-blue-3 min-w-[5rem] w-20 flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                :class="{ '!w-fit': targetType != unSelected }"
                 v-model="targetType"
                 @change="setTargetType"
                 required
@@ -615,13 +654,13 @@ onMounted(() => {
                   :class="[
                     action.target && action.target.length
                       ? ` text-true-blue-3`
-                      : 'text-red-2',
+                      : 'text-red-2 hover:text-red-1',
                   ]"
                   @click="showAccountModal"
                 >
                   {{
                     action.target && action.target.length
-                      ? `${t("已選${count}個項目", {
+                      ? `${t("已選{count}個項目", {
                           count: action.target.length,
                         })}`
                       : t("未選擇")
@@ -648,14 +687,14 @@ onMounted(() => {
           v-if="addAccountModal"
         >
           <div
-            class="sticky flex flex-col max-h-[95%] bg-light-5 rounded-xs shadow-01 w-4/5 p-4 h-fit top-[3%]"
+            class="sticky flex flex-col max-h-[95%] bg-light-5 rounded-xs shadow-01 w-4/5 py-4 px-10 h-fit top-[3%]"
           >
             <div class="flex justify-between">
               <span class="p2-b flex justify-center mb-3 text-dark-2 mr-auto">{{
                 t("請選擇目標")
               }}</span>
               <Ph-X
-                class="text-dark-3 cursor-pointer hover:text-dark-2"
+                class="text-dark-3 cursor-pointer hover:text-dark-2 absolute top-4 right-4"
                 weight="bold"
                 @click="addAccountModal = false"
               />
@@ -663,19 +702,15 @@ onMounted(() => {
             <TextInput
               v-model="accountFilterText"
               :placeholder="t('搜尋')"
-              class="max-w-xs min-w-[200px] mx-auto w-full mb-4"
+              class="w-full mr-auto mb-4"
             />
             <div
-              class="flex gap-2 mx-auto empty:hidden mb-8 items-center"
+              class="flex gap-4 w-full empty:hidden mb-2 items-center"
               v-if="!getAccountLoading && accountFilterTabs.length"
             >
-              <span class="p3-r text-dark-3">{{ t("篩選") }}</span>
+              <span class="p3-r text-dark-4">{{ t("篩選") }}</span>
               <label
-                class="p3-r flex cursor-pointer items-center gap-1 rounded bg-light-5 px-1.5 py-0.5 text-dark-3 border"
-                :class="{
-                  'bg-true-blue-3 border-true-blue-3 text-light-5':
-                    !item.status,
-                }"
+                class="p3-r flex cursor-pointer items-center gap-1 rounded-md bg-light-3 px-2 py-0.5 text-dark-4 hover:shadow-01"
                 v-for="item in accountFilterTabs"
                 :key="item.label"
                 :for="item.label"
@@ -687,6 +722,10 @@ onMounted(() => {
                   class="hidden"
                   @change="resetSelectedAccount"
                 />
+                <div
+                  class="w-2 h-2 rounded-full bg-success-green-4"
+                  v-show="!item.status"
+                ></div>
                 {{
                   t(
                     `${ClientType[client]}${item.status ? "On" : "Off"}${
@@ -697,31 +736,15 @@ onMounted(() => {
               </label>
             </div>
             <div
-              class="flex justify-between items-center"
+              class="flex justify-end gap-4 items-center"
               v-if="!getAccountLoading"
             >
-              <div class="flex items-center gap-2">
-                <div class="flex items-center gap-1">
-                  <div
-                    class="w-1.5 h-1.5 rounded-full bg-success-green-3"
-                  ></div>
-                  <span class="p4-r">{{ t("啟用中") }}</span>
-                </div>
-                <div class="flex items-center gap-1">
-                  <div class="w-1.5 h-1.5 rounded-full bg-red-3"></div>
-                  <span class="p4-r">{{ t("暫停中") }}</span>
-                </div>
-              </div>
               <div
-                class="flex w-fit items-center gap-1 justify-end p3-r text-true-blue-3 cursor-pointer"
+                class="flex w-fit items-center gap-1 justify-end p3-r text-true-blue-3 mr-2.5 hover:text-true-blue-2"
               >
-                <Checkbox
-                  class="rounded data-[state=checked]:bg-true-blue-3 border-true-blue-5"
-                  id="selectAllAdsStatus"
-                  :checked="selectAllAdsStatus"
-                  @update:checked="selectAllAccount"
-                />
-                <label for="selectAllAdsStatus"> {{ t("全選") }} </label>
+                <label class="cursor-pointer" @click="selectAllAccount">
+                  {{ selectAllAdsStatus ? t("取消全選") : t("全選") }}
+                </label>
               </div>
             </div>
 
@@ -730,8 +753,16 @@ onMounted(() => {
               class="h-4 w-4 mt-4 mx-auto animate-spin rounded-full border-2 border-solid border-blue-400 border-t-transparent"
             ></div>
             <template v-else>
-              <div class="flex flex-col gap-2 flex-1 overflow-y-auto">
+              <div class="flex flex-col gap-4 flex-1 overflow-y-auto">
+                <div
+                  class="flex flex-col items-center justify-center gap-4 mt-4"
+                  v-if="!filterAccountList.length"
+                >
+                  <ph-note :size="48" class="text-dark-4" />
+                  <p class="p2-b text-dark-3">{{ t("No Data") }}</p>
+                </div>
                 <EventActionTargetItem
+                  v-else
                   v-for="target in filterAccountList"
                   :key="target.id"
                   :target="target"
@@ -740,11 +771,11 @@ onMounted(() => {
               </div>
             </template>
             <div
-              class="mx-auto flex w-fit items-center gap-4 mt-4"
+              class="mx-auto flex w-fit items-center gap-4 mt-8"
               v-if="!getAccountLoading"
             >
               <div
-                class="p3-b flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 border border-transparent px-2 py-1 text-light-5 hover:bg-true-blue-3"
+                class="p3-r flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 border border-transparent px-4 py-1.5 text-light-5 hover:bg-true-blue-3 transition-all"
                 @click="addAccountModal = false"
               >
                 {{ t("確定") }}
@@ -754,10 +785,14 @@ onMounted(() => {
         </div>
       </Teleport>
       <div class="flex flex-col gap-6">
-        <label class="flex justify-start items-center gap-2">
+        <label
+          class="flex justify-start items-center gap-4"
+          :class="{ 'pointer-events-none': targetType == unSelected }"
+        >
           <span class="p3-r text-dark-4">{{ t("執行") }}</span>
           <select
-            class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            class="p3-b text-true-blue-3 min-w-[5rem] w-20 flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            :class="{ '!w-fit': actionValue != unSelected }"
             v-model="actionValue"
             @change="setActionValue"
             required
@@ -778,7 +813,7 @@ onMounted(() => {
             action.action == ActionType.LowerBudget
           "
         >
-          <label class="flex justify-start gap-2 items-center">
+          <label class="flex justify-start gap-4 items-center">
             <span class="p3-r text-dark-4">{{ t("類型") }}</span>
             <div
               class="shadow-01 flex items-center py-1 px-2 rounded p3-r text-dark-3"
@@ -820,13 +855,13 @@ onMounted(() => {
             </span>
           </label>
 
-          <div class="flex gap-6 w-full">
-            <div class="flex justify-start items-center gap-2">
+          <div class="flex gap-4 w-full">
+            <div class="flex justify-start items-center gap-4">
               <span class="p3-r text-dark-4 flex-shrink-0">{{
                 t("調整")
               }}</span>
               <div class="flex gap-10 w-full">
-                <div class="flex gap-2 flex-1">
+                <div class="flex gap-4 flex-1">
                   <div
                     class="shadow-01 flex items-center py-1 px-2 rounded p3-r text-dark-3"
                   >
@@ -881,14 +916,15 @@ onMounted(() => {
                 action.action == ActionType.LowerBudget
               "
             >
-              <div
-                class="flex gap-2 items-center"
-                v-if="action.params.valueType === ValueType.Percentage"
-              >
-                <span class="p3-r text-dark-4">{{ t("預算上限") }}</span>
+              <div class="flex gap-4 items-center">
+                <span class="p3-r text-dark-4">{{
+                  action.action == ActionType.IncreaseBudget
+                    ? t("預算上限")
+                    : t("預算下限")
+                }}</span>
                 <div class="flex items-center gap-1">
                   <div
-                    class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                    class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
                     @click="hasLimitBudget = true"
                     v-if="!hasLimitBudget"
                   >
@@ -896,7 +932,7 @@ onMounted(() => {
                   </div>
 
                   <div
-                    class="flex gap-2 items-center w-28"
+                    class="flex gap-4 items-center w-28"
                     v-if="hasLimitBudget"
                   >
                     <TextInput

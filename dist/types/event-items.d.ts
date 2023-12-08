@@ -86,7 +86,6 @@ export interface EventNotify {
  */
 export declare enum EmailNotify {
     None = -1,
-    ConditionMet = 2,
     All = 3,
     Error = 4
 }
@@ -159,10 +158,7 @@ export declare enum ConditionAdLevelTypeFacebook {
 export declare enum FrequencyType {
     Never = -1,
     Hour = 1,
-    Day = 2,
-    Week = 3,
-    Month = 4,
-    Annual = 5
+    Day = 2
 }
 /**
  * 每週星期幾

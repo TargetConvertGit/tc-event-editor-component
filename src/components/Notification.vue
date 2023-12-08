@@ -21,10 +21,10 @@ watch(
 
 <template>
   <div>
-    <label class="flex flex-1 items-center justify-start gap-2">
+    <label class="flex flex-1 items-center justify-start gap-4">
       <span class="p3-r text-dark-4">{{ t("以電子郵件寄出結果") }}</span>
       <select
-        class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+        class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
         v-model="notification.email"
       >
         <option value="" disabled>{{ t("請選擇") }}</option>

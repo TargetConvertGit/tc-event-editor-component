@@ -740,7 +740,7 @@ onMounted(() => {
               v-if="!getAccountLoading"
             >
               <div
-                class="flex w-fit items-center gap-1 justify-end p3-r text-true-blue-3 mr-2.5 hover:text-true-blue-2"
+                class="flex w-fit items-center gap-1 justify-end p3-r text-true-blue-3 mr-4 hover:text-true-blue-2"
               >
                 <label class="cursor-pointer" @click="selectAllAccount">
                   {{ selectAllAdsStatus ? t("取消全選") : t("全選") }}

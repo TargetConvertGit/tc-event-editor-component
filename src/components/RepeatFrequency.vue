@@ -6,6 +6,10 @@ import TextInput from "./TextInput.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
 import { i18n } from "../i18n";
+import { getTimezone } from "../timezone";
+import { onClickOutside } from "@vueuse/core";
+import { cloneDeep } from "lodash";
+import moment from "moment";
 const { t } = i18n.global;
 interface Props {
   frequency?: FrequencyType;
@@ -114,6 +118,22 @@ const repeat = ref(
   props.interval == undefined ? -1 : props.interval !== 1 ? 0 : props.frequency
 );
 
+function createHourRange(dateTime) {
+  // 從輸入的日期時間字串中取得日期和時間部分
+  let [date, time] = dateTime.split(" ");
+
+  // 從時間部分中取得小時部分
+  let hour = time.split(":")[0];
+  hour = hour.padStart(2, "0"); // 確保兩位數的小時
+
+  // 建立該小時的開始時間和結束時間字串
+  let startHour = `${date} ${hour}:00`;
+  let endHour = `${hour}:59`;
+
+  // 回傳該小時的時間範圍
+  return `${startHour}-${endHour}`;
+}
+
 watch(
   repeat,
   (val) => {
@@ -126,13 +146,30 @@ watch(
       eventData.value.monthDate = null;
       eventData.value.yearMonths = null;
     } else {
-      frequency.value = 1;
+      // frequency.value = 1;
     }
     // 若頻率為自訂
     eventData.value.customInterval = val === 0;
   },
   { immediate: true }
 );
+const tempValue = ref(
+  eventData.value.start ? new Date(eventData.value.start).toISOString() : ""
+);
+const updateStart = (v) => {
+  tempValue.value = v.toISOString();
+};
+
+const datePickerOpen = ref(false);
+watch(datePickerOpen, (val) => {
+  if (!val) {
+    eventData.value.start = cloneDeep(tempValue.value);
+  }
+});
+
+const target = ref(null);
+
+onClickOutside(target, () => (datePickerOpen.value = false));
 </script>
 
 <template>
@@ -159,30 +196,47 @@ watch(
       <div class="flex flex-col gap-4">
         <div class="flex items-center justify-start gap-4">
           <span class="p3-r text-dark-4">{{ t("開始") }}</span>
-          <DatePicker
-            v-model="startTime"
-            mode="dateTime"
-            :min-Date="new Date()"
-            is24hr
-            hide-time-header
-            :time-accuracy="2"
-            :timezone="Intl.DateTimeFormat().resolvedOptions().timeZone"
-            :popover="false"
-          >
-            <template #default="{ togglePopover, inputValue }">
+          <div class="relative" ref="target">
+            <div
+              class="p3-b text-true-blue-3 relative flex cursor-pointer items-center justify-start gap-4 rounded shadow-01 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
+              :class="{ ' !text-dark-5 !p3-r': !eventData.start }"
+              @click.stop="datePickerOpen = !datePickerOpen"
+            >
+              <p class="hidden">
+                {{ tempValue }}
+              </p>
+
+              <input
+                :value="eventData.start"
+                required
+                class="opacity-0 absolute w-[1px] bottom-0 left-1/2 h-[1px] pointer-events-none"
+              />
+              {{
+                eventData.start
+                  ? createHourRange(
+                      moment(eventData.start).format("YYYY-MM-DD HH:mm")
+                    )
+                  : t("未設定")
+              }}
+            </div>
+            <Transition name="fade" mode="out-in">
               <div
-                class="p3-b text-true-blue-3 flex cursor-pointer relative items-center justify-start gap-4 rounded shadow-01 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
-                @click="togglePopover"
+                class="absolute top-[calc(100%+.75rem)] left-0 z-10"
+                v-if="datePickerOpen"
               >
-                <input
-                  :value="inputValue"
-                  required
-                  class="opacity-0 absolute w-full h-full pointer-events-none"
+                <DatePicker
+                  v-model="eventData.start"
+                  mode="dateTime"
+                  :min-Date="new Date()"
+                  is24hr
+                  hide-time-header
+                  :time-accuracy="2"
+                  :timezone="getTimezone()"
+                  @update:modelValue="updateStart"
                 />
-                {{ inputValue ? inputValue : t("未設定") }}
               </div>
-            </template>
-          </DatePicker>
+            </Transition>
+          </div>
         </div>
       </div>
 

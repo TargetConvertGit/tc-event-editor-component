@@ -7,6 +7,9 @@ import Condition from "./Condition.vue";
 import OuterBlock from "./OuterBlock.vue";
 import Notification from "./Notification.vue";
 import { i18n } from "../i18n";
+import { setToken } from "../apiConfig";
+import setLang from "../langSetting.js";
+import { setTimezone } from "../timezone";
 
 const { t } = i18n.global;
 interface Props {
@@ -36,7 +39,7 @@ const checkData = (
   data: EventItem,
   rules: FieldCheckRule[]
 ): { checkedData: EventItem; errors: string[] } => {
-  const checkedData: EventItem = {};
+  const checkedData: EventItem | {} = {};
   const errors: string[] = [];
 
   for (const rule of rules) {
@@ -86,9 +89,9 @@ const save = (e) => {
 };
 
 const saveData = () => {
-  for (const el of document
-    .getElementById("editor-container")
-    .querySelectorAll("[required]")) {
+  const editor = document.getElementById("editor-container");
+  if (!editor) return;
+  for (const el of editor.querySelectorAll("[required]")) {
     if (el.getAttribute("required") !== null) {
       if (!el.reportValidity()) {
         throw new Error("未填寫完畢");
@@ -106,6 +109,25 @@ const submitBtn = ref();
 
 const lockScroll = ref(false);
 provide("lockScroll", lockScroll);
+
+const getToken = async () => {
+  return "Bearer 7|IMZYBXtkk2b4DXnscSaexanLbcBbjvd7dP5Djj6Q";
+};
+const getLocale = async () => {
+  return "zh_TW";
+};
+const getTimezone = async () => {
+  return "Asia/Taipei";
+};
+const init = async () => {
+  const token = await getToken();
+  setToken(token);
+  const locale = await getLocale();
+  setLang(locale);
+  const timezone = await getTimezone();
+  setTimezone(timezone);
+};
+init();
 defineExpose({
   saveData,
 });
@@ -113,7 +135,7 @@ defineExpose({
 
 <template>
   <div
-    :class="[lockScroll ? 'overflow-y-hidden' : 'overflow-y-auto']"
+    :class="[lockScroll ? 'overflow-y-hidden' : 'overflow-y-auto ']"
     v-if="props.data"
     id="editor-container-outer"
   >
@@ -128,6 +150,7 @@ defineExpose({
             v-model="json.title"
             :inputClass="'text-true-blue-3'"
             :maxLength="titleMaxLength"
+            :placeholder="t('ex: 廣告開啟規則')"
             :required="true"
           />
         </div>

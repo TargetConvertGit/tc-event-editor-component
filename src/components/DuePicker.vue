@@ -3,6 +3,10 @@ import { PhX } from "@phosphor-icons/vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
 import { i18n } from "../i18n";
+import { getTimezone } from "../timezone";
+import { onClickOutside } from "@vueuse/core";
+import { cloneDeep } from "lodash";
+import moment from "moment";
 
 const { t } = i18n.global;
 export interface Props {
@@ -11,13 +15,42 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 
 const emit = defineEmits(["update:modelValue"]);
-
-const localModelValue = computed({
-  get: () => (props.modelValue ? new Date(props.modelValue).toISOString() : ""),
-  set: (value) => emit("update:modelValue", value),
-});
+const eventData = inject("eventData");
 
 const setDeadline = ref(false);
+
+const tempValue = ref(
+  props.modelValue ? new Date(props.modelValue).toISOString() : ""
+);
+const updateStart = (v) => {
+  tempValue.value = v.toISOString();
+};
+
+const datePickerOpen = ref(false);
+watch(datePickerOpen, (val) => {
+  if (!val) {
+    emit("update:modelValue", cloneDeep(tempValue.value));
+  }
+});
+
+const target = ref(null);
+
+onClickOutside(target, () => (datePickerOpen.value = false));
+function createHourRange(dateTime) {
+  // 從輸入的日期時間字串中取得日期和時間部分
+  let [date, time] = dateTime.split(" ");
+
+  // 從時間部分中取得小時部分
+  let hour = time.split(":")[0];
+  hour = hour.padStart(2, "0"); // 確保兩位數的小時
+
+  // 建立該小時的開始時間和結束時間字串
+  let startHour = `${date} ${hour}:00`;
+  let endHour = `${hour}:59`;
+
+  // 回傳該小時的時間範圍
+  return `${startHour}-${endHour}`;
+}
 
 watch(
   () => props.modelValue,
@@ -28,13 +61,12 @@ watch(
   },
   { immediate: true }
 );
-const date = ref();
 watch(setDeadline, (value) => {
   if (!value) {
     emit("update:modelValue", null);
   } else {
     nextTick(() => {
-      date.value.click();
+      datePickerOpen.value = true;
     });
   }
 });
@@ -53,26 +85,44 @@ onUnmounted(() => {
         v-if="!setDeadline"
         >{{ t("持續執行") }}</label
       >
-      <DatePicker
-        v-if="setDeadline"
-        v-model="localModelValue"
-        mode="dateTime"
-        :timezone="Intl.DateTimeFormat().resolvedOptions().timeZone"
-        :min-Date="new Date()"
-        :time-accuracy="2"
-        is24hr
-        hide-time-header
-      >
-        <template #default="{ togglePopover, inputValue }">
+      <div class="relative" ref="target" v-else>
+        <div
+          class="p3-b text-true-blue-3 relative flex cursor-pointer items-center justify-start gap-4 rounded shadow-01 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
+          :class="{ ' !text-dark-5 !p3-r': !tempValue }"
+          @click.stop="datePickerOpen = !datePickerOpen"
+        >
+          <input
+            :value="tempValue"
+            required
+            class="opacity-0 absolute w-[1px] bottom-0 left-1/2 h-[1px] pointer-events-none"
+          />
+          {{
+            tempValue
+              ? createHourRange(moment(tempValue).format("YYYY-MM-DD HH:mm"))
+              : t("未設定")
+          }}
+        </div>
+        <Transition name="fade" mode="out-in">
           <div
-            ref="date"
-            class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-2 rounded shadow-01 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
-            @click="togglePopover"
+            class="absolute top-[calc(100%+.75rem)] left-0 z-10"
+            v-if="datePickerOpen"
           >
-            {{ inputValue ? inputValue : t("未設定") }}
+            <DatePicker
+              v-model="tempValue"
+              mode="dateTime"
+              :min-Date="
+                eventData.start ? new Date(eventData.start) : new Date()
+              "
+              is24hr
+              hide-time-header
+              :time-accuracy="2"
+              :timezone="getTimezone()"
+              @update:modelValue="updateStart"
+            />
           </div>
-        </template>
-      </DatePicker>
+        </Transition>
+      </div>
+
       <PhX
         v-if="setDeadline"
         @click="setDeadline = false"

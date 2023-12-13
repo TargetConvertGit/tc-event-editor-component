@@ -9,6 +9,7 @@ import EventActionTargetItem from "./EventActionTargetItem.vue";
 import { PhX, PhTrash } from "@phosphor-icons/vue";
 import { Label } from "../shadcn/components/ui/label";
 import { Checkbox } from "../shadcn/components/ui/checkbox";
+import { getTimezone } from "../timezone";
 
 import {
   EventCondition,
@@ -729,7 +730,7 @@ const comparisonDateLabel = computed(() => {
             <div v-if="dateRangeType == DateRangeType.SpecifiedTime">
               <DatePicker
                 v-model.range="condition.dateRange"
-                :timezone="Intl.DateTimeFormat().resolvedOptions().timeZone"
+                :timezone="getTimezone()"
               >
                 <template #default="{ togglePopover, inputValue }">
                   <div

@@ -574,9 +574,12 @@ onMounted(() => {
               <template v-if="!Number.isInteger(value)">
                 <span
                   class="cursor-pointer hover:drop-shadow-md"
-                  :class="{
-                    'text-true-blue-3 drop-shadow-sm p3-b': client == key,
-                  }"
+                  :class="[
+                    { '!text-dark-5 p3-r': client == unSelected },
+                    client === key
+                      ? 'text-true-blue-3 drop-shadow-sm p3-b'
+                      : 'text-dark-5 ',
+                  ]"
                   @click="setClient(key)"
                 >
                   {{ value }}
@@ -604,7 +607,7 @@ onMounted(() => {
             <span class="p3-r text-dark-4">{{ t("層級") }}</span>
             <select
               class="p3-b text-true-blue-3 min-w-[5rem] w-20 flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-              :class="{ '!w-fit': adLevel != unSelected }"
+              :class="[adLevel != unSelected ? '!w-fit' : '!text-dark-5 !p3-r']"
               v-model="adLevel"
               @change="setAdLevel"
               required
@@ -628,7 +631,9 @@ onMounted(() => {
               <span class="p3-r text-dark-4">{{ t("項目") }}</span>
               <select
                 class="p3-b text-true-blue-3 min-w-[5rem] w-20 flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-                :class="{ '!w-fit': targetType != unSelected }"
+                :class="[
+                  targetType != unSelected ? '!w-fit' : '!text-dark-5 !p3-r',
+                ]"
                 v-model="targetType"
                 @change="setTargetType"
                 required
@@ -747,13 +752,14 @@ onMounted(() => {
                 </label>
               </div>
             </div>
-
             <div
               v-if="getAccountLoading"
               class="h-4 w-4 mt-4 mx-auto animate-spin rounded-full border-2 border-solid border-blue-400 border-t-transparent"
             ></div>
             <template v-else>
-              <div class="flex flex-col gap-4 flex-1 overflow-y-auto">
+              <div
+                class="flex flex-col gap-4 flex-1 overflow-y-auto scroll-shadow"
+              >
                 <div
                   class="flex flex-col items-center justify-center gap-4 mt-4"
                   v-if="!filterAccountList.length"
@@ -792,7 +798,9 @@ onMounted(() => {
           <span class="p3-r text-dark-4">{{ t("執行") }}</span>
           <select
             class="p3-b text-true-blue-3 min-w-[5rem] w-20 flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-            :class="{ '!w-fit': actionValue != unSelected }"
+            :class="[
+              actionValue != unSelected ? '!w-fit' : '!text-dark-5 !p3-r',
+            ]"
             v-model="actionValue"
             @change="setActionValue"
             required
@@ -826,10 +834,12 @@ onMounted(() => {
                 <template v-if="!Number.isInteger(value)">
                   <span
                     class="cursor-pointer hover:drop-shadow-md"
-                    :class="{
-                      'text-true-blue-3 drop-shadow-sm p3-b':
-                        paramsBudgetType == BudgetType[key],
-                    }"
+                    :class="[
+                      { '!text-dark-5 p3-r': paramsBudgetType == unSelected },
+                      paramsBudgetType == BudgetType[key]
+                        ? 'text-true-blue-3 drop-shadow-sm p3-b'
+                        : 'text-dark-5 ',
+                    ]"
                     @click="setParamsBudgetType(BudgetType[key])"
                   >
                     {{ t(value) }}
@@ -873,10 +883,15 @@ onMounted(() => {
                       <template v-if="!Number.isInteger(value)">
                         <span
                           class="cursor-pointer hover:drop-shadow-md"
-                          :class="{
-                            'text-true-blue-3 drop-shadow-sm p3-b':
-                              paramsValueType == value,
-                          }"
+                          :class="[
+                            {
+                              '!text-dark-5 p3-r':
+                                paramsValueType == unSelected,
+                            },
+                            paramsValueType == value
+                              ? 'text-true-blue-3 drop-shadow-sm p3-b'
+                              : 'text-dark-5 ',
+                          ]"
                           @click="setParamsValueType(value)"
                         >
                           {{ t(`action${value}`) }}
@@ -925,10 +940,11 @@ onMounted(() => {
                 <div class="flex items-center gap-1">
                   <div
                     class="p3-b text-true-blue-3 w-fit flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+                    :class="{ '!text-dark-5 !p3-r': !hasLimitBudget }"
                     @click="hasLimitBudget = true"
                     v-if="!hasLimitBudget"
                   >
-                    {{ t("未設定") }}
+                    {{ t("無") }}
                   </div>
 
                   <div

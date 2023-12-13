@@ -37,10 +37,10 @@ function enter(element) {
     element.style.paddingTop = "24px";
   });
 }
-function afterEnter(element) {
+function afterEnter(element: any) {
   element.style.height = "auto";
 }
-function leave(element) {
+function leave(element: any) {
   const height = getComputedStyle(element).height;
 
   element.style.height = height;
@@ -62,7 +62,7 @@ function leave(element) {
     <div
       class="flex items-center justify-between bg-light-5 z-[2]"
       :class="{ ' cursor-pointer': !expand }"
-      @click="expand = !expand"
+      @click="!expand ? (expand = true) : null"
     >
       <div class="p2-b text-dark-2 bg-light-5 flex gap-1 items-center">
         <component :is="pIcon" weight="bold" /> {{ title }}
@@ -71,6 +71,7 @@ function leave(element) {
         weight="bold"
         class="transition-all hover:drop-shadow-md cursor-pointer hover:text-dark-3"
         :class="{ '-rotate-90': !expand }"
+        @click.stop="expand = !expand"
       />
     </div>
     <Transition

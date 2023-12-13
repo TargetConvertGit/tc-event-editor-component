@@ -757,9 +757,7 @@ onMounted(() => {
               class="h-4 w-4 mt-4 mx-auto animate-spin rounded-full border-2 border-solid border-blue-400 border-t-transparent"
             ></div>
             <template v-else>
-              <div
-                class="flex flex-col gap-4 flex-1 overflow-y-auto scroll-shadow"
-              >
+              <div class="flex flex-col gap-4 flex-1 overflow-y-auto">
                 <div
                   class="flex flex-col items-center justify-center gap-4 mt-4"
                   v-if="!filterAccountList.length"

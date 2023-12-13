@@ -88,9 +88,7 @@ function leave(element: any) {
 <style lang="scss" scoped>
 .expand-enter-active,
 .expand-leave-active {
-  transition:
-    height 0.25s ease-in-out,
-    padding 0.25s ease-in-out;
+  transition: all 0s ease-in-out;
   overflow: hidden;
 }
 

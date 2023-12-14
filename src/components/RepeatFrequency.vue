@@ -174,7 +174,7 @@ onClickOutside(target, () => (datePickerOpen.value = false));
 
 <template>
   <div class="flex flex-col gap-6">
-    <div class="flex gap-6">
+    <div class="flex gap-6 flex-wrap items-center">
       <label class="flex items-center justify-start gap-4">
         <span class="p3-r text-dark-4">{{ t("執行頻率") }}</span>
         <div class="flex gap-6">

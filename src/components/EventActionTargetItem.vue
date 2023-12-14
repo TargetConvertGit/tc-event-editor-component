@@ -55,16 +55,18 @@ const expand = ref(true);
         @update:checked="addTarget(target)"
       />
     </div>
-    <div
-      class="flex flex-col pl-6 w-full pt-2"
-      v-if="target?.children && expand"
-    >
-      <EventActionTargetItem
-        v-for="ta in target.children"
-        :target="ta"
-        :targets="targets"
-      />
-    </div>
+    <Transition name="fade" mode="out-in">
+      <div
+        class="flex flex-col pl-6 w-full pt-2"
+        v-if="target?.children && expand"
+      >
+        <EventActionTargetItem
+          v-for="ta in target.children"
+          :target="ta"
+          :targets="targets"
+        />
+      </div>
+    </Transition>
   </div>
 </template>
 

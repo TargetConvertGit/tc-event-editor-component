@@ -110,9 +110,6 @@ const submitBtn = ref();
 const lockScroll = ref(false);
 provide("lockScroll", lockScroll);
 
-const getToken = async () => {
-  return "Bearer 7|IMZYBXtkk2b4DXnscSaexanLbcBbjvd7dP5Djj6Q";
-};
 const getLocale = async () => {
   return "zh_TW";
 };
@@ -120,8 +117,6 @@ const getTimezone = async () => {
   return "Asia/Taipei";
 };
 const init = async () => {
-  const token = await getToken();
-  setToken(token);
   const locale = await getLocale();
   setLang(locale);
   const timezone = await getTimezone();

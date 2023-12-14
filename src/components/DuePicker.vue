@@ -52,6 +52,19 @@ function createHourRange(dateTime) {
   return `${startHour}-${endHour}`;
 }
 
+const listBlock = ref();
+const setListBlockStyle = () => {
+  nextTick(() => {
+    if (!listBlock.value) return;
+    const rect = listBlock.value.getBoundingClientRect();
+    if (rect.right >= window.innerWidth) {
+      listBlock.value.classList.add("list-left");
+    } else {
+      listBlock.value.classList.add("list-right");
+    }
+  });
+};
+
 watch(
   () => props.modelValue,
   (val) => {
@@ -67,6 +80,7 @@ watch(setDeadline, (value) => {
   } else {
     nextTick(() => {
       datePickerOpen.value = true;
+      setListBlockStyle();
     });
   }
 });
@@ -85,6 +99,7 @@ onUnmounted(() => {
         v-if="!setDeadline"
         >{{ t("持續執行") }}</label
       >
+
       <div class="relative" ref="target" v-else>
         <div
           class="p3-b text-true-blue-3 relative flex cursor-pointer items-center justify-start gap-4 rounded shadow-01 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
@@ -104,7 +119,8 @@ onUnmounted(() => {
         </div>
         <Transition name="fade" mode="out-in">
           <div
-            class="absolute top-[calc(100%+.75rem)] left-0 z-10"
+            class="absolute top-[calc(100%+.75rem)] z-10"
+            ref="listBlock"
             v-if="datePickerOpen"
           >
             <DatePicker
@@ -133,4 +149,11 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.list-left {
+  left: 0;
+}
+.list-right {
+  right: 0;
+}
+</style>

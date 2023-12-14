@@ -6,6 +6,7 @@ import { getApiUrlBase, getToken } from "../apiConfig";
 import EventActionTargetItem from "./EventActionTargetItem.vue";
 import { PhX, PhTrash, PhNote } from "@phosphor-icons/vue";
 import { Label } from "../shadcn/components/ui/label";
+import { watchDebounced } from "@vueuse/core";
 import {
   ClientType,
   AdLevelTypeGoogle,
@@ -15,6 +16,8 @@ import {
   ValueType,
   EventActionTargetType,
 } from "../types/event-items";
+import { DynamicScroller, DynamicScrollerItem } from "vue-virtual-scroller";
+import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 import { i18n } from "../i18n";
 
 const { t } = i18n.global;
@@ -301,105 +304,107 @@ const getAccountList = async () => {
 
 const getAccountLoading = ref(false);
 
-const filterAccountList = computed(() => {
-  const filterText = accountFilterText.value.trim().toLowerCase();
+const filterAccountList = ref([]);
 
-  const findMatchingItems = (items) => {
-    let matchingItems = [];
+// const filterAccountList = computed(() => {
+//   const filterText = accountFilterText.value.trim().toLowerCase();
 
-    for (const item of items) {
-      let shouldBreak = false;
-      accountFilterTabs.value.forEach((i) => {
-        if (i.label == item.type && i.status == item.enabled && !item.enabled) {
-          shouldBreak = true;
-        }
-      });
-      if (shouldBreak) continue;
-      if (!item.children || item.children.length === 0) {
-        matchingItems.push(item);
-      }
+//   function findMatchingItems(items): any {
+//     let matchingItems = [];
 
-      if (item.children && item.children.length > 0) {
-        const childMatches = findMatchingItems(item.children);
-        if (childMatches.length > 0) {
-          matchingItems.push({
-            id: item.id,
-            name: item.name,
-            children: childMatches,
-            enabled: item.enabled,
-          });
-        }
-      }
-    }
+//     for (const item of items) {
+//       let shouldBreak = false;
+//       accountFilterTabs.value.forEach((i) => {
+//         if (i.label == item.type && i.status == item.enabled && !item.enabled) {
+//           shouldBreak = true;
+//         }
+//       });
+//       if (shouldBreak) continue;
+//       if (!item.children || item.children.length === 0) {
+//         matchingItems.push(item);
+//       }
 
-    return matchingItems;
-  };
+//       if (item.children && item.children.length > 0) {
+//         const childMatches = findMatchingItems(item.children);
+//         if (childMatches.length > 0) {
+//           matchingItems.push({
+//             id: item.id,
+//             name: item.name,
+//             children: childMatches,
+//             enabled: item.enabled,
+//           });
+//         }
+//       }
+//     }
 
-  const filteredItems = [];
-  for (const account of allAccountList.value) {
-    if (account.children) {
-      const matchingItems = findMatchingItems(account.children);
-      if (matchingItems.length > 0) {
-        filteredItems.push({
-          id: account.id,
-          name: account.name,
-          type: account.type,
-          children: matchingItems,
-        });
-      }
-    } else {
-      filteredItems.push({
-        id: account.id,
-        name: account.name,
-        type: account.type,
-      });
-    }
-  }
-  function filterData(data, searchText) {
-    accountCount.value = 0;
+//     return matchingItems;
+//   }
 
-    function countLeafNodes(node) {
-      if (!node.children || node.children.length === 0) {
-        accountCount.value++;
-      } else {
-        node.children.forEach((child) => countLeafNodes(child));
-      }
-    }
+//   const filteredItems = [];
+//   for (const account of allAccountList.value) {
+//     if (account.children) {
+//       const matchingItems = findMatchingItems(account.children);
+//       if (matchingItems.length > 0) {
+//         filteredItems.push({
+//           id: account.id,
+//           name: account.name,
+//           type: account.type,
+//           children: matchingItems,
+//         });
+//       }
+//     } else {
+//       filteredItems.push({
+//         id: account.id,
+//         name: account.name,
+//         type: account.type,
+//       });
+//     }
+//   }
+//   function filterData(data, searchText) {
+//     accountCount.value = 0;
 
-    function filterNodes(node, text) {
-      const newItem = { ...node };
-      const children = newItem.children;
+//     function countLeafNodes(node) {
+//       if (!node.children || node.children.length === 0) {
+//         accountCount.value++;
+//       } else {
+//         node.children.forEach((child) => countLeafNodes(child));
+//       }
+//     }
 
-      if (newItem.name.toLowerCase().includes(text)) {
-        const filteredChildren = (children || []).filter((child) =>
-          child.name.toLowerCase().includes(text)
-        );
-        if (filteredChildren.length > 0) {
-          newItem.children = filteredChildren;
-        }
-        return newItem;
-      } else if (children) {
-        const filteredChildren = children
-          .map((child) => filterNodes(child, text))
-          .filter(Boolean);
-        if (filteredChildren.length > 0) {
-          newItem.children = filteredChildren;
-          return newItem;
-        }
-      }
+//     function filterNodes(node, text) {
+//       const newItem = { ...node };
+//       const children = newItem.children;
 
-      return null;
-    }
+//       if (newItem.name.toLowerCase().includes(text)) {
+//         const filteredChildren = (children || []).filter((child) =>
+//           child.name.toLowerCase().includes(text)
+//         );
+//         if (filteredChildren.length > 0) {
+//           newItem.children = filteredChildren;
+//         }
+//         return newItem;
+//       } else if (children) {
+//         const filteredChildren = children
+//           .map((child) => filterNodes(child, text))
+//           .filter(Boolean);
+//         if (filteredChildren.length > 0) {
+//           newItem.children = filteredChildren;
+//           return newItem;
+//         }
+//       }
 
-    const filteredData = data
-      .map((node) => filterNodes(node, searchText))
-      .filter(Boolean);
+//       return null;
+//     }
 
-    filteredData.forEach((item) => countLeafNodes(item));
-    return filteredData;
-  }
-  return filterData(filteredItems, filterText);
-});
+//     const filteredData = data
+//       .map((node) => filterNodes(node, searchText))
+//       .filter(Boolean);
+
+//     filteredData.forEach((item) => countLeafNodes(item));
+//     return filteredData;
+//   }
+//   return filterText ? filterData(filteredItems, filterText) : filteredItems;
+// });
 
 const resetSelectedAccount = () => {
   action.value.target = [];
@@ -532,6 +537,121 @@ const budgetTips = computed(() => {
 onMounted(() => {
   accountModalLoading.value = true;
 });
+const setList = () => {
+  const filterText = accountFilterText.value.trim().toLowerCase();
+
+  function findMatchingItems(items): any {
+    let matchingItems = [];
+
+    for (const item of items) {
+      let shouldBreak = false;
+      accountFilterTabs.value.forEach((i) => {
+        if (i.label == item.type && i.status == item.enabled && !item.enabled) {
+          shouldBreak = true;
+        }
+      });
+      if (shouldBreak) continue;
+      if (!item.children || item.children.length === 0) {
+        matchingItems.push(item);
+      }
+
+      if (item.children && item.children.length > 0) {
+        const childMatches = findMatchingItems(item.children);
+        if (childMatches.length > 0) {
+          matchingItems.push({
+            id: item.id,
+            name: item.name,
+            children: childMatches,
+            enabled: item.enabled,
+          });
+        }
+      }
+    }
+
+    return matchingItems;
+  }
+
+  const filteredItems = [];
+  for (const account of allAccountList.value) {
+    if (account.children) {
+      const matchingItems = findMatchingItems(account.children);
+      if (matchingItems.length > 0) {
+        filteredItems.push({
+          id: account.id,
+          name: account.name,
+          type: account.type,
+          children: matchingItems,
+        });
+      }
+    } else {
+      filteredItems.push({
+        id: account.id,
+        name: account.name,
+        type: account.type,
+      });
+    }
+  }
+  function filterData(data, searchText) {
+    accountCount.value = 0;
+
+    function countLeafNodes(node) {
+      if (!node.children || node.children.length === 0) {
+        accountCount.value++;
+      } else {
+        node.children.forEach((child) => countLeafNodes(child));
+      }
+    }
+
+    function filterNodes(node, text) {
+      const newItem = { ...node };
+      const children = newItem.children;
+
+      if (newItem.name.toLowerCase().includes(text)) {
+        const filteredChildren = (children || []).filter((child) =>
+          child.name.toLowerCase().includes(text)
+        );
+        if (filteredChildren.length > 0) {
+          newItem.children = filteredChildren;
+        }
+        return newItem;
+      } else if (children) {
+        const filteredChildren = children
+          .map((child) => filterNodes(child, text))
+          .filter(Boolean);
+        if (filteredChildren.length > 0) {
+          newItem.children = filteredChildren;
+          return newItem;
+        }
+      }
+
+      return null;
+    }
+
+    const filteredData = data
+      .map((node) => filterNodes(node, searchText))
+      .filter(Boolean);
+
+    filteredData.forEach((item) => countLeafNodes(item));
+    return filteredData;
+  }
+  filterAccountList.value = filterText
+    ? filterData(filteredItems, filterText)
+    : filteredItems;
+};
+watchDebounced(
+  () => accountFilterText,
+  () => {
+    setList();
+  },
+  { deep: true, debounce: 500 }
+);
+watch(
+  () => [accountFilterTabs, allAccountList],
+  () => {
+    setList();
+  },
+  { deep: true }
+);
 </script>
 
 <template>
@@ -757,22 +877,39 @@ onMounted(() => {
               class="h-4 w-4 mt-4 mx-auto animate-spin rounded-full border-2 border-solid border-blue-400 border-t-transparent"
             ></div>
             <template v-else>
-              <div class="flex flex-col gap-4 flex-1 overflow-y-auto">
+              <div
+                class="flex flex-col gap-4 flex-1 overflow-y-auto"
+                v-if="!filterAccountList.length"
+              >
                 <div
                   class="flex flex-col items-center justify-center gap-4 mt-4"
-                  v-if="!filterAccountList.length"
                 >
                   <ph-note :size="48" class="text-dark-4" />
                   <p class="p2-b text-dark-3">{{ t("No Data") }}</p>
                 </div>
-                <EventActionTargetItem
-                  v-else
-                  v-for="target in filterAccountList"
-                  :key="target.id"
-                  :target="target"
-                  :targets="action?.target ?? []"
-                />
               </div>
+              <DynamicScroller
+                v-else
+                ref="scroller"
+                :items="filterAccountList"
+                :min-item-size="28"
+                class="scroller"
+              >
+                <template #default="{ item, index, active }">
+                  <DynamicScrollerItem
+                    :item="item"
+                    :active="active"
+                    :size-dependencies="[item.children]"
+                    :data-index="index"
+                    :data-active="active"
+                  >
+                    <EventActionTargetItem
+                      :target="item"
+                      :targets="action?.target ?? []"
+                    />
+                  </DynamicScrollerItem>
+                </template>
+              </DynamicScroller>
             </template>
             <div
               class="mx-auto flex w-fit items-center gap-4 mt-8"

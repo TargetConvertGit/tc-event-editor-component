@@ -7,17 +7,27 @@ import Condition from "./Condition.vue";
 import OuterBlock from "./OuterBlock.vue";
 import Notification from "./Notification.vue";
 import { i18n } from "../i18n";
-import { setToken } from "../apiConfig";
-import setLang from "../langSetting.js";
-import { setTimezone } from "../timezone";
 
 const { t } = i18n.global;
 interface Props {
+  initial: {
+    apiUrl: string;
+    token: string;
+    locale: string;
+    timezone: string;
+  };
   data?: string;
 }
 
 const props = defineProps<Props>();
-
+provide("initialData", props.initial);
+watch(
+  props.initial,
+  (val) => {
+    i18n.global.locale.value = val.locale;
+  },
+  { deep: true, immediate: true }
+);
 const emit = defineEmits(["update:data"]);
 
 const json = computed((): EventItem => JSON.parse(props.data || `{}`));
@@ -113,15 +123,8 @@ provide("lockScroll", lockScroll);
 const getLocale = async () => {
   return "zh_TW";
 };
-const getTimezone = async () => {
-  return "Asia/Taipei";
-};
-const init = async () => {
-  const locale = await getLocale();
-  setLang(locale);
-  const timezone = await getTimezone();
-  setTimezone(timezone);
-};
+
+const init = async () => {};
 init();
 defineExpose({
   saveData,

@@ -3,7 +3,6 @@ import { PhX } from "@phosphor-icons/vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
 import { i18n } from "../i18n";
-import { getTimezone } from "../timezone";
 import { onClickOutside } from "@vueuse/core";
 import { cloneDeep } from "lodash";
 import moment from "moment";
@@ -16,6 +15,7 @@ const props = withDefaults(defineProps<Props>(), {});
 
 const emit = defineEmits(["update:modelValue"]);
 const eventData = inject("eventData");
+const initialData = inject("initialData");
 
 const setDeadline = ref(false);
 
@@ -132,7 +132,7 @@ onUnmounted(() => {
               is24hr
               hide-time-header
               :time-accuracy="2"
-              :timezone="getTimezone()"
+              :timezone="initialData.timezone"
               @update:modelValue="updateStart"
             />
           </div>

@@ -6,7 +6,6 @@ import TextInput from "./TextInput.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
 import { i18n } from "../i18n";
-import { getTimezone } from "../timezone";
 import { onClickOutside } from "@vueuse/core";
 import { cloneDeep } from "lodash";
 import moment from "moment";
@@ -16,15 +15,11 @@ interface Props {
   interval?: number | string;
 }
 const props = defineProps<Props>();
-
+const initialData = inject("initialData");
 const emit = defineEmits(["update:frequency", "update:interval"]);
 
 const eventData = inject("eventData");
-const editMode = ref(true);
 
-watch(eventData, () => {
-  editMode.value = true;
-});
 const minInterval = 1;
 const interval = ref(props.interval ?? minInterval);
 watch(interval, (val) => {
@@ -34,14 +29,6 @@ watch(interval, (val) => {
 const frequency = ref(props.frequency);
 watch(frequency, (val) => {
   emit("update:frequency", val);
-});
-
-const startTime = computed({
-  get: () =>
-    eventData.value.start ? new Date(eventData.value.start).toISOString() : "",
-  set: (value) => {
-    eventData.value.start = value;
-  },
 });
 
 //#region 日期相關參數
@@ -153,17 +140,18 @@ watch(
   },
   { immediate: true }
 );
-const tempValue = ref(
+
+const tempStartValue = ref(
   eventData.value.start ? new Date(eventData.value.start).toISOString() : ""
 );
 const updateStart = (v) => {
-  tempValue.value = v.toISOString();
+  tempStartValue.value = v.toISOString();
 };
 
 const datePickerOpen = ref(false);
 watch(datePickerOpen, (val) => {
   if (!val) {
-    eventData.value.start = cloneDeep(tempValue.value);
+    eventData.value.start = cloneDeep(tempStartValue.value);
   }
 });
 
@@ -199,22 +187,18 @@ onClickOutside(target, () => (datePickerOpen.value = false));
           <div class="relative" ref="target">
             <div
               class="p3-b text-true-blue-3 relative flex cursor-pointer items-center justify-start gap-4 rounded shadow-01 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
-              :class="{ ' !text-dark-5 !p3-r': !eventData.start }"
+              :class="{ ' !text-dark-5 !p3-r': !tempStartValue }"
               @click.stop="datePickerOpen = !datePickerOpen"
             >
-              <p class="hidden">
-                {{ tempValue }}
-              </p>
-
               <input
-                :value="eventData.start"
+                :value="tempStartValue"
                 required
                 class="opacity-0 absolute w-[1px] bottom-0 left-1/2 h-[1px] pointer-events-none"
               />
               {{
-                eventData.start
+                tempStartValue
                   ? createHourRange(
-                      moment(eventData.start).format("YYYY-MM-DD HH:mm")
+                      moment(tempStartValue).format("YYYY-MM-DD HH:mm")
                     )
                   : t("未設定")
               }}
@@ -225,13 +209,13 @@ onClickOutside(target, () => (datePickerOpen.value = false));
                 v-if="datePickerOpen"
               >
                 <DatePicker
-                  v-model="eventData.start"
+                  v-model="tempStartValue"
                   mode="dateTime"
                   :min-Date="new Date()"
                   is24hr
                   hide-time-header
                   :time-accuracy="2"
-                  :timezone="getTimezone()"
+                  :timezone="initialData.timezone"
                   @update:modelValue="updateStart"
                 />
               </div>

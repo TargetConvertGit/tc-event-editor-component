@@ -4,12 +4,11 @@ import OuterBlock from "./OuterBlock.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
 import axios from "axios";
-import { getApiUrlBase, getToken } from "../apiConfig";
+import { getApiUrlBase } from "../apiConfig";
 import EventActionTargetItem from "./EventActionTargetItem.vue";
 import { PhX, PhTrash } from "@phosphor-icons/vue";
 import { Label } from "../shadcn/components/ui/label";
 import { Checkbox } from "../shadcn/components/ui/checkbox";
-import { getTimezone } from "../timezone";
 
 import {
   EventCondition,
@@ -25,6 +24,7 @@ import {
 import { i18n } from "../i18n";
 
 const { t } = i18n.global;
+const initialData = inject("initialData");
 
 interface Props {
   modelValue: EventCondition;
@@ -242,7 +242,7 @@ const getAccountList = async () => {
     }&adLevel=${adLevel.value}`,
     withCredentials: true,
     headers: {
-      Authorization: getToken(),
+      Authorization: initialData.token,
     },
   });
   allAccountList.value = targets.data.data;
@@ -730,7 +730,7 @@ const comparisonDateLabel = computed(() => {
             <div v-if="dateRangeType == DateRangeType.SpecifiedTime">
               <DatePicker
                 v-model.range="condition.dateRange"
-                :timezone="getTimezone()"
+                :timezone="initialData.timezone"
               >
                 <template #default="{ togglePopover, inputValue }">
                   <div

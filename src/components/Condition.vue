@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TextInput from "./TextInput.vue";
 import axios from "axios";
-import { getApiUrlBase, getToken } from "../apiConfig";
+import { getApiUrlBase } from "../apiConfig";
 import { PhX } from "@phosphor-icons/vue";
 import ConditionItem from "./ConditionItem.vue";
 import { i18n } from "../i18n";
@@ -10,6 +10,7 @@ const { t } = i18n.global;
 const eventData = inject("eventData");
 const conditions = ref(eventData.value.conditions ?? []);
 const addConditionModal = ref(false);
+const initialData = inject("initialData");
 
 watch(
   conditions,
@@ -42,7 +43,7 @@ const selectDemoCondition = async (id: number) => {
     url: `${getApiUrlBase()}/heybear/api/automation/ad-events/template/${id}`,
     withCredentials: true,
     headers: {
-      Authorization: getToken(),
+      Authorization: initialData.token,
     },
   });
   conditions.value.push(res.data.data);
@@ -63,7 +64,7 @@ const getDemoCondition = async () => {
     params: { type: 2 },
     withCredentials: true,
     headers: {
-      Authorization: getToken(),
+      Authorization: initialData.token,
     },
   });
   allDemoCondition.value = res.data.data;

@@ -2,11 +2,12 @@
 import TextInput from "./TextInput.vue";
 import OuterBlock from "./OuterBlock.vue";
 import axios from "axios";
-import { getApiUrlBase, getToken } from "../apiConfig";
+import { getApiUrlBase } from "../apiConfig";
 import EventActionTargetItem from "./EventActionTargetItem.vue";
 import { PhX, PhTrash, PhNote } from "@phosphor-icons/vue";
 import { Label } from "../shadcn/components/ui/label";
 import { watchDebounced } from "@vueuse/core";
+
 import {
   ClientType,
   AdLevelTypeGoogle,
@@ -22,6 +23,7 @@ import { i18n } from "../i18n";
 
 const { t } = i18n.global;
 const eventData = inject("eventData");
+const initialData = inject("initialData");
 
 // 未選擇
 const unSelected = "";
@@ -289,12 +291,10 @@ const allAccountList = ref();
 const getAccountList = async () => {
   const targets = await axios({
     method: "get",
-    url: `${getApiUrlBase()}/heybear/api/automation/platform-target?client=${
-      client.value
-    }&adLevel=${adLevel.value}`,
+    url: `${initialData.apiUrl}/heybear/api/automation/platform-target?client=${client.value}&adLevel=${adLevel.value}`,
     withCredentials: true,
     headers: {
-      Authorization: getToken(),
+      Authorization: initialData.token,
     },
   });
 

@@ -38,10 +38,21 @@ const dt = {
     Last: "最後一週",
   },
 };
-
-export function getDescription(event, withRange = false) {
+/**
+ *
+ * @param {*} event
+ * @param {*} timezone
+ * @param {*} withRange
+ * @returns
+ */
+export function getDescription(
+  event,
+  timezone = Intl.DateTimeFormat().resolvedOptions().timeZone,
+  withRange = false
+) {
   const { t } = i18n.global;
   const startDate = new Date(event.start).toLocaleString("zh-TW", {
+    timeZone: timezone,
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -50,6 +61,7 @@ export function getDescription(event, withRange = false) {
   });
   const endDate = event.due
     ? new Date(event.due).toLocaleString("zh-TW", {
+        timeZone: timezone,
         year: "numeric",
         month: "long",
         day: "numeric",

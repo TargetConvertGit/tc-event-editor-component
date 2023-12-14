@@ -23,6 +23,7 @@ export interface Props {
   yearMonths?: MonthType[];
 }
 const props = withDefaults(defineProps<Props>(), {});
+const initialData = inject("initialData");
 
 const emit = defineEmits([
   "update:weekdays",
@@ -75,7 +76,7 @@ watchEffect(() => {
     "update:yearMonths",
     yearMonthsOrigin.value.length ? yearMonthsOrigin.value : null
   );
-  timeLabel.value = getDescription(eventData.value, true);
+  timeLabel.value = getDescription(eventData.value, initialData.timezone, true);
 });
 //指定每週星期幾
 const weekdaysOptions = ref([

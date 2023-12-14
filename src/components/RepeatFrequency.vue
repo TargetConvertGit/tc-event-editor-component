@@ -8,7 +8,8 @@ import "v-calendar/style.css";
 import { i18n } from "../i18n";
 import { onClickOutside } from "@vueuse/core";
 import { cloneDeep } from "lodash";
-import moment from "moment";
+import * as moment from "moment-timezone";
+
 const { t } = i18n.global;
 interface Props {
   frequency?: FrequencyType;
@@ -198,7 +199,9 @@ onClickOutside(target, () => (datePickerOpen.value = false));
               {{
                 tempStartValue
                   ? createHourRange(
-                      moment(tempStartValue).format("YYYY-MM-DD HH:mm")
+                      moment(tempStartValue)
+                        .tz(initialData.timezone)
+                        .format("YYYY-MM-DD HH:mm")
                     )
                   : t("未設定")
               }}

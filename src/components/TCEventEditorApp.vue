@@ -120,12 +120,8 @@ const submitBtn = ref();
 const lockScroll = ref(false);
 provide("lockScroll", lockScroll);
 
-const getLocale = async () => {
-  return "zh_TW";
-};
-
-const init = async () => {};
-init();
+// const init = async () => {};
+// init();
 defineExpose({
   saveData,
 });

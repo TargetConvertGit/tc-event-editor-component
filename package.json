@@ -32,6 +32,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
     "prettier": "^3.0.0",
     "radix-vue": "^1.2.3",
     "tailwind-merge": "^2.0.0",

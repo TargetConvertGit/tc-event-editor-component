@@ -5,7 +5,7 @@ import "v-calendar/style.css";
 import { i18n } from "../i18n";
 import { onClickOutside } from "@vueuse/core";
 import { cloneDeep } from "lodash";
-import moment from "moment";
+import * as moment from "moment-timezone";
 
 const { t } = i18n.global;
 export interface Props {
@@ -113,7 +113,11 @@ onUnmounted(() => {
           />
           {{
             tempValue
-              ? createHourRange(moment(tempValue).format("YYYY-MM-DD HH:mm"))
+              ? createHourRange(
+                  moment(tempValue)
+                    .tz(initialData.timezone)
+                    .format("YYYY-MM-DD HH:mm")
+                )
               : t("未設定")
           }}
         </div>

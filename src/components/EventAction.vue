@@ -4,10 +4,11 @@ import OuterBlock from "./OuterBlock.vue";
 import axios from "axios";
 import { getApiUrlBase } from "../apiConfig";
 import EventActionTargetItem from "./EventActionTargetItem.vue";
-import { PhX, PhTrash, PhNote } from "@phosphor-icons/vue";
+import { PhX, PhTrash, PhNote, PhArrowsClockwise } from "@phosphor-icons/vue";
 import { Label } from "../shadcn/components/ui/label";
 import { watchDebounced } from "@vueuse/core";
-
+import { Tooltip } from "floating-vue";
+import "floating-vue/dist/style.css";
 import {
   ClientType,
   AdLevelTypeGoogle,
@@ -288,10 +289,12 @@ const addAccount = (account) => {
 provide("addTarget", addAccount);
 // 目標列表
 const allAccountList = ref();
-const getAccountList = async () => {
+const getAccountList = async (noCache = false) => {
   const targets = await axios({
     method: "get",
-    url: `${initialData.apiUrl}/heybear/api/automation/platform-target?client=${client.value}&adLevel=${adLevel.value}`,
+    url: `${initialData.apiUrl}/heybear/api/automation/platform-target?client=${
+      client.value
+    }&adLevel=${adLevel.value}${noCache ? "&noCache=true" : ""}`,
     withCredentials: true,
     headers: {
       Authorization: initialData.token,
@@ -424,9 +427,10 @@ watch(addAccountModal, (val) => {
 });
 // 目標搜尋
 const accountFilterText = ref("");
-const accountCount = ref();
+const accountCount = ref(0);
 const selectAllAdsStatus = computed(() => {
   if (!action.value?.target) action.value.target = [];
+  console.log(action.value.target.length, accountCount.value);
   return (
     action.value.target.length > 0 &&
     action.value.target.length == accountCount.value
@@ -539,6 +543,7 @@ onMounted(() => {
 });
 const setList = () => {
   const filterText = accountFilterText.value.trim().toLowerCase();
+  accountCount.value = 0;
 
   function findMatchingItems(items): any {
     let matchingItems = [];
@@ -552,6 +557,8 @@ const setList = () => {
       });
       if (shouldBreak) continue;
       if (!item.children || item.children.length === 0) {
+        accountCount.value++;
+
         matchingItems.push(item);
       }
 
@@ -824,11 +831,28 @@ watch(
                 @click="addAccountModal = false"
               />
             </div>
-            <TextInput
-              v-model="accountFilterText"
-              :placeholder="t('搜尋')"
-              class="w-full mr-auto mb-4"
-            />
+            <div class="flex gap-2 mb-4 w-full">
+              <TextInput
+                v-model="accountFilterText"
+                :placeholder="t('搜尋')"
+                class="w-full"
+              />
+              <Tooltip :triggers="['hover']" :placement="'bottom-end'">
+                <div
+                  class="flex w-fit shadow-01 h-full bg-light-5 py-1 px-2 cursor-pointer hover:bg-light-3 hover:bg-opacity-50 items-center justify-center gap-3 rounded transition-all hover:shadow-01"
+                  @click="getAccountList(true)"
+                >
+                  <ph-arrows-clockwise weight="bold" />
+                </div>
+                <template #popper>
+                  <div class="flex flex-col">
+                    <span class="text-light-5 p3-r text-xs">{{
+                      t("立即更新")
+                    }}</span>
+                  </div>
+                </template>
+              </Tooltip>
+            </div>
             <div
               class="flex gap-4 w-full empty:hidden mb-2 items-center"
               v-if="!getAccountLoading && accountFilterTabs.length"
@@ -860,6 +884,7 @@ watch(
                 }}
               </label>
             </div>
+
             <div
               class="flex justify-end gap-4 items-center"
               v-if="!getAccountLoading"
@@ -947,6 +972,16 @@ watch(
               </option>
             </template>
           </select>
+          <span
+            class="text-dark-4 p3-r"
+            v-if="
+              client == ClientType.Google &&
+              adLevel == AdLevelTypeGoogle.Campaign &&
+              (actionValue == ActionType.OpenProject ||
+                actionValue == ActionType.SuspendProject)
+            "
+            >{{ t("註：影片廣告活動不支援狀態變更") }}</span
+          >
         </label>
         <!-- 新預算 -->
         <template

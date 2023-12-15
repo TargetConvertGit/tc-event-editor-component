@@ -31,6 +31,7 @@
     "axios": "^1.5.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "floating-vue": "^2.0.0-beta.24",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
     "prettier": "^3.0.0",

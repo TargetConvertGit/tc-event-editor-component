@@ -136,6 +136,7 @@ export enum AdLevelTypeGoogle {
   AdGroup = 3,
   // Ad = 4,
   AdTag = 5,
+  AssetGroup = 6,
 }
 
 /**

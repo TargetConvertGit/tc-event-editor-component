@@ -70,15 +70,15 @@ const repeatLabel = computed(() => {
   if (repeat.value == FrequencyType.Day) {
     return t("每日執行一次");
   }
-  if (repeat.value == FrequencyType.Week) {
-    return t("每週執行一次");
-  }
-  if (repeat.value == FrequencyType.Month) {
-    return t("每月執行一次");
-  }
-  if (repeat.value == FrequencyType.Annual) {
-    return t("每年執行一次");
-  }
+  // if (repeat.value == FrequencyType.Week) {
+  //   return t("每週執行一次");
+  // }
+  // if (repeat.value == FrequencyType.Month) {
+  //   return t("每月執行一次");
+  // }
+  // if (repeat.value == FrequencyType.Annual) {
+  //   return t("每年執行一次");
+  // }
   const label = {
     1: t("小時"),
     2: t("日"),
@@ -171,6 +171,7 @@ onClickOutside(target, () => (datePickerOpen.value = false));
             <select
               class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
               v-model="repeat"
+              required
             >
               <template v-for="(value, key) in FrequencyType" :key="key">
                 <option v-if="Number.isInteger(value)" :value="value">
@@ -252,20 +253,31 @@ onClickOutside(target, () => (datePickerOpen.value = false));
           v-model="interval"
           type="number"
         />
-        <select
-          class="p3-b text-true-blue-3 w-14 flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-          v-model="frequency"
-        >
-          <option value="-1" disabled>{{ t("未設定") }}</option>
-          <template v-for="(value, key) in FrequencyType" :key="key">
-            <option
-              v-if="value != FrequencyType.Never && Number.isInteger(value)"
-              :value="value"
-            >
-              {{ t(`repeat${key}`) }}
-            </option>
-          </template>
-        </select>
+        <div class="relative">
+          <input
+            type="text"
+            class="opacity-0 absolute left-1/2 w-[1px] h-[1px] bottom-0"
+            :value="frequency == -1 ? '' : frequency"
+            required
+          />
+          <select
+            class="p3-b text-true-blue-3 w-auto flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
+            v-model="frequency"
+            required
+            :class="[frequency != -1 ? '!w-fit' : '!text-dark-5 !p3-r']"
+          >
+            <option value="-1" disabled>{{ t("未設定") }}</option>
+            <template v-for="(value, key) in FrequencyType" :key="key">
+              <option
+                v-if="value != FrequencyType.Never && Number.isInteger(value)"
+                :value="value"
+              >
+                {{ t(`repeat${key}`) }}
+              </option>
+            </template>
+          </select>
+        </div>
+
         <span
           class="p3-b text-dark-3"
           v-if="

@@ -5,8 +5,8 @@ import "v-calendar/style.css";
 import { i18n } from "../i18n";
 import { onClickOutside } from "@vueuse/core";
 import { cloneDeep } from "lodash";
-import * as moment from "moment-timezone";
-
+import moment from "moment";
+import "moment-timezone";
 const { t } = i18n.global;
 export interface Props {
   modelValue: string | null | Date | undefined;

@@ -1,34 +1,8 @@
 <script setup lang="ts">
 import { TCEventEditorApp, setApiUrlBase } from "./index";
 
-import { i18n } from "./i18n";
 const dd = ref(`{
-  "start": "2023-12-15T16:00:00.000000Z",
-  "title": "在(當天+1天) 00:00 - 00:59 開啟指定廣告活動",
-  "active": 1,
-  "customInterval": 0,
-  "frequency": -1,
-  "interval": 1,
-  "weekdays": null,
-  "weekOrdinal": null,
-  "monthDate": null,
-  "yearMonths": null,
-  "due": null,
-  "except": null,
-  "notify": {
-    "email": 3,
-    "line": 0
-  },
-  "lastTimeAt": null,
-  "action": {
-    "client": 1,
-    "adLevel": 2,
-    "targetType": 2,
-    "target": [],
-    "action": 4,
-    "params": null
-  },
-  "conditions": []
+ 
 }`);
 const editor = ref();
 setApiUrlBase("https://tc-adsystem-stg.southeastasia.cloudapp.azure.com");

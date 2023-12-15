@@ -58,6 +58,7 @@ export default {
   totalBudget: "總預算",
   GoogleCampaign: "廣告活動",
   GoogleAdGroup: "廣告群組",
+  GoogleAssetGroup: "素材群組",
   GoogleAd: "廣告文字",
   GoogleAdTag: "廣告標籤",
   GoogleAccount: "帳戶",
@@ -76,6 +77,9 @@ export default {
   GoogleOn3: "所有廣告群組",
   GoogleOff2: "已啟用廣告活動",
   GoogleOff3: "已啟用廣告群組",
+  GoogleOn6: "所有素材群組",
+  GoogleOff6: "已啟用素材群組",
+
   所有的: "所有的",
   已開啟的: "已開啟的",
   個: "個",
@@ -128,6 +132,8 @@ export default {
   啟用中: "啟用中",
   暫停中: "暫停中",
   全選: "全選",
+  取消全選: "取消全選",
+  "註：影片廣告活動不支援狀態變更": "註：影片廣告活動不支援狀態變更",
   確定: "確定",
   執行: "執行",
   類型: "類型",
@@ -184,4 +190,5 @@ export default {
   "ex: 廣告開啟規則": "ex: 廣告開啟規則",
   "No Data": "沒有資料",
   無: "無",
+  立即更新: "立即更新",
 };

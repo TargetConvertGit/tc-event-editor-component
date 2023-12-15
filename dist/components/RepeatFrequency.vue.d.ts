@@ -1,5 +1,6 @@
 import { FrequencyType } from "../types/event-items";
 import "v-calendar/style.css";
+import "moment-timezone";
 declare const _default: import("vue").DefineComponent<{
     frequency: {
         type: globalThis.PropType<FrequencyType>;

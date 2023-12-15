@@ -431,7 +431,6 @@ const accountFilterText = ref("");
 const accountCount = ref(0);
 const selectAllAdsStatus = computed(() => {
   if (!action.value?.target) action.value.target = [];
-  console.log(action.value.target.length, accountCount.value);
   return (
     action.value.target.length > 0 &&
     action.value.target.length == accountCount.value

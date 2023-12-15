@@ -115,7 +115,10 @@ onUnmounted(() => {
             tempValue
               ? createHourRange(
                   moment(tempValue)
-                    .tz(initialData.timezone)
+                    .tz(
+                      initialData.timezone ??
+                        Intl.DateTimeFormat().resolvedOptions().timeZone
+                    )
                     .format("YYYY-MM-DD HH:mm")
                 )
               : t("未設定")

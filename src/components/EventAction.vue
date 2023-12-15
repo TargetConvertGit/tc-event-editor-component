@@ -289,7 +289,11 @@ const addAccount = (account) => {
 provide("addTarget", addAccount);
 // 目標列表
 const allAccountList = ref();
+const getAccountLoading = ref(false);
+
 const getAccountList = async (noCache = false) => {
+  getAccountLoading.value = true;
+
   const targets = await axios({
     method: "get",
     url: `${initialData.apiUrl}/heybear/api/automation/platform-target?client=${
@@ -303,9 +307,8 @@ const getAccountList = async (noCache = false) => {
 
   allAccountList.value = targets.data.data;
   accountFilterTabs.value = calculateHierarchyLevels(allAccountList.value);
+  getAccountLoading.value = false;
 };
-
-const getAccountLoading = ref(false);
 
 const filterAccountList = ref([]);
 
@@ -416,9 +419,7 @@ const resetSelectedAccount = () => {
 // 選擇目標視窗
 const showAccountModal = async () => {
   addAccountModal.value = true;
-  getAccountLoading.value = true;
   await getAccountList();
-  getAccountLoading.value = false;
 };
 const lockScroll = inject("lockScroll");
 watch(addAccountModal, (val) => {

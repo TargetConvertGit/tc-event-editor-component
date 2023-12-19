@@ -93,9 +93,12 @@ const actionOptionsMap: any = {
 
       SuspendProject: ActionType.SuspendProject,
     },
+    [AdLevelTypeGoogle.AssetGroup]: {
+      OpenProject: ActionType.OpenProject,
+      SuspendProject: ActionType.SuspendProject,
+    },
     // [AdLevelTypeGoogle.Ad]: {
     //   OpenProject: ActionType.OpenProject,
-
     //   SuspendProject: ActionType.SuspendProject,
     // },
   },
@@ -157,6 +160,9 @@ const valueTypeOptionsMap: any = {
       [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
     },
     [AdLevelTypeGoogle.AdTag]: {
+      [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
+    },
+    [AdLevelTypeGoogle.AssetGroup]: {
       [ActionType.SuspendProject]: [ValueType.Percentage, ValueType.Value],
     },
     // [AdLevelTypeGoogle.Ad]: {

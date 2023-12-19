@@ -5,12 +5,12 @@ import zh_TW from "./lang/zh_TW.js";
 import en_US from "./lang/en_US.js";
 
 const messages = {
-  zh_TW,
-  en_US,
+  "zh-TW": zh_TW,
+  "en-US": en_US,
 };
 
 export const i18n = createI18n({
-  locale: "zh_TW",
+  locale: "zh-TW",
   legacy: false,
   globalInjection: true,
   messages,

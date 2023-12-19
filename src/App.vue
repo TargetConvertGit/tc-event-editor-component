@@ -12,7 +12,7 @@ const submit = () => {
 };
 const token = ref("Bearer 7|IMZYBXtkk2b4DXnscSaexanLbcBbjvd7dP5Djj6Q");
 const timezone = ref("Asia/Tokyo");
-const locale = ref("zh_TW");
+const locale = ref("zh-TW");
 const init = ref({
   apiUrl: "https://tc-adsystem-stg.southeastasia.cloudapp.azure.com",
   token: token,

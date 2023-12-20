@@ -169,6 +169,16 @@ select {
   transform: translateY(-1rem);
 }
 
+.hide-enter-active,
+.hide-leave-active {
+  transition: all 0.25s ease;
+}
+
+.hide-enter-from,
+.hide-leave-to {
+  opacity: 0;
+}
+
 .v-popper__arrow-container {
   display: none;
 }

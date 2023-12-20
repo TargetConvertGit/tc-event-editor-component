@@ -310,113 +310,13 @@ const getAccountList = async (noCache = false) => {
       Authorization: initialData.token,
     },
   });
-
   allAccountList.value = targets.data.data;
+
   accountFilterTabs.value = calculateHierarchyLevels(allAccountList.value);
   getAccountLoading.value = false;
 };
 
 const filterAccountList = ref([]);
-
-// const filterAccountList = computed(() => {
-//   const filterText = accountFilterText.value.trim().toLowerCase();
-
-//   function findMatchingItems(items): any {
-//     let matchingItems = [];
-
-//     for (const item of items) {
-//       let shouldBreak = false;
-//       accountFilterTabs.value.forEach((i) => {
-//         if (i.label == item.type && i.status == item.enabled && !item.enabled) {
-//           shouldBreak = true;
-//         }
-//       });
-//       if (shouldBreak) continue;
-//       if (!item.children || item.children.length === 0) {
-//         matchingItems.push(item);
-//       }
-
-//       if (item.children && item.children.length > 0) {
-//         const childMatches = findMatchingItems(item.children);
-//         if (childMatches.length > 0) {
-//           matchingItems.push({
-//             id: item.id,
-//             name: item.name,
-//             children: childMatches,
-//             enabled: item.enabled,
-//           });
-//         }
-//       }
-//     }
-
-//     return matchingItems;
-//   }
-
-//   const filteredItems = [];
-//   for (const account of allAccountList.value) {
-//     if (account.children) {
-//       const matchingItems = findMatchingItems(account.children);
-//       if (matchingItems.length > 0) {
-//         filteredItems.push({
-//           id: account.id,
-//           name: account.name,
-//           type: account.type,
-//           children: matchingItems,
-//         });
-//       }
-//     } else {
-//       filteredItems.push({
-//         id: account.id,
-//         name: account.name,
-//         type: account.type,
-//       });
-//     }
-//   }
-//   function filterData(data, searchText) {
-//     accountCount.value = 0;
-
-//     function countLeafNodes(node) {
-//       if (!node.children || node.children.length === 0) {
-//         accountCount.value++;
-//       } else {
-//         node.children.forEach((child) => countLeafNodes(child));
-//       }
-//     }
-
-//     function filterNodes(node, text) {
-//       const newItem = { ...node };
-//       const children = newItem.children;
-
-//       if (newItem.name.toLowerCase().includes(text)) {
-//         const filteredChildren = (children || []).filter((child) =>
-//           child.name.toLowerCase().includes(text)
-//         );
-//         if (filteredChildren.length > 0) {
-//           newItem.children = filteredChildren;
-//         }
-//         return newItem;
-//       } else if (children) {
-//         const filteredChildren = children
-//           .map((child) => filterNodes(child, text))
-//           .filter(Boolean);
-//         if (filteredChildren.length > 0) {
-//           newItem.children = filteredChildren;
-//           return newItem;
-//         }
-//       }
-
-//       return null;
-//     }
-
-//     const filteredData = data
-//       .map((node) => filterNodes(node, searchText))
-//       .filter(Boolean);
-
-//     filteredData.forEach((item) => countLeafNodes(item));
-//     return filteredData;
-//   }
-//   return filterText ? filterData(filteredItems, filterText) : filteredItems;
-// });
 
 const resetSelectedAccount = () => {
   action.value.target = [];
@@ -432,6 +332,7 @@ watch(addAccountModal, (val) => {
   lockScroll.value = val;
   if (!val) accountFilterText.value = "";
 });
+
 // 目標搜尋
 const accountFilterText = ref("");
 const accountCount = ref(0);
@@ -443,7 +344,7 @@ const selectAllAdsStatus = computed(() => {
   );
 });
 
-// 全選
+// 全選目標
 const selectAllAccount = () => {
   const filteredItems = filterAccountList.value;
   const selectAll = (items) => {
@@ -464,8 +365,18 @@ const selectAllAccount = () => {
   }
 };
 
+// 移除目標;
+const removeAction = () => {
+  actionEnable.value = false;
+  action.value = {};
+  nextTick(() => {
+    delete eventData.value.action;
+  });
+};
+
 const accountFilterTabs = ref([]);
 
+// 標依選擇 顯示據籤
 function calculateHierarchyLevels(data) {
   const hierarchyLevels = [];
 
@@ -497,14 +408,6 @@ function calculateHierarchyLevels(data) {
 
 const accountModalLoading = ref(false);
 
-const removeAction = () => {
-  actionEnable.value = false;
-  action.value = {};
-  nextTick(() => {
-    delete eventData.value.action;
-  });
-};
-
 // 註解
 const budgetTips = computed(() => {
   const clientValue = client.value;
@@ -535,18 +438,11 @@ const budgetTips = computed(() => {
           paramsBudgetTypeValue !== unSelected ? budgetType : "",
       })}`
     : "";
-  // const msg = show
-  //   ? `若${t(clientAndAdLevel)}設定為${
-  //       paramsBudgetTypeValue !== unSelected ? budgetType : ""
-  //     }，則不會變更`
-  //   : "";
 
   return { show, msg };
 });
 
-onMounted(() => {
-  accountModalLoading.value = true;
-});
+// 依據標籤 搜尋字設定顯示目標
 const setList = () => {
   const filterText = accountFilterText.value.trim().toLowerCase();
   accountCount.value = 0;
@@ -651,20 +547,64 @@ const setList = () => {
     ? filterData(filteredItems, filterText)
     : filteredItems;
 };
-watchDebounced(
-  () => accountFilterText,
-  () => {
-    setList();
-  },
-  { deep: true, debounce: 500 }
-);
+
+// 更新列表
+const refresh = ref(false);
+
+const targetComponent = ref();
 watch(
-  () => [accountFilterTabs, allAccountList],
+  () => allAccountList,
   () => {
     setList();
   },
   { deep: true }
 );
+// 標籤
+watch(
+  () => accountFilterTabs,
+  () => {
+    if (targetComponent.value) {
+      const h = targetComponent.value.offsetHeight;
+      targetComponent.value.style = `height:${h}px`;
+    }
+    refresh.value = true;
+    setList();
+    nextTick(() => {
+      setTimeout(() => {
+        if (targetComponent.value) {
+          targetComponent.value.style = `height:fit-content`;
+        }
+        refresh.value = false;
+      }, 0);
+    });
+  },
+  { deep: true }
+);
+// 關鍵字
+watchDebounced(
+  () => accountFilterText,
+  () => {
+    if (targetComponent.value) {
+      const h = targetComponent.value.offsetHeight;
+      targetComponent.value.style = `height:${h}px`;
+    }
+    refresh.value = true;
+    setList();
+    nextTick(() => {
+      setTimeout(() => {
+        if (targetComponent.value) {
+          targetComponent.value.style = `height:fit-content`;
+        }
+        refresh.value = false;
+      }, 0);
+    });
+  },
+  { deep: true, debounce: 500 }
+);
+
+onMounted(() => {
+  accountModalLoading.value = true;
+});
 </script>
 
 <template>
@@ -825,7 +765,8 @@ watch(
           v-if="addAccountModal"
         >
           <div
-            class="sticky flex flex-col max-h-[95%] bg-light-5 rounded-xs shadow-01 w-4/5 py-4 px-10 h-fit top-[3%]"
+            class="sticky flex flex-col max-h-[95%] bg-light-5 rounded-xs shadow-01 w-4/5 py-4 px-10 h-fit top-[3%] transition-all"
+            ref="targetComponent"
           >
             <div class="flex justify-between">
               <span class="p2-b flex justify-center mb-3 text-dark-2 mr-auto">{{
@@ -863,32 +804,36 @@ watch(
               class="flex gap-4 w-full empty:hidden mb-2 items-center"
               v-if="!getAccountLoading && accountFilterTabs.length"
             >
-              <span class="p3-r text-dark-4">{{ t("篩選") }}</span>
-              <label
-                class="p3-r flex cursor-pointer items-center gap-1 rounded-md bg-light-3 px-2 py-0.5 text-dark-4 hover:shadow-01"
-                v-for="item in accountFilterTabs"
-                :key="item.label"
-                :for="item.label"
-              >
-                <input
-                  type="checkbox"
-                  v-model="item.status"
-                  :id="item.label"
-                  class="hidden"
-                  @change="resetSelectedAccount"
-                />
-                <div
-                  class="w-2 h-2 rounded-full bg-success-green-4"
-                  v-show="!item.status"
-                ></div>
-                {{
-                  t(
-                    `${ClientType[client]}${item.status ? "On" : "Off"}${
-                      item.label
-                    }`
-                  )
-                }}
-              </label>
+              <span class="p3-r text-dark-4 flex-shrink-0 self-start">{{
+                t("篩選")
+              }}</span>
+              <div class="flex items-center gap-4 flex-wrap">
+                <label
+                  class="p3-r flex cursor-pointer items-center gap-1 rounded-md bg-light-3 px-2 py-0.5 text-dark-4 hover:shadow-01"
+                  v-for="item in accountFilterTabs"
+                  :key="item.label"
+                  :for="item.label"
+                >
+                  <input
+                    type="checkbox"
+                    v-model="item.status"
+                    :id="item.label"
+                    class="hidden"
+                    @change="resetSelectedAccount"
+                  />
+                  <div
+                    class="w-2 h-2 rounded-full bg-success-green-4"
+                    v-show="!item.status"
+                  ></div>
+                  {{
+                    t(
+                      `${ClientType[client]}${item.status ? "On" : "Off"}${
+                        item.label
+                      }`
+                    )
+                  }}
+                </label>
+              </div>
             </div>
 
             <div
@@ -909,7 +854,7 @@ watch(
             ></div>
             <template v-else>
               <div
-                class="flex flex-col gap-4 flex-1 overflow-y-auto"
+                class="flex flex-col gap-4 flex-1"
                 v-if="!filterAccountList.length"
               >
                 <div
@@ -919,28 +864,32 @@ watch(
                   <p class="p2-b text-dark-3">{{ t("No Data") }}</p>
                 </div>
               </div>
-              <DynamicScroller
-                v-else
-                ref="scroller"
-                :items="filterAccountList"
-                :min-item-size="28"
-                class="scroller"
-              >
-                <template #default="{ item, index, active }">
-                  <DynamicScrollerItem
-                    :item="item"
-                    :active="active"
-                    :size-dependencies="[item.children]"
-                    :data-index="index"
-                    :data-active="active"
+              <div class="relative flex-1 overflow-auto" v-else>
+                <Transition name="hide" mode="out-in">
+                  <DynamicScroller
+                    :items="filterAccountList"
+                    :min-item-size="28"
+                    class="scroller"
+                    v-if="!refresh"
                   >
-                    <EventActionTargetItem
-                      :target="item"
-                      :targets="action?.target ?? []"
-                    />
-                  </DynamicScrollerItem>
-                </template>
-              </DynamicScroller>
+                    <template #default="{ item, index, active }">
+                      <DynamicScrollerItem
+                        :item="item"
+                        :active="active"
+                        :size-dependencies="[item.children]"
+                        :data-index="index"
+                        :data-active="active"
+                        :watchData="true"
+                      >
+                        <EventActionTargetItem
+                          :target="item"
+                          :targets="action?.target ?? []"
+                        />
+                      </DynamicScrollerItem>
+                    </template>
+                  </DynamicScroller>
+                </Transition>
+              </div>
             </template>
             <div
               class="mx-auto flex w-fit items-center gap-4 mt-8"

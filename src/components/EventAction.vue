@@ -402,8 +402,7 @@ function calculateHierarchyLevels(data) {
   data.forEach((node) => {
     calculateLevelsRecursive(node, 1);
   });
-
-  return hierarchyLevels.filter((level) => level !== undefined);
+  return hierarchyLevels.filter((level) => level);
 }
 
 const accountModalLoading = ref(false);
@@ -552,30 +551,22 @@ const setList = () => {
 const refresh = ref(false);
 
 const targetComponent = ref();
-watch(
-  () => allAccountList,
-  () => {
-    setList();
-  },
-  { deep: true }
-);
+
 // 標籤
 watch(
-  () => accountFilterTabs,
+  () => [allAccountList, accountFilterTabs],
   () => {
     if (targetComponent.value) {
       const h = targetComponent.value.offsetHeight;
-      targetComponent.value.style = `height:${h}px`;
+      targetComponent.value.style = `min-height:${h}px`;
     }
     refresh.value = true;
     setList();
     nextTick(() => {
-      setTimeout(() => {
-        if (targetComponent.value) {
-          targetComponent.value.style = `height:fit-content`;
-        }
-        refresh.value = false;
-      }, 0);
+      if (targetComponent.value) {
+        targetComponent.value.style = `height:fit-content`;
+      }
+      refresh.value = false;
     });
   },
   { deep: true }
@@ -586,17 +577,15 @@ watchDebounced(
   () => {
     if (targetComponent.value) {
       const h = targetComponent.value.offsetHeight;
-      targetComponent.value.style = `height:${h}px`;
+      targetComponent.value.style = `min-height:${h}px`;
     }
     refresh.value = true;
     setList();
     nextTick(() => {
-      setTimeout(() => {
-        if (targetComponent.value) {
-          targetComponent.value.style = `height:fit-content`;
-        }
-        refresh.value = false;
-      }, 0);
+      if (targetComponent.value) {
+        targetComponent.value.style = `height:fit-content`;
+      }
+      refresh.value = false;
     });
   },
   { deep: true, debounce: 500 }

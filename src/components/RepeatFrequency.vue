@@ -221,7 +221,7 @@ onClickOutside(target, () => (datePickerOpen.value = false));
                   :min-Date="new Date()"
                   is24hr
                   hide-time-header
-                  :time-accuracy="2"
+                  :time-accuracy="initialData.isProd ? 1 : 2"
                   :timezone="initialData.timezone"
                   @update:modelValue="updateStart"
                 />

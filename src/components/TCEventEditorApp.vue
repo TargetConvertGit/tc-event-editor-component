@@ -15,11 +15,14 @@ interface Props {
     token: string;
     locale: string;
     timezone: string;
+    isProd?: boolean;
   };
   data?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  isProd: false,
+});
 provide("initialData", props.initial);
 watch(
   props.initial,

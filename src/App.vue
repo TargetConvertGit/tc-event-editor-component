@@ -52,6 +52,7 @@ const init = ref({
   token: token,
   locale: locale,
   timezone: timezone,
+  isProd: false,
 });
 </script>
 

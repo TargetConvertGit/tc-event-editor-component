@@ -920,7 +920,7 @@ onMounted(() => {
             class="text-dark-4 p3-r"
             v-if="
               client == ClientType.Google &&
-              adLevel == AdLevelTypeGoogle.Campaign &&
+              adLevel != AdLevelTypeGoogle.AssetGroup &&
               (actionValue == ActionType.OpenProject ||
                 actionValue == ActionType.SuspendProject)
             "

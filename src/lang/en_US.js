@@ -28,8 +28,8 @@ export default {
   OpenProject: "Enable",
   SuspendProject: "Pause",
   None: "Send email",
-  dailyBudget: "Avg. Daily",
-  totalBudget: "Total",
+  DailyBudget: "Avg. Daily",
+  TotalBudget: "Total",
   BudgetRemaining: "Account remaining budget",
   BudgetCap: "Upper budget limit",
   Clicks: "Clicks",
@@ -39,6 +39,7 @@ export default {
   Conversions: "Conversions",
   ConversionSpend: "Avg. CPA",
   ReturnOnADSpending: "ROAS",
+  AllTime: "All Time",
   Today: "Today",
   Yesterday: "Yesterday",
   Last3Days: "Last 3 days",
@@ -113,7 +114,7 @@ export default {
   執行一次: "Once",
   開始: "Start",
   執行頻率: "Frequency",
-  自訂: "Custom",
+  自訂條件: "Custom Condition",
   結束: "End",
   日預算: "Avg. Daily",
   總預算: "Campaign total",
@@ -191,4 +192,7 @@ export default {
   "註：影片廣告活動不支援狀態變更":
     "Please note: Video campaign can't be paused or enabled.",
   立即更新: "Refresh",
+  目標對象: "Target",
+
+  請先設定目標對象: "Please specify the Target first",
 };

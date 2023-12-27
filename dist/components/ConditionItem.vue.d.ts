@@ -1,4 +1,5 @@
 import "v-calendar/style.css";
+import "floating-vue/dist/style.css";
 import { EventCondition } from "../types/event-items";
 declare const _default: import("vue").DefineComponent<{
     modelValue: {

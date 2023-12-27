@@ -14,7 +14,7 @@ const expand = ref(false);
 onMounted(() => {
   expand.value = true;
 });
-function enter(element) {
+function enter(element: any) {
   const width = getComputedStyle(element).width;
 
   element.style.width = width;

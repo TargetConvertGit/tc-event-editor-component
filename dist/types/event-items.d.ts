@@ -45,6 +45,7 @@ export interface EventAction {
     target?: EventActionTarget[];
     action: ActionType;
     params?: EventActionParamBudget;
+    pipeline: Boolean;
 }
 /**
  * 執行動作目標
@@ -86,6 +87,7 @@ export interface EventNotify {
  */
 export declare enum EmailNotify {
     None = -1,
+    ConditionMet = 2,
     All = 3,
     Error = 4
 }
@@ -151,7 +153,8 @@ export declare enum ConditionAdLevelTypeGoogle {
 export declare enum ConditionAdLevelTypeFacebook {
     Account = 1,
     Campaign = 2,
-    AdGroup = 3
+    AdGroup = 3,
+    Ad = 4
 }
 /**
  * 頻率
@@ -247,6 +250,7 @@ export declare enum ConditionType {
  * 比較區間日期範圍
  */
 export declare enum DateRangeType {
+    AllTime = 77,
     Today = 1,
     Yesterday = 2,
     Last3Days = 3,

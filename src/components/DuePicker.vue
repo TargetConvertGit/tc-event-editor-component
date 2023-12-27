@@ -8,6 +8,7 @@ import { cloneDeep } from "lodash";
 import moment from "moment";
 import "moment-timezone";
 const { t } = i18n.global;
+
 export interface Props {
   modelValue: string | null | Date | undefined;
 }
@@ -22,12 +23,12 @@ const setDeadline = ref(false);
 const tempValue = ref(
   props.modelValue ? new Date(props.modelValue).toISOString() : ""
 );
-const updateStart = (v) => {
+const updateStart = (v: Date) => {
   tempValue.value = v.toISOString();
 };
 
 const datePickerOpen = ref(false);
-watch(datePickerOpen, (val) => {
+watch(datePickerOpen, (val: boolean) => {
   if (!val) {
     emit("update:modelValue", cloneDeep(tempValue.value));
   }
@@ -36,7 +37,9 @@ watch(datePickerOpen, (val) => {
 const target = ref(null);
 
 onClickOutside(target, () => (datePickerOpen.value = false));
-function createHourRange(dateTime) {
+
+// 轉換顯示文字
+function createHourRange(dateTime: string) {
   // 從輸入的日期時間字串中取得日期和時間部分
   let [date, time] = dateTime.split(" ");
 
@@ -53,6 +56,7 @@ function createHourRange(dateTime) {
 }
 
 const listBlock = ref();
+// 選擇器位置
 const setListBlockStyle = () => {
   nextTick(() => {
     if (!listBlock.value) return;
@@ -65,16 +69,19 @@ const setListBlockStyle = () => {
   });
 };
 
+// 有數值就自動啟用結束日
 watch(
   () => props.modelValue,
-  (val) => {
+  (val: string) => {
     if (val) {
       setDeadline.value = true;
     }
   },
   { immediate: true }
 );
-watch(setDeadline, (value) => {
+
+// 是否啟用結束日
+watch(setDeadline, (value: boolean) => {
   if (!value) {
     emit("update:modelValue", null);
   } else {
@@ -99,7 +106,6 @@ onUnmounted(() => {
         v-if="!setDeadline"
         >{{ t("持續執行") }}</label
       >
-
       <div class="relative" ref="target" v-else>
         <div
           class="p3-b text-true-blue-3 relative flex cursor-pointer items-center justify-start gap-4 rounded shadow-01 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"

@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { EmailNotify } from "../types/event-items";
+import { EmailNotify, ActionType } from "../types/event-items";
 import { i18n } from "../i18n";
+import Select from "./Select.vue";
+import { enumToObj } from "../lib";
 
 const { t } = i18n.global;
 const eventData = inject("eventData");
 const notification = ref(
   eventData.value.notify ?? {
-    email: EmailNotify.All,
+    email: "",
   }
 );
+const setNotificationEmail = (v: number) => {
+  notification.value.email = v;
+};
 
 watch(
   notification,
@@ -17,25 +22,38 @@ watch(
   },
   { deep: true, immediate: true }
 );
+
+// 依據條件顯示選項
+const notificationItem = ref(enumToObj(EmailNotify));
+watchEffect(() => {
+  const action = eventData.value.action;
+  const conditions = eventData.value.conditions;
+  const items = enumToObj(EmailNotify);
+  if (action.action == ActionType.None) {
+    delete items["Error"];
+    delete items["All"];
+  }
+  if (!conditions?.length) {
+    delete items["ConditionMet"];
+  }
+  notificationItem.value = items;
+  // 沒有該值就清空
+  if (!Object.values(items).find((i) => i == notification.value.email))
+    notification.value.email = "";
+});
 </script>
 
 <template>
-  <div>
-    <label class="flex flex-1 items-center justify-start gap-4">
-      <span class="p3-r text-dark-4">{{ t("以電子郵件寄出結果") }}</span>
-      <select
-        class="p3-b text-true-blue-3 flex cursor-pointer items-center justify-center gap-4 rounded shadow-01 bg-light-5 py-1 px-2 outline-none transition-all hover:bg-light-3 hover:bg-opacity-50"
-        v-model="notification.email"
-      >
-        <option value="" disabled>{{ t("請選擇") }}</option>
-        <template v-for="(value, key) in EmailNotify" :key="key">
-          <option v-if="!Number.isInteger(value)" :value="Number(key)">
-            {{ t(`mail${value}`) }}
-          </option>
-        </template>
-      </select>
-    </label>
-  </div>
+  <Select
+    :value="notification.email"
+    :label="t('以電子郵件寄出結果')"
+    :options="notificationItem"
+    @updateValue="setNotificationEmail"
+  >
+    <template #default="{ option }">
+      {{ t(`mail${option}`) }}
+    </template>
+  </Select>
 </template>
 
 <style lang="scss" scoped></style>

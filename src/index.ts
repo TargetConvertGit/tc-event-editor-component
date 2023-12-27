@@ -5,7 +5,7 @@ import { getDescription } from "./description.js";
 import { getActionDescription } from "./action.js";
 import { getNotifyDescription } from "./notify.js";
 
-import "./style.css";
+import "./style.scss";
 
 const install = (app) => {
   app.component("TCEventEditorApp", TCEventEditorApp);

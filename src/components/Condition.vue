@@ -2,7 +2,7 @@
 import TextInput from "./TextInput.vue";
 import axios from "axios";
 import { getApiUrlBase } from "../apiConfig";
-import { PhX } from "@phosphor-icons/vue";
+import { PhX, PhPlusCircle } from "@phosphor-icons/vue";
 import ConditionItem from "./ConditionItem.vue";
 import { i18n } from "../i18n";
 
@@ -19,16 +19,7 @@ watch(
   },
   { deep: true }
 );
-
-const toBottom = () => {
-  const editor = document.getElementById("editor-container-outer");
-  if (!editor) return;
-  nextTick(() => {
-    setTimeout(() => {
-      editor.scrollTop = editor.scrollHeight;
-    }, 200);
-  });
-};
+const toBottom = inject("toBottom");
 
 // 新增條件
 const addCondition = () => {
@@ -82,6 +73,10 @@ const showConditionModal = async () => {
   await getDemoCondition();
   getDemoConditionLoading.value = false;
 };
+
+onUnmounted(() => {
+  eventData.value.conditions = [];
+});
 </script>
 
 <template>
@@ -100,13 +95,13 @@ const showConditionModal = async () => {
       <div class="h-[1px] flex-1 bg-light-3"></div>
     </div>
   </template>
-
   <div
-    class="p3-b cursor-pointer rounded shadow-01 hover:shadow-02 transition-all bg-light-5 py-1 px-2 text-dark-4 flex items-center justify-center"
+    class="p3-b cursor-pointer rounded shadow-01 hover:shadow-02 transition-all bg-light-5 py-1 px-2 text-dark-4 flex items-center justify-center gap-1"
     @click="showConditionModal"
     id="condition"
   >
-    + {{ t("加入條件") }}
+    <ph-plus-circle weight="bold" />
+    {{ t("加入條件") }}
   </div>
   <div
     class="absolute top-0 left-0 pt-4 right-0 bottom-0 w-full h-full flex justify-center bg-dark-3 bg-opacity-50 z-[2]"
@@ -126,7 +121,7 @@ const showConditionModal = async () => {
         />
       </div>
       <TextInput
-        class="max-w-xs min-w-[200px] mx-auto w-full"
+        class="w-full"
         :placeholder="t('輸入關鍵字搜尋 ex: 轉換數')"
         v-model="demoConditionFilterText"
       />
@@ -152,21 +147,29 @@ const showConditionModal = async () => {
         </div>
       </template>
       <div
-        class="border ml-auto mt-2 border-true-blue-3 text-true-blue-3 rounded px-1 w-fit p3-b cursor-pointer hover:text-true-blue-2 hover:border-true-blue-2"
+        class="border mx-auto mt-2 flex items-center gap-1 border-true-blue-3 text-true-blue-3 rounded px-2 py-1 w-fit p3-b cursor-pointer hover:text-true-blue-2 hover:border-true-blue-2"
         @click="addCondition"
         v-if="!getDemoConditionLoading"
       >
-        {{ t("自訂") }}
+        <ph-plus-circle size="18" />
+        {{ t("自訂條件") }}
       </div>
+
       <div
-        class="mx-auto flex w-fit items-center gap-4 mt-4"
+        class="mx-auto flex items-center justify-between gap-4 mt-8 border-t w-full pt-4"
         v-if="!getDemoConditionLoading"
       >
         <div
-          class="p3-b flex cursor-pointer items-center gap-1 rounded border bg-light-5 border-dark-5 px-2 py-1 text-dark-4 hover:text-light-5 hover:bg-dark-5"
+          class="p3-r flex cursor-pointer items-center gap-1 text-dark-3 hover:text-dark-2 underline transition-all"
           @click="addConditionModal = false"
         >
           {{ t("取消") }}
+        </div>
+        <div
+          class="p3-r flex cursor-pointer items-center gap-1 rounded bg-true-blue-3 border border-transparent px-4 py-1.5 text-light-5 hover:bg-true-blue-3 transition-all"
+          @click="addConditionModal = false"
+        >
+          {{ t("確定") }}
         </div>
       </div>
     </div>

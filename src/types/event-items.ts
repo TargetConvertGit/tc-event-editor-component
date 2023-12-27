@@ -56,6 +56,7 @@ export interface EventAction {
   target?: EventActionTarget[];
   action: ActionType;
   params?: EventActionParamBudget;
+  pipeline: Boolean; // 同目標對象 第二版存true
 }
 
 /**
@@ -102,7 +103,7 @@ export interface EventNotify {
  */
 export enum EmailNotify {
   None = -1, // 不寄送
-  // ConditionMet = 2, // 當符合條件時
+  ConditionMet = 2, // 當符合條件時
   All = 3, // 僅執行動作或錯誤時
   Error = 4, //僅出現錯誤時
 }
@@ -181,6 +182,7 @@ export enum ConditionAdLevelTypeFacebook {
   Account = 1,
   Campaign = 2,
   AdGroup = 3,
+  Ad = 4,
 }
 
 /**
@@ -290,6 +292,7 @@ export enum ConditionType {
  * 比較區間日期範圍
  */
 export enum DateRangeType {
+  AllTime = 77, // 所有時間
   Today = 1, // 當天
   Yesterday = 2, // 昨天
   Last3Days = 3, // 近3天

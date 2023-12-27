@@ -6,6 +6,7 @@ export interface Props {
   maxLength?: number;
   required?: boolean;
   inputClass?: string;
+  disabled?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   type: "string",
@@ -19,6 +20,9 @@ function onInput(e: any) {
     props.type == "number" ? Number(e.target.value) : e.target.value
   );
 }
+watchEffect(() => {
+  if (props.disabled) emit("update:modelValue", "");
+});
 </script>
 
 <template>
@@ -30,7 +34,7 @@ function onInput(e: any) {
       @input="onInput"
       :type="type"
       min="0"
-      :class="inputClass"
+      :class="[inputClass, { 'pointer-events-none': disabled }]"
       class="p3-b w-full border-none outline-none shadow-none placeholder:text-dark-5 text-dark-3"
       :placeholder="placeholder"
       :maxLength="maxLength"

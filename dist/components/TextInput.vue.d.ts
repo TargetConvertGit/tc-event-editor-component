@@ -5,6 +5,7 @@ export interface Props {
     maxLength?: number;
     required?: boolean;
     inputClass?: string;
+    disabled?: boolean;
 }
 declare const _default: import("vue").DefineComponent<{
     type: {
@@ -16,6 +17,9 @@ declare const _default: import("vue").DefineComponent<{
     };
     placeholder: {
         type: globalThis.PropType<string>;
+    };
+    disabled: {
+        type: globalThis.PropType<boolean>;
     };
     modelValue: {
         type: globalThis.PropType<string | number>;
@@ -36,6 +40,9 @@ declare const _default: import("vue").DefineComponent<{
     };
     placeholder: {
         type: globalThis.PropType<string>;
+    };
+    disabled: {
+        type: globalThis.PropType<boolean>;
     };
     modelValue: {
         type: globalThis.PropType<string | number>;

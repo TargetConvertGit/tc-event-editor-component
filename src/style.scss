@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+#editor-container-outer {
+  @layer components {
+    /* text */
+    .title-m {
+      @apply font-montserrat text-title  font-medium;
+    }
+    .h1-m {
+      @apply font-montserrat text-h1 font-medium;
+    }
+    .h2-m {
+      @apply font-montserrat text-h2 font-medium;
+    }
+    .h3-m {
+      @apply font-montserrat text-h3 font-medium;
+    }
+    .h4-m {
+      @apply font-montserrat text-h4 font-medium;
+    }
+    .h5-m {
+      @apply font-montserrat text-h5 font-medium;
+    }
+    .h6-m {
+      @apply font-montserrat text-h6 font-medium;
+    }
+    .title-b {
+      @apply font-montserrat text-title font-bold;
+    }
+    .h1-b {
+      @apply font-montserrat text-h1 font-bold;
+    }
+    .h2-b {
+      @apply font-montserrat text-h2 font-bold;
+    }
+    .h3-b {
+      @apply font-montserrat text-h3 font-bold;
+    }
+    .h4-b {
+      @apply font-montserrat text-h4 font-bold;
+    }
+    .h5-b {
+      @apply font-montserrat text-h5 font-bold;
+    }
+    .h6-b {
+      @apply font-montserrat text-h6 font-bold;
+    }
+    .h7-b {
+      @apply font-montserrat text-h7 font-bold tracking-[.5em];
+    }
+    .h8-b {
+      @apply font-montserrat text-h8 font-bold;
+    }
+    .p1-b {
+      @apply font-lato text-p1 font-bold;
+    }
+    .p2-b {
+      @apply font-lato text-p2 font-bold;
+    }
+    .p3-b {
+      @apply font-lato text-p3 font-bold;
+    }
+    .p4-b {
+      @apply font-lato text-p4 font-bold;
+    }
+    .p1-r {
+      @apply font-lato text-p1 font-regular;
+    }
+    .p2-r {
+      @apply font-lato text-p2 font-regular;
+    }
+    .p3-r {
+      @apply font-lato text-p3 font-regular;
+    }
+    .p4-r {
+      @apply font-lato text-p4 font-regular;
+    }
+    /*  Numbers Chart */
+    .n-c {
+      @apply font-jua font-semibold;
+      font-size: 11px;
+      line-height: 13px;
+    }
+    /* Numbers Large */
+    .n-l {
+      @apply font-montserrat font-bold;
+      font-size: 40px;
+      line-height: 48px;
+    }
+    /* Large Number Jura */
+    .n-l-jua {
+      @apply font-jua font-bold;
+      font-size: 36px;
+      line-height: 44px;
+    }
+  }
+
+  /* Chrome, Safari, Edge, Opera */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  select {
+    appearance: none;
+    text-align: center;
+  }
+
+  /* width */
+  * {
+    /* Track */
+    /* Handle */
+  }
+  * ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  * ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 1px grey;
+    border-radius: 9999px;
+  }
+  * ::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+    border-radius: 9999px;
+    background-color: #d3d3d3;
+  }
+
+  .scroll-shadow {
+    z-index: 2;
+    background:
+      linear-gradient(#ffffff 33%, rgba(255, 255, 255, 0)),
+      linear-gradient(rgba(255, 255, 255, 0), #ffffff 66%) 0 100%,
+      radial-gradient(
+        farthest-side at 50% 0,
+        rgba(85, 85, 85, 0.5),
+        rgba(0, 0, 0, 0)
+      ),
+      radial-gradient(
+          farthest-side at 50% 100%,
+          rgba(85, 85, 85, 0.5),
+          rgba(0, 0, 0, 0)
+        )
+        0 100%;
+    background-color: #ffffff;
+    background-repeat: no-repeat;
+    background-attachment: local, local, scroll, scroll;
+    background-size:
+      100% 78px,
+      100% 78px,
+      100% 26px,
+      100% 26px;
+  }
+
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: all 0.25s ease;
+  }
+
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+
+  .hide-enter-active,
+  .hide-leave-active {
+    transition: all 0.25s ease;
+  }
+
+  .hide-enter-from,
+  .hide-leave-to {
+    opacity: 0;
+  }
+}

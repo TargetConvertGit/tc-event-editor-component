@@ -4,6 +4,8 @@ import SpecifyDate from "./SpecifyDate.vue";
 import DuePicker from "./DuePicker.vue";
 import TextInput from "./TextInput.vue";
 import { DatePicker } from "v-calendar";
+import Select from "./Select.vue";
+import { enumToObj } from "../lib";
 import "v-calendar/style.css";
 import { i18n } from "../i18n";
 import { onClickOutside } from "@vueuse/core";
@@ -23,37 +25,37 @@ const eventData = inject("eventData");
 
 const minInterval = 1;
 const interval = ref(props.interval ?? minInterval);
-watch(interval, (val) => {
+watch(interval, (val: number) => {
   if (!val) val = minInterval;
   emit("update:interval", val);
 });
 const frequency = ref(props.frequency);
-watch(frequency, (val) => {
+watch(frequency, (val: number) => {
   emit("update:frequency", val);
 });
 
 //#region 日期相關參數
 const weekdays = computed({
   get: () => eventData.value.weekdays ?? [],
-  set: (value) => {
+  set: (value: number[]) => {
     eventData.value.weekdays = value;
   },
 });
 const weekOrdinal = computed({
   get: () => eventData.value.weekOrdinal ?? [],
-  set: (value) => {
+  set: (value: number[]) => {
     eventData.value.weekOrdinal = value;
   },
 });
 const monthDate = computed({
   get: () => eventData.value.monthDate ?? [],
-  set: (value) => {
+  set: (value: number[]) => {
     eventData.value.monthDate = value;
   },
 });
 const yearMonths = computed({
   get: () => eventData.value.yearMonths ?? [],
-  set: (value) => {
+  set: (value: number[]) => {
     eventData.value.yearMonths = value;
   },
 });
@@ -106,7 +108,7 @@ const repeat = ref(
   props.interval == undefined ? -1 : props.interval !== 1 ? 0 : props.frequency
 );
 
-function createHourRange(dateTime) {
+function createHourRange(dateTime: string) {
   // 從輸入的日期時間字串中取得日期和時間部分
   let [date, time] = dateTime.split(" ");
 
@@ -124,7 +126,7 @@ function createHourRange(dateTime) {
 
 watch(
   repeat,
-  (val) => {
+  (val: number) => {
     if (FrequencyType[val]) {
       emit("update:frequency", val);
       emit("update:interval", 1);
@@ -145,12 +147,12 @@ watch(
 const tempStartValue = ref(
   eventData.value.start ? new Date(eventData.value.start).toISOString() : ""
 );
-const updateStart = (v) => {
+const updateStart = (v: Date) => {
   tempStartValue.value = v.toISOString();
 };
 
 const datePickerOpen = ref(false);
-watch(datePickerOpen, (val) => {
+watch(datePickerOpen, (val: boolean) => {
   if (!val) {
     eventData.value.start = cloneDeep(tempStartValue.value);
   }

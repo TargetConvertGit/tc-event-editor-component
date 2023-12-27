@@ -22,7 +22,7 @@ const dd = ref(`{
   "lastTimeAt": "2023-12-19T08:12:01.000000Z",
   "action": {
     "client": 2,
-    "adLevel": 4,
+    "adLevel": 2,
     "targetType": 2,
     "target": [
       "23857428423890410",
@@ -58,6 +58,7 @@ const init = ref({
 
 <template>
   <div class="bg-dark-1 bg-opacity-70 h-screen w-full py-10">
+    {{ dd }}
     <div @click="timezone = 'Asia/Taipei'">Asia/Taipei</div>
     <div @click="timezone = 'Asia/Tokyo'">Asia/Tokyo</div>
     <div class="bg-light-5 rounded w-5/6 h-full flex mx-auto flex-col my-auto">

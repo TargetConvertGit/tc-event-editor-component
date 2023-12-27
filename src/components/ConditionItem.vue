@@ -8,7 +8,7 @@ import { PhX, PhTrash } from "@phosphor-icons/vue";
 import { Label } from "../shadcn/components/ui/label";
 import Select from "./Select.vue";
 import ToggleCheckBox from "./ToggleCheckBox.vue";
-import { enumToObj, arrayToObj } from "../lib";
+import { enumToObj } from "../lib";
 import { Tooltip } from "floating-vue";
 import "floating-vue/dist/style.css";
 import {

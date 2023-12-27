@@ -13,8 +13,6 @@ import Condition from "./Condition.vue";
 import OuterBlock from "./OuterBlock.vue";
 import Notification from "./Notification.vue";
 import { i18n } from "../i18n";
-import { onClickOutside } from "@vueuse/core";
-import { Dropdown } from "floating-vue";
 
 const { t } = i18n.global;
 interface Props {

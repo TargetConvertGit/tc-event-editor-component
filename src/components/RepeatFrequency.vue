@@ -5,7 +5,6 @@ import DuePicker from "./DuePicker.vue";
 import TextInput from "./TextInput.vue";
 import { DatePicker } from "v-calendar";
 import Select from "./Select.vue";
-import { enumToObj } from "../lib";
 import "v-calendar/style.css";
 import { i18n } from "../i18n";
 import { onClickOutside } from "@vueuse/core";

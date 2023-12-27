@@ -13,7 +13,7 @@ import {
 } from "@phosphor-icons/vue";
 import { Label } from "../shadcn/components/ui/label";
 import { watchDebounced } from "@vueuse/core";
-import { Tooltip, Dropdown } from "floating-vue";
+import { Tooltip } from "floating-vue";
 import "floating-vue/dist/style.css";
 import {
   ClientType,

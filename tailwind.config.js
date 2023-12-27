@@ -124,6 +124,7 @@ module.exports = {
         },
       },
       fontFamily: {
+        inherit: ["inherit"],
         montserrat: ["微軟正黑體", "Montserrat"],
         lato: ["微軟正黑體", "Lato"],
         jua: ["微軟正黑體", "Jua"],

@@ -61,7 +61,9 @@ const init = ref({
     {{ dd }}
     <div @click="timezone = 'Asia/Taipei'">Asia/Taipei</div>
     <div @click="timezone = 'Asia/Tokyo'">Asia/Tokyo</div>
-    <div class="bg-light-5 rounded w-5/6 h-full flex mx-auto flex-col my-auto">
+    <div
+      class="bg-light-5 rounded w-5/6 h-full flex mx-auto flex-col my-auto font-jura"
+    >
       <span class="p1-b p-1" @click="submit">建立自動化規則</span>
       <TCEventEditorApp v-model:data="dd" ref="editor" :initial="init" />
     </div>

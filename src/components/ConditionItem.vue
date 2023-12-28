@@ -158,8 +158,8 @@ watchEffect(() => {
   targetType.value = eventData.value?.action?.targetType;
   targets.value = eventData.value?.action?.target;
   // 自動帶入動作的目標對象
-  condition.value.targetClient = targetClient.value;
-  condition.value.targetAdLevel = targetAdLevel.value;
+  condition.value.client = targetClient.value;
+  condition.value.adLevel = targetAdLevel.value;
   condition.value.targetType = targetType.value;
   condition.value.targets = targets.value;
 });

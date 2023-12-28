@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import TextInput from "./TextInput.vue";
 import axios from "axios";
-import { getApiUrlBase } from "../apiConfig";
 import { PhX, PhPlusCircle } from "@phosphor-icons/vue";
 import ConditionItem from "./ConditionItem.vue";
 import { i18n } from "../i18n";
@@ -31,7 +30,7 @@ const addCondition = () => {
 const selectDemoCondition = async (id: number) => {
   const res = await axios({
     method: "get",
-    url: `${getApiUrlBase()}/heybear/api/automation/ad-events/template/${id}`,
+    url: `${initialData.apiUrl}/heybear/api/automation/ad-events/template/${id}`,
     withCredentials: true,
     headers: {
       Authorization: initialData.token,
@@ -51,7 +50,7 @@ const filterItem = computed(() => "title");
 const getDemoCondition = async () => {
   const res = await axios({
     method: "get",
-    url: `${getApiUrlBase()}/heybear/api/automation/template`,
+    url: `${initialData.apiUrl}/heybear/api/automation/template`,
     params: { type: 2 },
     withCredentials: true,
     headers: {
@@ -104,7 +103,7 @@ onUnmounted(() => {
     {{ t("加入條件") }}
   </div>
   <div
-    class="absolute top-0 left-0 pt-4 right-0 bottom-0 w-full h-full flex justify-center bg-dark-3 bg-opacity-50 z-[2]"
+    class="absolute top-0 left-0 pt-4 right-0 bottom-0 w-full h-full flex justify-center bg-dark-3 bg-opacity-50 z-[3]"
     v-if="addConditionModal"
   >
     <div
@@ -122,7 +121,7 @@ onUnmounted(() => {
       </div>
       <TextInput
         class="w-full"
-        :placeholder="t('輸入關鍵字搜尋 ex: 轉換數')"
+        :placeholder="t('輸入關鍵字搜尋')"
         v-model="demoConditionFilterText"
       />
       <div

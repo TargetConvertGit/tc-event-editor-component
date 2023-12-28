@@ -161,14 +161,14 @@ provide("toBottom", toBottom);
           v-model:interval="json.interval"
         />
       </OuterBlock>
-      <OuterBlock :title="t('通知')" :icon="'PhBellRinging'" id="notification">
-        <Notification />
-      </OuterBlock>
+
       <div class="flex flex-col gap-5">
         <EventAction v-model:showErrorModal="showErrorModal" />
         <Condition v-if="!hideCondition" />
       </div>
-
+      <OuterBlock :title="t('通知')" :icon="'PhBellRinging'" id="notification">
+        <Notification />
+      </OuterBlock>
       <button
         ref="submitBtn"
         class="p-2 px-3 rounded bg-slate-100 hover:bg-sky-500 hover:text-white hidden"

@@ -87,7 +87,7 @@ export default {
   且: "And",
   加入條件: "Add condition",
   請選擇條件: "Choose a condition",
-  "輸入關鍵字搜尋 ex: 轉換數": "Search",
+  輸入關鍵字搜尋: "Search",
   自訂: "Custom",
   取消: "Cancel",
   規則名稱: "Task",

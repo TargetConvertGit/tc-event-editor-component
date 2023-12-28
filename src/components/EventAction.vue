@@ -622,11 +622,7 @@ watch(
 // 是否有設定目標了
 const targetSettingComplete = computed(() => {
   if (targetType.value == unSelected) return false;
-  if (
-    targetType.value == EventActionTargetType.ForID &&
-    (!action.value?.target || !action.value.target.length)
-  )
-    return false;
+
   return true;
 });
 </script>
@@ -857,7 +853,11 @@ const targetSettingComplete = computed(() => {
       </Teleport>
     </div>
   </OuterBlock>
-  <Tooltip :placement="'top'" v-model:shown="showErrorModal">
+  <Tooltip
+    :placement="'top'"
+    v-model:shown="showErrorModal"
+    class="empty:hidden"
+  >
     <div
       class="p3-b cursor-pointer rounded shadow-01 hover:shadow-02 transition-all bg-light-5 py-1 px-2 text-dark-4 flex items-center justify-center gap-1"
       @click="showActionBlock = true"

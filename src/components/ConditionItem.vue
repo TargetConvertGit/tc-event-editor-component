@@ -229,11 +229,6 @@ const comparisonDateLabel = computed(() => {
 // 是否有設定目標了
 const targetSettingComplete = computed(() => {
   if (targetType.value == unSelected) return false;
-  if (
-    targetType.value == EventActionTargetType.ForID &&
-    (!targets.value || !targets.value.length)
-  )
-    return false;
   return true;
 });
 </script>

@@ -292,7 +292,7 @@ export enum ConditionType {
  * 比較區間日期範圍
  */
 export enum DateRangeType {
-  AllTime = 77, // 所有時間
+  AllTime = 99, // 所有時間
   Today = 1, // 當天
   Yesterday = 2, // 昨天
   Last3Days = 3, // 近3天

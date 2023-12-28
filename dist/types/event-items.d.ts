@@ -250,7 +250,7 @@ export declare enum ConditionType {
  * 比較區間日期範圍
  */
 export declare enum DateRangeType {
-    AllTime = 77,
+    AllTime = 99,
     Today = 1,
     Yesterday = 2,
     Last3Days = 3,

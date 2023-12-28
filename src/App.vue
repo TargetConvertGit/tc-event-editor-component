@@ -2,9 +2,8 @@
 import { TCEventEditorApp, setApiUrlBase } from "./index";
 
 const dd = ref(`{
-  "id": 22,
-  "start": "2023-12-19T08:12:00.000000Z",
-  "title": "12/19 16:12 FB開啟指定廣告",
+  "start": "2023-12-28T16:00:00.000000Z",
+  "title": "在明天 00:00 - 00:59 開啟指定廣告活動",
   "active": 1,
   "customInterval": 0,
   "frequency": -1,
@@ -19,22 +18,15 @@ const dd = ref(`{
     "email": 3,
     "line": 0
   },
-  "lastTimeAt": "2023-12-19T08:12:01.000000Z",
+  "lastTimeAt": null,
   "action": {
-    "client": 2,
+    "client": 1,
     "adLevel": 2,
     "targetType": 2,
-    "target": [
-      "23857428423890410",
-      "23857428359540410",
-      "23857428248610410",
-      "23857679280700410",
-      "23857428181060410",
-      "23857427053220410",
-      "23857426837250410"
-    ],
+    "target": [],
     "action": 4,
-    "params": null
+    "params": null,
+    "pipeline": 0
   },
   "conditions": []
 }`);

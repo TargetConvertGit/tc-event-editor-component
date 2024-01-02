@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import TextInput from "./TextInput.vue";
+import NumberInput2 from "./NumberInput2.vue";
 import OuterBlock from "./OuterBlock.vue";
 import axios from "axios";
 import { enumToObj, arrayToObj } from "../lib";
@@ -244,7 +245,7 @@ const setAdLevel = (v: number | string) => {
   setActionValue(-1);
   // delete action.value.action;
   // 不可跨層級選目標
-  // delete action.value.target;
+  delete action.value.target;
   // setTargetType("");
 };
 // 目標類型
@@ -278,6 +279,7 @@ const paramsValueType = computed(() => {
 });
 const setParamsValueType = (v: string) => {
   action.value.params.valueType = v;
+  action.value.params.value = 0;
 };
 
 // 預算選項註解
@@ -299,15 +301,18 @@ const budgetTips = computed(() => {
   const show = isGoogleCampaign || isFacebookCampaign || isFacebookAdGroup;
   const budgetType =
     paramsBudgetTypeValue === BudgetType.DailyBudget
-      ? t("日預算")
-      : t("總預算");
+      ? t("總預算")
+      : t("日預算");
   const clientAndAdLevel = `${ClientType[clientValue]}${adLevelOption.value[adLevelValue]}`;
   const msg = show
-    ? `${t(`若{clientAndAdLevel}設定為{paramsBudgetTypeValue}，則不會變更`, {
-        clientAndAdLevel: t(clientAndAdLevel),
-        paramsBudgetTypeValue:
-          paramsBudgetTypeValue !== unSelected ? budgetType : "",
-      })}`
+    ? `${t(
+        `註：若{clientAndAdLevel}設定為{paramsBudgetTypeValue}，則不會變更`,
+        {
+          clientAndAdLevel: t(clientAndAdLevel),
+          paramsBudgetTypeValue:
+            paramsBudgetTypeValue !== unSelected ? budgetType : "",
+        }
+      )}`
     : "";
 
   return { show, msg };
@@ -960,13 +965,12 @@ const targetSettingComplete = computed(() => {
                 }}</template>
               </ToggleCheckBox>
               <label
-                class="flex items-center gap-1 w-24"
+                class="flex items-center gap-1 w-28"
                 v-if="paramsValueType != unSelected"
               >
-                <TextInput
+                <NumberInput2
                   v-model="action.params.value"
-                  :inputClass="'text-true-blue-3'"
-                  :type="'number'"
+                  :precision="2"
                   :required="true"
                 />
                 <span class="p3-r text-dark-4">{{
@@ -989,11 +993,10 @@ const targetSettingComplete = computed(() => {
                 }}</span>
                 <div class="flex items-center gap-1">
                   <template v-if="hasLimitBudget">
-                    <div class="flex gap-1 items-center w-24">
-                      <TextInput
+                    <div class="flex gap-1 items-center flex-1">
+                      <NumberInput2
                         v-model="action.params.limit"
-                        :inputClass="'text-true-blue-3'"
-                        :type="'number'"
+                        :precision="2"
                         :required="true"
                       />
                       <span class="p3-r text-dark-4">{{ t("元") }}</span>

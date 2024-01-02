@@ -173,6 +173,7 @@ export enum ConditionAdLevelTypeGoogle {
   Account = 1,
   Campaign = 2,
   AdGroup = 3,
+  AssetGroup = 6,
 }
 
 /**

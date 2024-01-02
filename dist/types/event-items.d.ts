@@ -145,7 +145,8 @@ export type ConditionAdLevelType = ConditionAdLevelTypeGoogle | ConditionAdLevel
 export declare enum ConditionAdLevelTypeGoogle {
     Account = 1,
     Campaign = 2,
-    AdGroup = 3
+    AdGroup = 3,
+    AssetGroup = 6
 }
 /**
  * Facebook 層級

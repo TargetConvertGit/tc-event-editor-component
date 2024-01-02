@@ -13,7 +13,6 @@ import Condition from "./Condition.vue";
 import OuterBlock from "./OuterBlock.vue";
 import Notification from "./Notification.vue";
 import { i18n } from "../i18n";
-
 const { t } = i18n.global;
 interface Props {
   initial: {

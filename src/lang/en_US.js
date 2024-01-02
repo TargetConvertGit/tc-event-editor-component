@@ -118,7 +118,7 @@ export default {
   結束: "End",
   日預算: "Avg. Daily",
   總預算: "Campaign total",
-  "若{clientAndAdLevel}設定為{paramsBudgetTypeValue}，則不會變更": "",
+  "註：若{clientAndAdLevel}設定為{paramsBudgetTypeValue}，則不會變更": "e",
   加入動作: "Add action",
   動作: "Action",
   平台: "Platform",

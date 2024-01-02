@@ -2,7 +2,7 @@
 import { FrequencyType } from "../types/event-items";
 import SpecifyDate from "./SpecifyDate.vue";
 import DuePicker from "./DuePicker.vue";
-import TextInput from "./TextInput.vue";
+import NumberInput2 from "./NumberInput2.vue";
 import { DatePicker } from "v-calendar";
 import Select from "./Select.vue";
 import "v-calendar/style.css";
@@ -248,11 +248,13 @@ onClickOutside(target, () => (datePickerOpen.value = false));
     >
       <div class="flex gap-4 items-center">
         <span class="p3-r text-dark-4">{{ t("每") }}</span>
-        <TextInput
-          class="!w-10 text-center text-dark-3"
-          :inputClass="'text-true-blue-3'"
+
+        <NumberInput2
+          class="!w-12 text-dark-3"
+          :inputClass="'!text-true-blue-3 !text-center'"
+          :textCenter="true"
+          :required="true"
           v-model="interval"
-          type="number"
         />
         <div class="relative">
           <input

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TextInput from "./TextInput.vue";
+import NumberInput2 from "./NumberInput2.vue";
 import OuterBlock from "./OuterBlock.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
@@ -20,7 +20,7 @@ import {
   ClientType,
   ConditionAdLevelTypeFacebook,
   ConditionAdLevelTypeGoogle,
-  EventActionTargetType,
+  ActionType,
 } from "../types/event-items";
 import { i18n } from "../i18n";
 
@@ -47,7 +47,10 @@ const conditionType = computed(() => {
   if (condition.value.conditionType) return condition.value.conditionType;
   return "";
 });
-const setConditionType = (v) => (condition.value.conditionType = v);
+const setConditionType = (v) => {
+  condition.value.conditionType = v;
+  condition.value.value = "";
+};
 // 運算
 const dateRangeType = computed(() => {
   if (condition.value.dateRangeType) return condition.value.dateRangeType;
@@ -73,7 +76,12 @@ const valueType = computed(() => {
   return "";
 });
 const setValueType = (v) => (condition.value.valueType = v);
-
+const valueTypeOption = computed(() => {
+  if (props.modelValue.comparison) return ValueType;
+  return {
+    Value: ValueType.Value,
+  };
+});
 // 可選執行項
 const actionOptionsMap: any = {
   [ClientType.Google]: {
@@ -105,11 +113,19 @@ const actionOptionsMap: any = {
       ConversionSpend: ConditionType.ConversionSpend,
       ReturnOnADSpending: ConditionType.ReturnOnADSpending,
     },
+    [ConditionAdLevelTypeGoogle.AssetGroup]: {
+      Clicks: ConditionType.Clicks,
+      Impressions: ConditionType.Impressions,
+      Cpc: ConditionType.Cpc,
+      Spend: ConditionType.Spend,
+      Conversions: ConditionType.Conversions,
+      ConversionSpend: ConditionType.ConversionSpend,
+      ReturnOnADSpending: ConditionType.ReturnOnADSpending,
+    },
   },
   [ClientType.Facebook]: {
     [ConditionAdLevelTypeFacebook.Campaign]: {
       Clicks: ConditionType.Clicks,
-      BudgetCap: ConditionType.BudgetCap,
       Impressions: ConditionType.Impressions,
       Cpc: ConditionType.Cpc,
       Spend: ConditionType.Spend,
@@ -148,11 +164,13 @@ const actionOptionsMap: any = {
   },
 };
 
+const targetAction = ref();
 const targetClient = ref();
 const targetAdLevel = ref();
 const targetType = ref();
 const targets = ref();
 watchEffect(() => {
+  targetAction.value = eventData.value?.action?.action;
   targetClient.value = eventData.value?.action?.client;
   targetAdLevel.value = eventData.value?.action?.adLevel;
   targetType.value = eventData.value?.action?.targetType;
@@ -259,7 +277,7 @@ const targetSettingComplete = computed(() => {
             @updateValue="setConditionType"
           >
             <template #default="{ option }">
-              {{ t(option) }}
+              {{ t(`${ClientType[targetClient]}${option}`) }}
             </template>
           </Select>
           <template #popper>
@@ -361,7 +379,7 @@ const targetSettingComplete = computed(() => {
           </Select>
           <ToggleCheckBox
             :value="valueType"
-            :options="ValueType"
+            :options="valueTypeOption"
             :disabled="!operation"
             @updateValue="setValueType"
           >
@@ -370,18 +388,35 @@ const targetSettingComplete = computed(() => {
             }}</template>
           </ToggleCheckBox>
           <div class="flex gap-1 items-center w-24">
-            <TextInput
+            <NumberInput2
               v-model="condition.value"
               :inputClass="'text-true-blue-3'"
-              :type="'number'"
+              :precision="
+                conditionType != ConditionType.Clicks &&
+                conditionType != ConditionType.Impressions &&
+                conditionType != ConditionType.Cpc &&
+                conditionType != ConditionType.ReturnOnADSpending
+                  ? 2
+                  : 0
+              "
               :required="true"
               :disabled="!valueType"
             />
             <span class="p3-r text-dark-4" v-if="valueType != unSelected">{{
-              condition.valueType === ValueType.Percentage ? "%" : t("元")
+              condition.valueType === ValueType.Percentage
+                ? "%"
+                : conditionType != ConditionType.Clicks &&
+                  conditionType != ConditionType.Impressions &&
+                  conditionType != ConditionType.Cpc &&
+                  conditionType != ConditionType.ReturnOnADSpending
+                ? t("元")
+                : ""
             }}</span>
           </div>
         </div>
+        <span class="text-dark-4 p3-r" v-if="targetAction != ActionType.None">{{
+          t("註：僅有符合條件的目標對象，才會執行動作。")
+        }}</span>
       </div>
     </div>
   </OuterBlock>

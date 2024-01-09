@@ -39,7 +39,7 @@ export default {
   GoogleConversions: "轉換數",
   GoogleConversionSpend: "每次購買成本",
   GoogleReturnOnADSpending: "ROAS",
-  FacebookClicks: "點擊數",
+  FacebookClicks: "點擊數(全部)",
   FacebookImpressions: "曝光數",
   FacebookCpc: "CPC(全部)",
   FacebookSpend: "花費",
@@ -201,4 +201,6 @@ export default {
   目標對象: "目標對象",
   AllTime: "所有時間",
   請先設定目標對象: "請先設定目標對象",
+  "註：僅有符合條件的目標對象，才會執行動作。":
+    "註：僅有符合條件的目標對象，才會執行動作。",
 };

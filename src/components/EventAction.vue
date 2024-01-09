@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TextInput from "./TextInput.vue";
-import NumberInput2 from "./NumberInput2.vue";
+import NumberInput from "./NumberInput.vue";
 import OuterBlock from "./OuterBlock.vue";
 import axios from "axios";
 import { enumToObj, arrayToObj } from "../lib";
@@ -279,7 +279,7 @@ const paramsValueType = computed(() => {
 });
 const setParamsValueType = (v: string) => {
   action.value.params.valueType = v;
-  action.value.params.value = 0;
+  action.value.params.value = "";
 };
 
 // 預算選項註解
@@ -616,7 +616,9 @@ onMounted(() => {
 });
 
 // 顯示執行動作區塊
-const showActionBlock = ref(action.value.action ? true : false);
+const showActionBlock = ref(
+  action.value.action && action.value.action != -1 ? true : false
+);
 watch(
   showActionBlock,
   (val: boolean) => {
@@ -847,7 +849,7 @@ const targetSettingComplete = computed(() => {
                 {{ t("取消") }}
               </div>
               <div
-                class="p3-r flex cursor-pointer items-center gap-1 rounded bg-true-blue-3 border border-transparent px-4 py-1.5 text-light-5 hover:bg-true-blue-3 transition-all"
+                class="p3-r flex cursor-pointer items-center gap-1 rounded bg-true-blue-2 border border-transparent px-4 py-1.5 text-light-5 hover:bg-true-blue-3 transition-all"
                 @click="addAccountModal = false"
               >
                 {{ t("確定") }}
@@ -858,27 +860,47 @@ const targetSettingComplete = computed(() => {
       </Teleport>
     </div>
   </OuterBlock>
-  <Tooltip
-    :placement="'top'"
-    v-model:shown="showErrorModal"
-    class="empty:hidden"
-  >
-    <div
-      class="p3-b cursor-pointer rounded shadow-01 hover:shadow-02 transition-all bg-light-5 py-1 px-2 text-dark-4 flex items-center justify-center gap-1"
-      @click="showActionBlock = true"
-      v-if="!showActionBlock"
+  <div>
+    <Tooltip
+      :triggers="['click']"
+      :placement="'top'"
+      v-model:shown="showErrorModal"
+      class="empty:hidden"
+      :disabled="!showErrorModal"
     >
-      <ph-plus-circle weight="bold" />
-      {{ t("加入動作") }}
-    </div>
-    <template #popper>
-      <div class="py-2 px-4">
-        <span class="p3-b text-light-5">
-          {{ t("請設置一個動作或條件") }}
-        </span>
+      <div class="absolute"></div>
+      <template #popper>
+        <div class="py-2 px-4">
+          <span class="p3-r text-light-5">
+            {{ t("請設置一個動作或條件") }}
+          </span>
+        </div>
+      </template>
+    </Tooltip>
+    <Tooltip
+      :triggers="['click']"
+      :placement="'top'"
+      class="empty:hidden"
+      :disabled="targetSettingComplete"
+    >
+      <div
+        class="p3-b cursor-pointer rounded shadow-01 hover:shadow-02 transition-all bg-light-5 py-1 px-2 text-dark-4 flex items-center justify-center gap-1"
+        @click="!targetSettingComplete ? null : (showActionBlock = true)"
+        v-if="!showActionBlock"
+      >
+        <ph-plus-circle weight="bold" />
+        {{ t("加入動作") }}
       </div>
-    </template>
-  </Tooltip>
+      <template #popper>
+        <div class="py-2 px-4">
+          <span class="p3-r text-light-5">
+            {{ t("請先設定目標對象") }}
+          </span>
+        </div>
+      </template>
+    </Tooltip>
+  </div>
+
   <!-- 層級不同 可執行項目也不同 還有註解 -->
   <OuterBlock
     :title="t('動作')"
@@ -968,7 +990,7 @@ const targetSettingComplete = computed(() => {
                 class="flex items-center gap-1 w-28"
                 v-if="paramsValueType != unSelected"
               >
-                <NumberInput2
+                <NumberInput
                   v-model="action.params.value"
                   :precision="2"
                   :required="true"
@@ -994,7 +1016,7 @@ const targetSettingComplete = computed(() => {
                 <div class="flex items-center gap-1">
                   <template v-if="hasLimitBudget">
                     <div class="flex gap-1 items-center flex-1">
-                      <NumberInput2
+                      <NumberInput
                         v-model="action.params.limit"
                         :precision="2"
                         :required="true"

@@ -46,7 +46,7 @@ const localModalValue = computed({
 
 const props = withDefaults(defineProps<Props>(), {
   min: 1,
-  modelValue: 0,
+  modelValue: "",
   precision: 0,
 });
 const emit = defineEmits(["update:modelValue"]);

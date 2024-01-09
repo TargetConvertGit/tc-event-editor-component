@@ -25,7 +25,7 @@ declare const _default: import("vue").DefineComponent<{
     };
     modelValue: {
         type: globalThis.PropType<string | number>;
-        default: number;
+        default: string;
     };
     maxLength: {
         type: globalThis.PropType<number>;
@@ -56,7 +56,7 @@ declare const _default: import("vue").DefineComponent<{
     };
     modelValue: {
         type: globalThis.PropType<string | number>;
-        default: number;
+        default: string;
     };
     maxLength: {
         type: globalThis.PropType<number>;

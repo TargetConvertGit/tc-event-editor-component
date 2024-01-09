@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import NumberInput2 from "./NumberInput2.vue";
+import NumberInput from "./NumberInput.vue";
 import OuterBlock from "./OuterBlock.vue";
 import { DatePicker } from "v-calendar";
 import "v-calendar/style.css";
@@ -387,18 +387,11 @@ const targetSettingComplete = computed(() => {
               t(`condition${option}`)
             }}</template>
           </ToggleCheckBox>
-          <div class="flex gap-1 items-center w-24">
-            <NumberInput2
+          <div class="flex gap-1 items-center w-24" v-if="operation">
+            <NumberInput
               v-model="condition.value"
               :inputClass="'text-true-blue-3'"
-              :precision="
-                conditionType != ConditionType.Clicks &&
-                conditionType != ConditionType.Impressions &&
-                conditionType != ConditionType.Cpc &&
-                conditionType != ConditionType.ReturnOnADSpending
-                  ? 2
-                  : 0
-              "
+              :precision="2"
               :required="true"
               :disabled="!valueType"
             />
@@ -407,7 +400,7 @@ const targetSettingComplete = computed(() => {
                 ? "%"
                 : conditionType != ConditionType.Clicks &&
                   conditionType != ConditionType.Impressions &&
-                  conditionType != ConditionType.Cpc &&
+                  conditionType != ConditionType.Conversions &&
                   conditionType != ConditionType.ReturnOnADSpending
                 ? t("元")
                 : ""

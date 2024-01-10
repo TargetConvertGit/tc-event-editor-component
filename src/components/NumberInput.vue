@@ -13,6 +13,7 @@
       :controls="false"
       :bordered="false"
       :min="min"
+      :max="max"
       :precision="precision"
       :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
       :parser="(value) => value.replace(/\$\s?|(,*)/g, '')"
@@ -33,6 +34,7 @@ export interface Props {
   textCenter?: boolean;
   precision?: number;
   min?: number;
+  max?: number;
 }
 
 const localModalValue = computed({

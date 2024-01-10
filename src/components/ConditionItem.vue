@@ -69,13 +69,17 @@ const operation = computed(() => {
 });
 const setOperation = (v) => {
   condition.value.operation = v;
+  condition.value.value = "";
 };
 // 數值
 const valueType = computed(() => {
   if (condition.value.valueType) return condition.value.valueType;
   return "";
 });
-const setValueType = (v) => (condition.value.valueType = v);
+const setValueType = (v) => {
+  condition.value.valueType = v;
+  if (!condition.value.valueType) condition.value.value = "";
+};
 const valueTypeOption = computed(() => {
   if (props.modelValue.comparison) return ValueType;
   return {
@@ -164,6 +168,17 @@ const actionOptionsMap: any = {
   },
 };
 
+const operationOptions = computed(() => {
+  if (props.modelValue.comparison)
+    return {
+      MoreThan: OperationType.MoreThan,
+      GreaterOrEqualTo: OperationType.GreaterOrEqualTo,
+      LessThan: OperationType.LessThan,
+      LessThanOrEqualTo: OperationType.LessThanOrEqualTo,
+    };
+  return OperationType;
+});
+
 const targetAction = ref();
 const targetClient = ref();
 const targetAdLevel = ref();
@@ -248,6 +263,20 @@ const comparisonDateLabel = computed(() => {
 const targetSettingComplete = computed(() => {
   if (targetType.value == unSelected) return false;
   return true;
+});
+
+// 根據填入百分比,顯示試算文字
+const valueTip = computed(() => {
+  if (!condition.value.value || operation.value == OperationType.Equal)
+    return false;
+  if (valueType.value == ValueType.Percentage)
+    return `假設數值 = 100，當數值 ${operation.value} ${Number(
+      100 *
+        (operation.value == OperationType.LessThan
+          ? 1 - condition.value.value / 100
+          : 1 + condition.value.value / 100)
+    ).toFixed(0)} 即符合條件`;
+  return false;
 });
 </script>
 
@@ -369,7 +398,7 @@ const targetSettingComplete = computed(() => {
           <Select
             :value="operation"
             :label="t('運算')"
-            :options="OperationType"
+            :options="operationOptions"
             :disabled="!dateRangeType"
             @updateValue="setOperation"
           >
@@ -393,6 +422,12 @@ const targetSettingComplete = computed(() => {
               :inputClass="'text-true-blue-3'"
               :precision="2"
               :required="true"
+              :max="
+                operation == OperationType.LessThan ||
+                operation == OperationType.LessThanOrEqualTo
+                  ? 100
+                  : null
+              "
               :disabled="!valueType"
             />
             <span class="p3-r text-dark-4" v-if="valueType != unSelected">{{
@@ -406,7 +441,14 @@ const targetSettingComplete = computed(() => {
                 : ""
             }}</span>
           </div>
+          <div
+            class="ml-4 flex p4-r text-dark-4 top-[calc(100%+4px)]"
+            v-if="valueTip"
+          >
+            {{ valueTip }}
+          </div>
         </div>
+
         <span class="text-dark-4 p3-r" v-if="targetAction != ActionType.None">{{
           t("註：僅有符合條件的目標對象，才會執行動作。")
         }}</span>

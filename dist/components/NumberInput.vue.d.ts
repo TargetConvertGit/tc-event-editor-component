@@ -8,6 +8,7 @@ export interface Props {
     textCenter?: boolean;
     precision?: number;
     min?: number;
+    max?: number;
 }
 declare const _default: import("vue").DefineComponent<{
     required: {
@@ -18,6 +19,9 @@ declare const _default: import("vue").DefineComponent<{
     };
     disabled: {
         type: globalThis.PropType<boolean>;
+    };
+    max: {
+        type: globalThis.PropType<number>;
     };
     min: {
         type: globalThis.PropType<number>;
@@ -49,6 +53,9 @@ declare const _default: import("vue").DefineComponent<{
     };
     disabled: {
         type: globalThis.PropType<boolean>;
+    };
+    max: {
+        type: globalThis.PropType<number>;
     };
     min: {
         type: globalThis.PropType<number>;

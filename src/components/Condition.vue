@@ -125,7 +125,7 @@ onUnmounted(() => {
     </div>
   </template>
   <Tooltip
-    :triggers="['click']"
+    :triggers="['hover']"
     :placement="'top'"
     class="empty:hidden"
     :disabled="targetSettingComplete"
@@ -139,7 +139,7 @@ onUnmounted(() => {
       {{ t("加入條件") }}
     </div>
     <template #popper>
-      <div class="py-2 px-4">
+      <div>
         <span class="p3-r text-light-5">
           {{ t("請先設定目標對象") }}
         </span>
@@ -177,10 +177,18 @@ onUnmounted(() => {
         ></div>
         <template v-else>
           <div
-            class="flex flex-wrap gap-2.5 mt-8 rounded overflow-y-auto flex-1 px-1 py-1"
+            class="flex flex-wrap gap-3 mt-8 rounded overflow-y-auto flex-1 px-1 py-1"
           >
             <div
-              class="rounded shadow-01 items-center py-1 px-3 flex gap-1 hover:bg-true-blue-5 cursor-pointer"
+              class="border flex items-center gap-1 border-true-blue-3 text-true-blue-3 rounded-full px-3 py-1 w-fit p3-b cursor-pointer hover:text-true-blue-2 hover:border-true-blue-2"
+              @click="addCondition"
+              v-if="!getDemoConditionLoading"
+            >
+              <ph-plus-circle size="18" />
+              {{ t("自訂條件") }}
+            </div>
+            <div
+              class="rounded-full shadow-01 items-center py-1 px-3 flex gap-1 hover:bg-true-blue-5 cursor-pointer"
               v-for="condition in demoCondition"
               :key="condition.id"
               @click="selectDemoCondition(condition.id)"
@@ -191,14 +199,6 @@ onUnmounted(() => {
                   condition.description
                 }}</span> -->
               </div>
-            </div>
-            <div
-              class="border flex items-center gap-1 border-true-blue-3 text-true-blue-3 rounded px-3 py-1 w-fit p3-b cursor-pointer hover:text-true-blue-2 hover:border-true-blue-2"
-              @click="addCondition"
-              v-if="!getDemoConditionLoading"
-            >
-              <ph-plus-circle size="18" />
-              {{ t("自訂條件") }}
             </div>
           </div>
         </template>

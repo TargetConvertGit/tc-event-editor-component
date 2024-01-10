@@ -37,14 +37,14 @@ export default {
   GoogleCpc: "CPC",
   GoogleSpend: "花費",
   GoogleConversions: "轉換數",
-  GoogleConversionSpend: "每次購買成本",
+  GoogleConversionSpend: "單次轉換費用",
   GoogleReturnOnADSpending: "ROAS",
   FacebookClicks: "點擊數(全部)",
   FacebookImpressions: "曝光數",
   FacebookCpc: "CPC(全部)",
   FacebookSpend: "花費",
   FacebookConversions: "購買數",
-  FacebookConversionSpend: "單次轉換費用",
+  FacebookConversionSpend: "每次購買成本",
   FacebookReturnOnADSpending: "購買ROAS",
   Today: "當天",
   Yesterday: "昨天",
@@ -203,4 +203,5 @@ export default {
   請先設定目標對象: "請先設定目標對象",
   "註：僅有符合條件的目標對象，才會執行動作。":
     "註：僅有符合條件的目標對象，才會執行動作。",
+  請設置一個動作或條件: "請設置一個動作或條件",
 };

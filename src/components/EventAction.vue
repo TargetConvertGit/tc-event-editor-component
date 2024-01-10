@@ -862,7 +862,7 @@ const targetSettingComplete = computed(() => {
   </OuterBlock>
   <div>
     <Tooltip
-      :triggers="['click']"
+      :triggers="['hover']"
       :placement="'top'"
       v-model:shown="showErrorModal"
       class="empty:hidden"
@@ -870,7 +870,7 @@ const targetSettingComplete = computed(() => {
     >
       <div class="absolute"></div>
       <template #popper>
-        <div class="py-2 px-4">
+        <div>
           <span class="p3-r text-light-5">
             {{ t("請設置一個動作或條件") }}
           </span>
@@ -878,7 +878,7 @@ const targetSettingComplete = computed(() => {
       </template>
     </Tooltip>
     <Tooltip
-      :triggers="['click']"
+      :triggers="['hover']"
       :placement="'top'"
       class="empty:hidden"
       :disabled="targetSettingComplete"
@@ -892,7 +892,7 @@ const targetSettingComplete = computed(() => {
         {{ t("加入動作") }}
       </div>
       <template #popper>
-        <div class="py-2 px-4">
+        <div>
           <span class="p3-r text-light-5">
             {{ t("請先設定目標對象") }}
           </span>
@@ -919,7 +919,7 @@ const targetSettingComplete = computed(() => {
       <div class="flex flex-col gap-6">
         <div class="flex justify-start items-center gap-4">
           <Tooltip
-            :triggers="['click']"
+            :triggers="['hover']"
             :placement="'right'"
             :disabled="targetSettingComplete"
           >

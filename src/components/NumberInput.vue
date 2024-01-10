@@ -45,7 +45,7 @@ const localModalValue = computed({
 });
 
 const props = withDefaults(defineProps<Props>(), {
-  min: 1,
+  min: 0,
   modelValue: "",
   precision: 0,
 });

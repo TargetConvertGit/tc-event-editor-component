@@ -336,6 +336,7 @@ const valueTip = computed(() => {
           <div class="flex gap-2 empty:hidden">
             <div v-if="dateRangeType == DateRangeType.SpecifiedTime">
               <DatePicker
+                :locale="initialData.locale"
                 v-model.range="condition.dateRange"
                 :timezone="initialData.timezone"
               >

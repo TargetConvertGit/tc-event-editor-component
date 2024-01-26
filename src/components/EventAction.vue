@@ -960,6 +960,7 @@ const targetSettingComplete = computed(() => {
         <template v-if="showSettingBudget">
           <div class="flex justify-start gap-4 items-center">
             <ToggleCheckBox
+              class="flex-shrink-0"
               :value="paramsBudgetType"
               :label="t('類型')"
               :options="BudgetType"

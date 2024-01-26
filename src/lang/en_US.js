@@ -60,7 +60,20 @@ export default {
   GoogleCampaign: "Campaign",
   GoogleAdGroup: "Ad group",
   GoogleAssetGroup: "Asset Group",
-
+  GoogleClicks: "Clicks",
+  GoogleImpressions: "Impr.",
+  GoogleCpc: "CPC",
+  GoogleSpend: "Cost",
+  GoogleConversions: "Conversions",
+  GoogleConversionSpend: "CPA",
+  GoogleReturnOnADSpending: "ROAS",
+  FacebookClicks: "Clicks (all)",
+  FacebookImpressions: "Impressions",
+  FacebookCpc: "CPC (all)",
+  FacebookSpend: "Spent",
+  FacebookConversions: "Purchases",
+  FacebookConversionSpend: "Cost per purchase",
+  FacebookReturnOnADSpending: "Purchase ROAS",
   GoogleAd: "Ad",
   GoogleAdTag: "Ad label",
   GoogleAccount: "Account",
@@ -118,7 +131,8 @@ export default {
   結束: "End",
   日預算: "Avg. Daily",
   總預算: "Campaign total",
-  "註：若{clientAndAdLevel}設定為{paramsBudgetTypeValue}，則不會變更": "e",
+  "註：若{clientAndAdLevel}設定為{paramsBudgetTypeValue}，則不會變更":
+    "Please note: If the {clientAndAdLevel} is set to a {paramsBudgetTypeValue}, there will be no changes.",
   加入動作: "Add action",
   動作: "Action",
   平台: "Platform",
@@ -195,4 +209,7 @@ export default {
   目標對象: "Target",
 
   請先設定目標對象: "Please specify the Target first",
+  請設置一個動作或條件: "Create at least one action or condition",
+  "註：僅有符合條件的目標對象，才會執行動作。":
+    "Please note: Actions will only be taken when targets meet the conditions.",
 };

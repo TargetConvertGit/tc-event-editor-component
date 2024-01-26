@@ -58,14 +58,17 @@ function createHourRange(dateTime: string) {
 const listBlock = ref();
 // 選擇器位置
 const setListBlockStyle = () => {
+  datePickerOpen.value = !datePickerOpen.value;
+  if (!datePickerOpen.value) return;
+  if (!listBlock.value) return;
+  const rect = listBlock.value.getBoundingClientRect();
+  if (rect.right >= window.innerWidth) {
+    listBlock.value.classList.add("list-left");
+  } else {
+    listBlock.value.classList.add("list-right");
+  }
   nextTick(() => {
-    if (!listBlock.value) return;
-    const rect = listBlock.value.getBoundingClientRect();
-    if (rect.right >= window.innerWidth) {
-      listBlock.value.classList.add("list-left");
-    } else {
-      listBlock.value.classList.add("list-right");
-    }
+    datePickerOpen.value = true;
   });
 };
 
@@ -85,12 +88,10 @@ watch(setDeadline, (value: boolean) => {
   if (!value) {
     emit("update:modelValue", null);
   } else {
-    nextTick(() => {
-      datePickerOpen.value = true;
-      setListBlockStyle();
-    });
+    setListBlockStyle();
   }
 });
+
 onUnmounted(() => {
   emit("update:modelValue", null);
 });
@@ -110,7 +111,7 @@ onUnmounted(() => {
         <div
           class="p3-b text-true-blue-3 relative flex cursor-pointer items-center justify-start gap-4 rounded shadow-01 bg-light-5 py-1 px-2 transition-all hover:bg-light-3 hover:bg-opacity-50"
           :class="{ ' !text-dark-5 !p3-r': !tempValue }"
-          @click.stop="datePickerOpen = !datePickerOpen"
+          @click.stop="setListBlockStyle"
         >
           <input
             :value="tempValue"
@@ -137,6 +138,7 @@ onUnmounted(() => {
             v-if="datePickerOpen"
           >
             <DatePicker
+              :locale="initialData.locale"
               v-model="tempValue"
               mode="dateTime"
               :min-Date="

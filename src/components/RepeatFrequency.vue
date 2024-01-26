@@ -217,9 +217,11 @@ onClickOutside(target, () => (datePickerOpen.value = false));
                 v-if="datePickerOpen"
               >
                 <DatePicker
+                  :locale="initialData.locale"
                   v-model="tempStartValue"
                   mode="dateTime"
                   :min-Date="new Date()"
+                  :max-Date="eventData.due ? new Date(eventData.due) : null"
                   is24hr
                   hide-time-header
                   :time-accuracy="initialData.isProd ? 1 : 2"

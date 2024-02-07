@@ -270,12 +270,22 @@ const valueTip = computed(() => {
   if (!condition.value.value || operation.value == OperationType.Equal)
     return false;
   if (valueType.value == ValueType.Percentage)
-    return `假設數值 = 100，當數值 ${operation.value} ${Number(
-      100 *
-        (operation.value == OperationType.LessThan
-          ? 1 - condition.value.value / 100
-          : 1 + condition.value.value / 100)
-    ).toFixed(0)} 即符合條件`;
+    return t("conditionValueTip", {
+      operation: operation.value,
+      value: Number(
+        100 *
+          (operation.value == OperationType.LessThan
+            ? 1 - condition.value.value / 100
+            : 1 + condition.value.value / 100)
+      ).toFixed(0),
+    });
+
+  // t(`假設數值 = 100，當數值 ${operation.value} ${Number(
+  //   100 *
+  //     (operation.value == OperationType.LessThan
+  //       ? 1 - condition.value.value / 100
+  //       : 1 + condition.value.value / 100)
+  // ).toFixed(0)} 即符合條件`);
   return false;
 });
 </script>

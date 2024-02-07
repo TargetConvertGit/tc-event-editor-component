@@ -212,4 +212,6 @@ export default {
   請設置一個動作或條件: "Create at least one action or condition",
   "註：僅有符合條件的目標對象，才會執行動作。":
     "Please note: Actions will only be taken when targets meet the conditions.",
+  conditionValueTip:
+    "when the value is 100, it meets the condition when the value is {operation} {value}.",
 };

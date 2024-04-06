@@ -117,6 +117,7 @@ export default {
   月: "月",
   年: "年",
   每: "每",
+  every: "每",
   執行一次: "執行一次",
   開始: "開始",
   執行頻率: "執行頻率",
@@ -205,4 +206,6 @@ export default {
     "註：僅有符合條件的目標對象，才會執行動作。",
   請設置一個動作或條件: "請設置一個動作或條件",
   conditionValueTip: "假設數值 = 100，當數值 {operation} {value} 即符合條件",
+  taskStartTime: "於 {time} 起",
+  taskEndTime: "並於 {time} 結束循環",
 };

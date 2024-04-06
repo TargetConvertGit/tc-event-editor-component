@@ -33,7 +33,7 @@ export default {
   BudgetRemaining: "Account remaining budget",
   BudgetCap: "Upper budget limit",
   Clicks: "Clicks",
-  Impressions: "Imprssions",
+  Impressions: "Impressions",
   Cpc: "Avg. CPC",
   Spend: "Total Spent",
   Conversions: "Conversions",
@@ -124,6 +124,7 @@ export default {
   月: "month",
   年: "year",
   每: "Every",
+  every: "every",
   執行一次: "Once",
   開始: "Start",
   執行頻率: "Frequency",
@@ -214,4 +215,6 @@ export default {
     "Please note: Actions will only be taken when targets meet the conditions.",
   conditionValueTip:
     "when the value is 100, it meets the condition when the value is {operation} {value}.",
+  taskStartTime: "Starting from {time}",
+  taskEndTime: "and ends the loop on {time}",
 };

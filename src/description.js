@@ -6,7 +6,7 @@ import {
 import { i18n } from "./i18n";
 
 const dt = {
-  every: "每",
+  every: "every",
 
   frequency: {
     Never: "永不",
@@ -48,19 +48,24 @@ const dt = {
 export function getDescription(
   event,
   timezone = Intl.DateTimeFormat().resolvedOptions().timeZone,
-  withRange = false
+  withRange = false,
+  lang = i18n.global.locale.value
 ) {
   const { t } = i18n.global;
-  const startDate = new Date(event.start).toLocaleString("zh-TW", {
-    timeZone: timezone,
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    hour12: false,
-  });
+  if (lang) i18n.global.locale.value = lang;
+  const startDate = new Date(event.start).toLocaleString(
+    i18n.global.locale.value,
+    {
+      timeZone: timezone,
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      hour12: false,
+    }
+  );
   const endDate = event.due
-    ? new Date(event.due).toLocaleString("zh-TW", {
+    ? new Date(event.due).toLocaleString(i18n.global.locale.value, {
         timeZone: timezone,
         year: "numeric",
         month: "long",
@@ -69,7 +74,8 @@ export function getDescription(
         hour12: false,
       })
     : null;
-  if (event.frequency === FrequencyType.Never) return `於 ${startDate} 起`;
+  if (event.frequency === FrequencyType.Never)
+    return `${t("taskStartTime", { time: startDate })}`;
 
   const frequencyText = t(dt.frequency[FrequencyType[event.frequency]]);
 
@@ -90,8 +96,10 @@ export function getDescription(
         .reverse()
         .join("、")}月`
     : "";
-  let description = `於 ${startDate} 起，${dt.every}${event.interval}${frequencyText}`;
-  let withoutDescription = `${dt.every}${event.interval}${frequencyText}`;
+  let description = `${t("taskStartTime", { time: startDate })}，${t(
+    dt.every
+  )} ${event.interval} ${frequencyText}`;
+  let withoutDescription = `${t(dt.every)} ${event.interval} ${frequencyText}`;
   if (weekOrdinalText || weekdaysText || monthDateText || yearMonthsText) {
     description += "的";
     withoutDescription += "的";
@@ -114,7 +122,7 @@ export function getDescription(
   }
 
   if (endDate) {
-    description += `，並於 ${endDate} 結束循環`;
+    description += `，${t("taskEndTime", { time: endDate })}`;
   }
 
   return withRange ? withoutDescription : description;

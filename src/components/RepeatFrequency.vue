@@ -96,9 +96,9 @@ const repeatLabel = computed(() => {
   };
 
   if (repeat.value == 0) {
-    return `${t("每")}${interval.value ?? ""}${label[frequency.value] ?? ""}${
+    return `${t("每")} ${interval.value ?? ""} ${label[frequency.value] ?? ""}${
       date[frequency.value] ?? ""
-    }${t("執行一次")}`;
+    } ${t("執行一次")}`;
   }
   return "";
 });
